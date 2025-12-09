@@ -23,6 +23,8 @@ class Zicer_Settings {
         add_action('admin_menu', [__CLASS__, 'add_menu']);
         add_action('admin_init', [__CLASS__, 'register_settings']);
         add_action('wp_ajax_zicer_test_connection', [__CLASS__, 'ajax_test_connection']);
+        add_action('wp_ajax_zicer_disconnect', [__CLASS__, 'ajax_disconnect']);
+        add_action('wp_ajax_zicer_clear_all_listings', [__CLASS__, 'ajax_clear_all_listings']);
         add_action('wp_ajax_zicer_fetch_categories', [__CLASS__, 'ajax_fetch_categories']);
         add_action('wp_ajax_zicer_fetch_regions', [__CLASS__, 'ajax_fetch_regions']);
         add_action('wp_ajax_zicer_fetch_cities', [__CLASS__, 'ajax_fetch_cities']);
@@ -149,6 +151,13 @@ class Zicer_Settings {
 
         // Fallback category
         register_setting('zicer_settings', 'zicer_fallback_category');
+
+        // Debug logging
+        register_setting('zicer_settings', 'zicer_debug_logging', [
+            'type'              => 'string',
+            'default'           => '0',
+            'sanitize_callback' => [__CLASS__, 'sanitize_checkbox'],
+        ]);
     }
 
     /**
@@ -238,28 +247,109 @@ class Zicer_Settings {
         update_option('zicer_api_token', $token);
 
         $shop = $api->get_shop();
-        if (!is_wp_error($shop) && isset($shop['region'])) {
-            update_option('zicer_default_region', $shop['region']['id']);
-            if (isset($shop['city'])) {
+        $shop_data = null;
+        $has_shop = !is_wp_error($shop) && !empty($shop['title']);
+
+        if ($has_shop) {
+            $shop_data = $shop;
+            // Auto-populate region/city from shop only if not already set
+            if (!get_option('zicer_default_region') && isset($shop['region']['id'])) {
+                update_option('zicer_default_region', $shop['region']['id']);
+            }
+            if (!get_option('zicer_default_city') && isset($shop['city']['id'])) {
                 update_option('zicer_default_city', $shop['city']['id']);
             }
         }
 
         $rate_limit = $api->get_rate_limit_status();
+        $new_user_id = $result['uuid'] ?? $result['id'] ?? '';
+        $new_user_email = $result['email'] ?? '';
+
+        // Check if connecting with a different account
+        $previous_user_id = get_option('zicer_connected_user_id', '');
+        $is_different_account = $previous_user_id && $new_user_id && $previous_user_id !== $new_user_id;
+
+        // Store the connected user ID permanently (survives disconnect)
+        if ($new_user_id) {
+            update_option('zicer_connected_user_id', $new_user_id);
+            update_option('zicer_connected_user_email', $new_user_email);
+        }
+
         update_option('zicer_connection_status', [
             'connected'       => true,
-            'user'            => $result['email'] ?? '',
-            'shop'            => $shop['title'] ?? null,
+            'user'            => $new_user_email,
+            'user_id'         => $new_user_id,
+            'shop'            => $shop_data['title'] ?? null,
+            'has_shop'        => $has_shop,
             'last_check'      => current_time('mysql'),
             'rate_limit'      => $rate_limit['limit'],
             'rate_remaining'  => $rate_limit['remaining'],
         ]);
 
         wp_send_json_success([
-            'user'       => $result,
-            'shop'       => $shop,
-            'rate_limit' => $rate_limit['limit'],
+            'user'              => $result,
+            'shop'              => $shop_data,
+            'has_shop'          => $has_shop,
+            'rate_limit'        => $rate_limit['limit'],
+            'different_account' => $is_different_account,
+            'previous_email'    => $is_different_account ? get_option('zicer_connected_user_email', '') : null,
         ]);
+    }
+
+    /**
+     * AJAX: Disconnect / clear token
+     */
+    public static function ajax_disconnect() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        delete_option('zicer_api_token');
+        delete_option('zicer_connection_status');
+        // Note: zicer_connected_user_id and zicer_connected_user_email are kept
+        // to detect if a different account connects later
+
+        wp_send_json_success();
+    }
+
+    /**
+     * AJAX: Clear all ZICER listing data from products
+     */
+    public static function ajax_clear_all_listings() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        global $wpdb;
+
+        // Delete all ZICER-related post meta
+        $meta_keys = [
+            '_zicer_listing_id',
+            '_zicer_last_sync',
+            '_zicer_sync_error',
+            '_zicer_synced_images',
+        ];
+
+        $deleted = 0;
+        foreach ($meta_keys as $key) {
+            $deleted += $wpdb->delete(
+                $wpdb->postmeta,
+                ['meta_key' => $key],
+                ['%s']
+            );
+        }
+
+        // Clear the stored user ID so next connect is treated as fresh
+        delete_option('zicer_connected_user_id');
+        delete_option('zicer_connected_user_email');
+
+        Zicer_Logger::log('info', "Cleared all ZICER listing data ($deleted meta entries)");
+
+        wp_send_json_success(['deleted' => $deleted]);
     }
 
     /**

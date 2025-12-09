@@ -58,6 +58,26 @@
             }
         });
 
+        // Disconnect
+        $('#zicer-disconnect').on('click', function() {
+            if (!confirm('Are you sure you want to disconnect? Previously synced products will keep their ZICER listing IDs.')) {
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true);
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_disconnect',
+                nonce: zicerAdmin.nonce
+            }, function(response) {
+                location.reload();
+            }).fail(function() {
+                alert(zicerAdmin.strings.error + ' Connection failed');
+                $btn.prop('disabled', false);
+            });
+        });
+
         // Test connection
         $('#zicer-test-connection').on('click', function() {
             var $btn = $(this);
@@ -72,6 +92,26 @@
             }, function(response) {
                 $btn.prop('disabled', false).text('Test Connection');
                 if (response.success) {
+                    // Check if different account
+                    if (response.data.different_account) {
+                        var msg = 'Warning: You are connecting with a different account.\n\n' +
+                            'Previous: ' + (response.data.previous_email || 'Unknown') + '\n' +
+                            'New: ' + (response.data.user.email || 'Unknown') + '\n\n' +
+                            'Previously synced products have listing IDs from the old account.\n' +
+                            'Do you want to clear all ZICER listing data?\n\n' +
+                            'Click OK to clear, Cancel to keep existing data.';
+
+                        if (confirm(msg)) {
+                            $.post(zicerAdmin.ajaxUrl, {
+                                action: 'zicer_clear_all_listings',
+                                nonce: zicerAdmin.nonce
+                            }, function() {
+                                location.reload();
+                            });
+                            return;
+                        }
+                    }
+
                     $('#zicer-connection-status')
                         .removeClass('disconnected')
                         .addClass('connected')
@@ -98,12 +138,8 @@
                 nonce: zicerAdmin.nonce,
                 product_id: productId
             }, function(response) {
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Sync Now');
-                }
+                // Always reload to show updated status in meta box
+                location.reload();
             }).fail(function() {
                 alert(zicerAdmin.strings.error + ' Connection failed');
                 $btn.prop('disabled', false).text('Sync Now');
@@ -130,6 +166,41 @@
             }).fail(function() {
                 alert(zicerAdmin.strings.error + ' Connection failed');
                 $btn.prop('disabled', false);
+            });
+        });
+
+        // Clear stale data and re-sync (when listing deleted on ZICER)
+        $('.zicer-clear-stale').on('click', function() {
+            var $btn = $(this);
+            var productId = $btn.data('product-id');
+
+            $btn.prop('disabled', true).text('Clearing...');
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_clear_stale',
+                nonce: zicerAdmin.nonce,
+                product_id: productId
+            }, function(response) {
+                if (response.success) {
+                    // Now sync the product
+                    $btn.text('Syncing...');
+                    $.post(zicerAdmin.ajaxUrl, {
+                        action: 'zicer_sync_product',
+                        nonce: zicerAdmin.nonce,
+                        product_id: productId
+                    }, function(syncResponse) {
+                        location.reload();
+                    }).fail(function() {
+                        alert(zicerAdmin.strings.error + ' Sync failed');
+                        location.reload();
+                    });
+                } else {
+                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false).text('Clear & Re-create');
+                }
+            }).fail(function() {
+                alert(zicerAdmin.strings.error + ' Connection failed');
+                $btn.prop('disabled', false).text('Clear & Re-create');
             });
         });
 

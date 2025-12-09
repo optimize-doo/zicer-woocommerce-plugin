@@ -69,11 +69,35 @@ class Zicer_Product_Meta {
      * @param WP_Post $post The post object.
      */
     public static function render_meta_box($post) {
+        $product           = wc_get_product($post->ID);
+        $is_variable       = $product && $product->is_type('variable');
         $listing_id        = get_post_meta($post->ID, '_zicer_listing_id', true);
         $last_sync         = get_post_meta($post->ID, '_zicer_last_sync', true);
         $sync_error        = get_post_meta($post->ID, '_zicer_sync_error', true);
         $excluded          = get_post_meta($post->ID, '_zicer_exclude', true);
         $category_override = get_post_meta($post->ID, '_zicer_category', true);
+
+        // For variable products, check variations' sync status
+        $synced_variations = 0;
+        $total_variations  = 0;
+        if ($is_variable) {
+            $children = $product->get_children();
+            $total_variations = count($children);
+            foreach ($children as $variation_id) {
+                if (get_post_meta($variation_id, '_zicer_listing_id', true)) {
+                    $synced_variations++;
+                }
+                // Get last sync time from variations
+                $var_sync = get_post_meta($variation_id, '_zicer_last_sync', true);
+                if ($var_sync && (!$last_sync || $var_sync > $last_sync)) {
+                    $last_sync = $var_sync;
+                }
+            }
+            // Consider variable product "synced" if all variations are synced
+            if ($synced_variations > 0) {
+                $listing_id = 'variations';
+            }
+        }
 
         // Get ZICER categories for dropdown
         $zicer_categories = Zicer_Category_Map::get_cached_categories();
@@ -141,26 +165,54 @@ class Zicer_Product_Meta {
             <hr>
 
             <!-- Status -->
+            <?php
+            $is_404_error = $sync_error && strpos($sync_error, '404:') === 0;
+            ?>
             <?php if ($excluded === 'yes') : ?>
                 <p class="zicer-status excluded">
                     <?php esc_html_e('Excluded from sync', 'zicer-woo-sync'); ?>
                 </p>
+            <?php elseif ($is_404_error) : ?>
+                <p class="zicer-status warning">
+                    &#9888; <?php esc_html_e('Listing not found', 'zicer-woo-sync'); ?>
+                </p>
+                <p class="zicer-error"><?php echo esc_html(substr($sync_error, 4)); ?></p>
+                <p>
+                    <button type="button"
+                            class="button zicer-clear-stale"
+                            style="width: 100%;"
+                            data-product-id="<?php echo esc_attr($post->ID); ?>">
+                        <?php esc_html_e('Clear & Re-create', 'zicer-woo-sync'); ?>
+                    </button>
+                </p>
             <?php elseif ($listing_id) : ?>
                 <p class="zicer-status synced">
                     &#10003; <?php esc_html_e('Synced', 'zicer-woo-sync'); ?>
+                    <?php if ($is_variable && $total_variations > 0) : ?>
+                        (<?php printf(
+                            /* translators: %1$d: synced count, %2$d: total count */
+                            esc_html__('%1$d/%2$d variations', 'zicer-woo-sync'),
+                            $synced_variations,
+                            $total_variations
+                        ); ?>)
+                    <?php endif; ?>
                 </p>
                 <p class="zicer-info">
-                    <strong>ID:</strong> <?php echo esc_html(substr($listing_id, 0, 8)); ?>...
-                    <br>
+                    <?php if (!$is_variable) : ?>
+                        <strong>ID:</strong> <?php echo esc_html(substr($listing_id, 0, 8)); ?>...
+                        <br>
+                    <?php endif; ?>
                     <strong><?php esc_html_e('Last sync:', 'zicer-woo-sync'); ?></strong>
                     <?php echo esc_html($last_sync); ?>
                 </p>
-                <p>
-                    <a href="https://zicer.ba/oglasi/<?php echo esc_attr($listing_id); ?>"
-                       target="_blank" class="button">
-                        <?php esc_html_e('View on ZICER', 'zicer-woo-sync'); ?>
-                    </a>
-                </p>
+                <?php if (!$is_variable) : ?>
+                    <p>
+                        <a href="https://zicer.ba/oglasi/<?php echo esc_attr($listing_id); ?>"
+                           target="_blank" class="button">
+                            <?php esc_html_e('View on ZICER', 'zicer-woo-sync'); ?>
+                        </a>
+                    </p>
+                <?php endif; ?>
             <?php elseif ($current_issue) : ?>
                 <p class="zicer-status error">
                     &#10007; <?php esc_html_e('Cannot sync', 'zicer-woo-sync'); ?>
