@@ -347,7 +347,7 @@ msgstr "Nema log zapisa."
 
 #: admin/views/sync-status.php:21
 msgid "Queue"
-msgstr "Red"
+msgstr "Obrada"
 
 #: admin/views/sync-status.php:27
 msgid "Pending"
@@ -577,7 +577,7 @@ msgstr "Mapiranje kategorija"
 
 #: includes/class-zicer-settings.php:74
 msgid "Sync Queue"
-msgstr "Red za sinkronizaciju"
+msgstr "Obrada"
 
 #: includes/class-zicer-settings.php:221
 msgid "Testing..."
@@ -698,3 +698,11 @@ msgstr "API token možete kreirati u vašim %s."
 #: admin/views/settings-page.php:48
 msgid "ZICER profile settings"
 msgstr "ZICER postavkama profila"
+
+#: includes/class-zicer-settings.php:235
+msgid "No suggestions"
+msgstr "Nema prijedloga"
+
+#: includes/class-zicer-settings.php:236
+msgid "No match found"
+msgstr "Nije pronađeno"

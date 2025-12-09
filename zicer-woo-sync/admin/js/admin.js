@@ -430,14 +430,14 @@
                         $select.val(suggestionId).trigger('change');
                         $result.addClass('success').text('✓');
                     } else {
-                        $result.addClass('error').text('No match found');
+                        $result.addClass('error').text(zicerAdmin.strings.no_match_found);
                     }
                 } else {
-                    $result.addClass('error').text('No suggestions');
+                    $result.addClass('error').text(zicerAdmin.strings.no_suggestions);
                 }
             }).fail(function() {
                 $spinner.removeClass('is-active');
-                $result.addClass('error').text('Error');
+                $result.addClass('error').text(zicerAdmin.strings.error);
             });
         });
 
