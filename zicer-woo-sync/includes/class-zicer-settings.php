@@ -277,22 +277,31 @@ class Zicer_Settings {
      *
      * @param array  $regions     Regions array.
      * @param string $parent_name Parent region name for display.
+     * @param bool   $is_child    Whether these are child regions.
      * @return array Flattened regions.
      */
-    private static function flatten_regions($regions, $parent_name = '') {
+    private static function flatten_regions($regions, $parent_name = '', $is_child = false) {
         $flat = [];
 
         foreach ($regions as $region) {
-            $title = $parent_name ? "$parent_name > {$region['title']}" : $region['title'];
+            $has_children = !empty($region['cantons']);
 
-            $flat[] = [
-                'uuid'  => $region['uuid'] ?? $region['id'] ?? '',
-                'title' => $title,
-            ];
-
-            // Add cantons (nested regions)
-            if (!empty($region['cantons'])) {
-                $flat = array_merge($flat, self::flatten_regions($region['cantons'], $region['title']));
+            // Top-level regions with children are just group headers
+            if (!$is_child && $has_children) {
+                $flat[] = [
+                    'uuid'     => '',
+                    'title'    => $region['title'],
+                    'disabled' => true,
+                ];
+                $flat = array_merge($flat, self::flatten_regions($region['cantons'], $region['title'], true));
+            } else {
+                // Selectable region (child or top-level without children)
+                $title = $parent_name ? "— {$region['title']}" : $region['title'];
+                $flat[] = [
+                    'uuid'     => $region['uuid'] ?? $region['id'] ?? '',
+                    'title'    => $title,
+                    'disabled' => false,
+                ];
             }
         }
 
