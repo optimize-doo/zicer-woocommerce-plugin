@@ -55,13 +55,18 @@ $saved            = isset($_GET['saved']) && $_GET['saved'] === '1';
             <p class="description">
                 <?php esc_html_e('This category will be used when a product has no mapped category.', 'zicer-woo-sync'); ?>
             </p>
-            <select name="fallback_category" class="zicer-category-select">
+            <select name="fallback_category" class="zicer-category-select zicer-select2">
                 <option value=""><?php esc_html_e('-- None --', 'zicer-woo-sync'); ?></option>
                 <?php
                 $fallback = get_option('zicer_fallback_category', '');
                 foreach ($flat_categories as $zcat) :
-                    if (!$zcat['has_children']) : // Only leaf categories
+                    $is_disabled = !empty($zcat['disabled']);
+                    if ($is_disabled) :
                 ?>
+                    <option value="" disabled>
+                        <?php echo esc_html($zcat['path']); ?>
+                    </option>
+                <?php else : ?>
                     <option value="<?php echo esc_attr($zcat['id']); ?>"
                             <?php selected($fallback, $zcat['id']); ?>>
                         <?php echo esc_html($zcat['path']); ?>
@@ -101,17 +106,25 @@ $saved            = isset($_GET['saved']) && $_GET['saved'] === '1';
                             </td>
                             <td>
                                 <select name="mapping[<?php echo esc_attr($wc_cat->term_id); ?>]"
-                                        class="zicer-category-select"
+                                        class="zicer-category-select zicer-select2"
                                         data-wc-cat="<?php echo esc_attr($wc_cat->name); ?>">
                                     <option value=""><?php esc_html_e('-- Do not map --', 'zicer-woo-sync'); ?></option>
-                                    <?php foreach ($flat_categories as $zcat) : ?>
-                                        <?php if (!$zcat['has_children']) : // Only leaf categories ?>
-                                            <option value="<?php echo esc_attr($zcat['id']); ?>"
-                                                    <?php selected($mapping[$wc_cat->term_id] ?? '', $zcat['id']); ?>>
-                                                <?php echo esc_html($zcat['path']); ?>
-                                            </option>
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
+                                    <?php foreach ($flat_categories as $zcat) :
+                                        $is_disabled = !empty($zcat['disabled']);
+                                        if ($is_disabled) :
+                                    ?>
+                                        <option value="" disabled>
+                                            <?php echo esc_html($zcat['path']); ?>
+                                        </option>
+                                    <?php else : ?>
+                                        <option value="<?php echo esc_attr($zcat['id']); ?>"
+                                                <?php selected($mapping[$wc_cat->term_id] ?? '', $zcat['id']); ?>>
+                                            <?php echo esc_html($zcat['path']); ?>
+                                        </option>
+                                    <?php
+                                        endif;
+                                    endforeach;
+                                    ?>
                                 </select>
                             </td>
                             <td>

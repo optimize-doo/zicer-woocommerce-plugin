@@ -94,27 +94,61 @@ class Zicer_Category_Map {
     /**
      * Flatten categories into a list with paths
      *
-     * @param array  $categories  Categories array.
-     * @param string $parent_path Parent category path.
+     * @param array $categories Categories array from API.
      * @return array Flattened categories.
      */
-    public static function flatten_categories($categories, $parent_path = '') {
+    public static function flatten_categories($categories) {
         $flat = [];
+        $seen = []; // Track seen IDs to avoid duplicates
 
-        foreach ($categories as $cat) {
-            $path   = $parent_path ? "$parent_path > {$cat['title']}" : $cat['title'];
-            $flat[] = [
-                'id'           => $cat['id'],
-                'title'        => $cat['title'],
-                'path'         => $path,
-                'has_children' => !empty($cat['categories']),
-            ];
-
-            if (!empty($cat['categories'])) {
-                $flat = array_merge($flat, self::flatten_categories($cat['categories'], $path));
-            }
-        }
+        self::flatten_recursive($categories, $flat, $seen);
 
         return $flat;
+    }
+
+    /**
+     * Recursively flatten categories
+     *
+     * @param array $categories Categories array.
+     * @param array $flat       Reference to flat array.
+     * @param array $seen       Reference to seen IDs array.
+     */
+    private static function flatten_recursive($categories, &$flat, &$seen) {
+        foreach ($categories as $cat) {
+            $id = $cat['id'] ?? $cat['uuid'] ?? '';
+
+            // Skip if already processed
+            if (isset($seen[$id])) {
+                continue;
+            }
+            $seen[$id] = true;
+
+            $has_children = !empty($cat['categories']);
+
+            // Determine if this is a leaf category (selectable)
+            // Use hierarchyLevels or breadcrumbs to check depth
+            $breadcrumbs = $cat['breadcrumbs'] ?? [];
+            $level       = count($breadcrumbs) - 1; // 0-indexed level of this category
+
+            // Category is selectable only if it's a leaf (no children)
+            // Root categories (level 0) with no children are still selectable
+            $is_disabled = $has_children;
+
+            // Build path from hierarchyLevels or refinementValue
+            $path = $cat['refinementValue'] ?? $cat['title'];
+
+            $flat[] = [
+                'id'           => $id,
+                'title'        => $cat['title'],
+                'path'         => $path,
+                'has_children' => $has_children,
+                'disabled'     => $is_disabled,
+            ];
+
+            // Recurse into children
+            if ($has_children) {
+                self::flatten_recursive($cat['categories'], $flat, $seen);
+            }
+        }
     }
 }

@@ -11,6 +11,15 @@
 
     $(document).ready(function() {
 
+        // Initialize Select2 for category dropdowns
+        if ($.fn.select2) {
+            $('.zicer-select2').select2({
+                placeholder: '-- Select --',
+                allowClear: true,
+                width: '100%'
+            });
+        }
+
         // Test connection
         $('#zicer-test-connection').on('click', function() {
             var $btn = $(this);
