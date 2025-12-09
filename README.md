@@ -1,20 +1,20 @@
 # ZICER WooCommerce Sync Plugin
 
-WordPress/WooCommerce plugin za sinhronizaciju proizvoda sa ZICER marketplace platformom.
+WordPress/WooCommerce plugin for synchronizing products with the ZICER marketplace platform.
 
-## Razvoj
+## Development
 
-### Pokretanje test okruženja
+### Starting the Test Environment
 
 ```bash
-# Pokreni Docker kontejnere i instaliraj WordPress + WooCommerce
+# Start Docker containers and install WordPress + WooCommerce
 make setup
 
-# Ili samo pokreni kontejnere (ako je već instalirano)
+# Or just start containers (if already installed)
 make up
 ```
 
-### Pristup
+### Access
 
 - **WordPress**: http://localhost:8080
 - **Admin panel**: http://localhost:8080/wp-admin
@@ -24,52 +24,58 @@ make up
   - Username: `wordpress`
   - Password: `wordpress`
 
-### Korisne komande
+### Useful Commands
 
 ```bash
-make up          # Pokreni kontejnere
-make down        # Zaustavi kontejnere
-make logs        # Prikaži logove
-make shell       # Shell u WordPress kontejner
+make up          # Start containers
+make down        # Stop containers
+make logs        # Show logs
+make shell       # Shell into WordPress container
 make wp          # WP-CLI shell
 make db-shell    # MySQL shell
-make activate    # Aktiviraj plugin
-make deactivate  # Deaktiviraj plugin
-make clean       # Obriši sve (uključujući bazu!)
+make activate    # Activate plugin
+make deactivate  # Deactivate plugin
+make clean       # Remove everything (including database!)
 ```
 
-### Struktura projekta
+### Project Structure
 
 ```
 zicer.woo/
-├── docker-compose.yml     # Docker konfiguracija
-├── Makefile               # Korisne komande
+├── docker-compose.yml     # Docker configuration
+├── Makefile               # Useful commands
 ├── scripts/
-│   └── setup.sh           # Skripta za inicijalno podešavanje
+│   └── setup.sh           # Initial setup script
 ├── zicer-woo-sync/        # WordPress plugin
-│   ├── zicer-woo-sync.php # Glavni plugin fajl
-│   ├── includes/          # PHP klase
-│   ├── admin/             # Admin resursi
+│   ├── zicer-woo-sync.php # Main plugin file
+│   ├── includes/          # PHP classes
+│   ├── admin/             # Admin resources
 │   │   ├── css/
 │   │   ├── js/
 │   │   └── views/
-│   └── languages/         # Prijevodi
+│   └── languages/         # Translations (BS/EN)
 └── thoughts/
-    └── plans/             # Implementacijski planovi
+    └── plans/             # Implementation plans
 ```
 
-## Funkcionalnosti
+## Features
 
-- Povezivanje sa ZICER platformom putem API tokena
-- Automatska sinhronizacija proizvoda u realnom vremenu
-- Bulk sinhronizacija postojećih proizvoda
-- Mapiranje WooCommerce kategorija na ZICER kategorije
-- Konfigurabilni opisi (šabloni)
-- Sinhronizacija slika
-- Poštovanje API rate limita
-- Opciono skraćivanje naslova
-- Automatsko uklanjanje nedostupnih proizvoda
+- Connect to ZICER platform via API token
+- Real-time automatic product synchronization
+- Bulk sync for existing products
+- WooCommerce to ZICER category mapping
+- Configurable description templates
+- Image synchronization
+- API rate limit compliance
+- Optional title truncation
+- Auto-remove unavailable products
 
-## Dokumentacija
+## Internationalization
 
-Detaljan implementacijski plan: `thoughts/plans/2025-12-09-zicer-woo-sync-plugin.md`
+The plugin supports both English and Bosnian languages:
+- Default language: English
+- Translation file: `languages/zicer-woo-sync-bs_BA.po`
+
+## Documentation
+
+Detailed implementation plan: `thoughts/plans/2025-12-09-zicer-woo-sync-plugin.md`

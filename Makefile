@@ -85,3 +85,27 @@ status:
 	@docker exec zicer-woo-cli wp plugin status zicer-woo-sync || echo "Plugin not installed"
 	@echo ""
 	@docker exec zicer-woo-cli wp option get zicer_connection_status --format=json 2>/dev/null || echo "Not connected to ZICER"
+
+# Generate translation template
+pot:
+	docker exec zicer-woo-cli wp i18n make-pot \
+		/var/www/html/wp-content/plugins/zicer-woo-sync \
+		/var/www/html/wp-content/plugins/zicer-woo-sync/languages/zicer-woo-sync.pot \
+		--domain=zicer-woo-sync
+
+# Help
+help:
+	@echo "Available commands:"
+	@echo "  make up          - Start Docker containers"
+	@echo "  make down        - Stop Docker containers"
+	@echo "  make setup       - Full setup (WordPress + WooCommerce + test data)"
+	@echo "  make logs        - View container logs"
+	@echo "  make shell       - Shell into WordPress container"
+	@echo "  make wp          - WP-CLI shell"
+	@echo "  make db-shell    - MySQL shell"
+	@echo "  make activate    - Activate ZICER plugin"
+	@echo "  make deactivate  - Deactivate ZICER plugin"
+	@echo "  make status      - Check plugin status"
+	@echo "  make test-product- Create a test product"
+	@echo "  make pot         - Generate translation template"
+	@echo "  make clean       - Remove all data (careful!)"
