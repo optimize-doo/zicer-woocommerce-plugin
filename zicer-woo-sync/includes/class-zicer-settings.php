@@ -176,7 +176,10 @@ class Zicer_Settings {
      * @param string $hook Current admin page hook.
      */
     public static function enqueue_scripts($hook) {
-        if (strpos($hook, 'zicer') === false && get_post_type() !== 'product') {
+        $screen = get_current_screen();
+        $is_product_page = $screen && ($screen->post_type === 'product' || $screen->id === 'edit-product');
+
+        if (strpos($hook, 'zicer') === false && !$is_product_page) {
             return;
         }
 
