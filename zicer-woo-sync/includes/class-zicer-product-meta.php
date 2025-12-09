@@ -174,8 +174,8 @@ class Zicer_Product_Meta {
      * @return array Modified bulk actions.
      */
     public static function add_bulk_actions($actions) {
-        $actions['zicer_sync'] = __('Sync to ZICER', 'zicer-woo-sync');
-        $actions['zicer_remove'] = __('Remove from ZICER', 'zicer-woo-sync');
+        $actions['zicer_sync'] = __('Queue: Add to ZICER', 'zicer-woo-sync');
+        $actions['zicer_remove'] = __('Queue: Remove from ZICER', 'zicer-woo-sync');
         return $actions;
     }
 
