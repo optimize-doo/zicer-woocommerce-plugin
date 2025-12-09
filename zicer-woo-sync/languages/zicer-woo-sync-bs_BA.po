@@ -463,11 +463,11 @@ msgstr "Nije sinkronizirano"
 
 #: includes/class-zicer-product-meta.php:177
 msgid "Queue: Add to ZICER"
-msgstr "Red: Dodaj na ZICER"
+msgstr "Obrada: Dodaj na ZICER"
 
 #: includes/class-zicer-product-meta.php:178
 msgid "Queue: Remove from ZICER"
-msgstr "Red: Ukloni sa ZICER-a"
+msgstr "Obrada: Ukloni sa ZICER-a"
 
 #. translators: %d: number of items
 msgid "%d item added to sync queue."
@@ -824,6 +824,10 @@ msgid "Complete!"
 msgstr "Završeno!"
 
 #: includes/class-zicer-settings.php:253
+msgid "items remaining"
+msgstr "stavki preostalo"
+
+#: includes/class-zicer-settings.php:253
 msgid "Loading..."
 msgstr "Učitavanje..."
 
@@ -874,3 +878,35 @@ msgstr "Zadrži podatke sinkronizacije"
 #: includes/class-zicer-settings.php:266
 msgid "Keep existing listing IDs. Warning: Syncing will fail because these IDs belong to the old account."
 msgstr "Zadrži postojeće ID-ove oglasa. Upozorenje: Sinkronizacija neće uspjeti jer ovi ID-ovi pripadaju starom nalogu."
+
+#: admin/views/sync-status.php:144
+msgid "variation"
+msgstr "varijacija"
+
+#: admin/views/sync-status.php:146
+msgid "variations"
+msgstr "varijacija"
+
+#: includes/class-zicer-product-meta.php:508
+msgid "Processing..."
+msgstr "Obrada..."
+
+#: includes/class-zicer-product-meta.php:513
+msgid "In queue: %s"
+msgstr "U redu: %s"
+
+#: includes/class-zicer-product-meta.php:525
+msgid "%d variations in queue"
+msgstr "%d varijacija u redu"
+
+#: includes/class-zicer-product-meta.php:537
+msgid "Remove from Queue"
+msgstr "Ukloni iz obrade"
+
+#: includes/class-zicer-product-meta.php:545
+msgid "Add to Queue"
+msgstr "Dodaj u obradu"
+
+#: includes/class-zicer-settings.php:770
+msgid "Product not found."
+msgstr "Proizvod nije pronađen."
