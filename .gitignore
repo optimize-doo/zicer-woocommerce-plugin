@@ -1,0 +1,29 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes (data is in named volumes)
+# No local data directories to ignore
+
+# Backup files
+*.sql
+*.bak
+
+# Logs
+*.log
+
+# Node (if we add build tools later)
+node_modules/
+
+# Composer (if we add PHP dependencies later)
+vendor/
+
+# Environment
+.env
+.env.local
