@@ -706,3 +706,7 @@ msgstr "Nema prijedloga"
 #: includes/class-zicer-settings.php:236
 msgid "No match found"
 msgstr "Nije pronađeno"
+
+#: admin/views/settings-page.php:206
+msgid "Supported HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a"
+msgstr "Podržani HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a"

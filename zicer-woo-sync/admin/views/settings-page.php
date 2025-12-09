@@ -202,6 +202,8 @@ $regions      = get_option('zicer_regions_cache', []);
                         ?>
                         <p class="description">
                             <?php esc_html_e('Available variables: {product_name}, {product_price}, {product_sku}, {shop_name}', 'zicer-woo-sync'); ?>
+                            <br>
+                            <?php esc_html_e('Supported HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a', 'zicer-woo-sync'); ?>
                         </p>
                     </td>
                 </tr>
