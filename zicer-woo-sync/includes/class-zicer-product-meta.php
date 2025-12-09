@@ -156,7 +156,7 @@ class Zicer_Product_Meta {
                     <?php echo esc_html($last_sync); ?>
                 </p>
                 <p>
-                    <a href="https://zicer.ba/oglas/<?php echo esc_attr($listing_id); ?>"
+                    <a href="https://zicer.ba/oglasi/<?php echo esc_attr($listing_id); ?>"
                        target="_blank" class="button">
                         <?php esc_html_e('View on ZICER', 'zicer-woo-sync'); ?>
                     </a>
