@@ -332,6 +332,31 @@
             });
         });
 
+        // Clear all pending items
+        $('#zicer-clear-pending').on('click', function() {
+            if (!confirm('Clear all pending items from the queue?')) {
+                return;
+            }
+
+            var $btn = $(this);
+            $btn.prop('disabled', true);
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_clear_pending',
+                nonce: zicerAdmin.nonce
+            }, function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false);
+                }
+            }).fail(function() {
+                alert(zicerAdmin.strings.error + ' Connection failed');
+                $btn.prop('disabled', false);
+            });
+        });
+
         // Refresh rate limit
         $('#zicer-refresh-rate').on('click', function() {
             var $btn = $(this);

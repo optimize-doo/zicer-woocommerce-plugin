@@ -179,6 +179,15 @@ class Zicer_Queue {
     }
 
     /**
+     * Clear pending items
+     */
+    public static function clear_pending() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+        $wpdb->query("DELETE FROM $table WHERE status IN ('pending', 'processing')");
+    }
+
+    /**
      * Remove a single queue item by ID
      *
      * @param int $id Queue item ID.

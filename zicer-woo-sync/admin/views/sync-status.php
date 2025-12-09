@@ -117,7 +117,14 @@ $failed_items = Zicer_Queue::get_failed_items(20);
                     <th><?php esc_html_e('Product', 'zicer-woo-sync'); ?></th>
                     <th><?php esc_html_e('Action', 'zicer-woo-sync'); ?></th>
                     <th><?php esc_html_e('Added', 'zicer-woo-sync'); ?></th>
-                    <th style="width: 60px;"></th>
+                    <th style="width: 60px;">
+                        <button type="button"
+                                id="zicer-clear-pending"
+                                class="button-link"
+                                title="<?php esc_attr_e('Clear All', 'zicer-woo-sync'); ?>">
+                            <span class="dashicons dashicons-no-alt"></span>
+                        </button>
+                    </th>
                 </tr>
             </thead>
             <tbody id="pending-items-body">
