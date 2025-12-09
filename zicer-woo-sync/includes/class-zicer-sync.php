@@ -32,6 +32,7 @@ class Zicer_Sync {
         add_action('wp_ajax_zicer_delete_listing', [__CLASS__, 'ajax_delete_listing']);
         add_action('wp_ajax_zicer_bulk_sync', [__CLASS__, 'ajax_bulk_sync']);
         add_action('wp_ajax_zicer_clear_stale', [__CLASS__, 'ajax_clear_stale']);
+        add_action('wp_ajax_zicer_remove_queue_item', [__CLASS__, 'ajax_remove_queue_item']);
 
         // Category mapping save
         add_action('admin_post_zicer_save_category_mapping', [__CLASS__, 'save_category_mapping']);
@@ -524,6 +525,26 @@ class Zicer_Sync {
         Zicer_Logger::log('info', "Cleared stale ZICER data for product $product_id");
 
         wp_send_json_success();
+    }
+
+    /**
+     * AJAX: Remove item from queue
+     */
+    public static function ajax_remove_queue_item() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        if (!$id) {
+            wp_send_json_error('Invalid queue item ID');
+        }
+
+        $result = Zicer_Queue::remove($id);
+
+        if ($result) {
+            wp_send_json_success(Zicer_Queue::get_stats());
+        } else {
+            wp_send_json_error('Failed to remove item');
+        }
     }
 
     /**

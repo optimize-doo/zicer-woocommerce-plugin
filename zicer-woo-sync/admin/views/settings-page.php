@@ -349,4 +349,6 @@ $regions      = get_option('zicer_regions_cache', []);
 
         <?php submit_button(__('Save Settings', 'zicer-woo-sync')); ?>
     </form>
+
+    <p class="zicer-footer"><?php esc_html_e('&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark.', 'zicer-woo-sync'); ?></p>
 </div>

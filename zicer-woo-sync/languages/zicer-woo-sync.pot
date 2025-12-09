@@ -1,0 +1,695 @@
+# Copyright (C) 2025 ZICER
+# This file is distributed under the same license as the ZICER WooCommerce Sync plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: ZICER WooCommerce Sync 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/zicer-woo-sync\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-12-09T21:24:11+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: zicer-woo-sync\n"
+
+#. Plugin Name of the plugin
+#: zicer-woo-sync.php
+msgid "ZICER WooCommerce Sync"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: zicer-woo-sync.php
+msgid "https://zicer.ba"
+msgstr ""
+
+#. Description of the plugin
+#: zicer-woo-sync.php
+msgid "Synchronize WooCommerce products with ZICER marketplace"
+msgstr ""
+
+#. Author of the plugin
+#: zicer-woo-sync.php
+msgid "ZICER"
+msgstr ""
+
+#: admin/views/category-mapping.php:26
+#: includes/class-zicer-settings.php:65
+msgid "Categories"
+msgstr ""
+
+#: admin/views/category-mapping.php:30
+msgid "Mapping saved successfully."
+msgstr ""
+
+#: admin/views/category-mapping.php:35
+msgid "Map WooCommerce categories to ZICER categories. Products without mapping will use the fallback category."
+msgstr ""
+
+#: admin/views/category-mapping.php:41
+msgid "ZICER categories are not loaded."
+msgstr ""
+
+#: admin/views/category-mapping.php:43
+msgid "Load Categories"
+msgstr ""
+
+#. translators: %1$s: number of categories, %2$s: date/time
+#: admin/views/category-mapping.php:53
+#, php-format
+msgid "Loaded %1$s categories on %2$s."
+msgstr ""
+
+#: admin/views/category-mapping.php:59
+#: admin/views/settings-page.php:334
+msgid "Refresh"
+msgstr ""
+
+#: admin/views/category-mapping.php:71
+msgid "Fallback Category"
+msgstr ""
+
+#: admin/views/category-mapping.php:73
+msgid "This category will be used when a product has no mapped category."
+msgstr ""
+
+#: admin/views/category-mapping.php:76
+msgid "-- None --"
+msgstr ""
+
+#: admin/views/category-mapping.php:102
+msgid "WooCommerce Category"
+msgstr ""
+
+#: admin/views/category-mapping.php:103
+#: includes/class-zicer-product-meta.php:374
+msgid "ZICER Category"
+msgstr ""
+
+#: admin/views/category-mapping.php:104
+msgid "Auto-suggest"
+msgstr ""
+
+#: admin/views/category-mapping.php:128
+msgid "-- Do not map --"
+msgstr ""
+
+#: admin/views/category-mapping.php:152
+msgid "Get AI-suggested ZICER category based on category name"
+msgstr ""
+
+#: admin/views/category-mapping.php:153
+msgid "Suggest"
+msgstr ""
+
+#: admin/views/category-mapping.php:162
+msgid "No WooCommerce categories found."
+msgstr ""
+
+#: admin/views/category-mapping.php:168
+msgid "Save Mapping"
+msgstr ""
+
+#: admin/views/category-mapping.php:171
+#: admin/views/settings-page.php:353
+#: admin/views/sync-log.php:109
+#: admin/views/sync-status.php:180
+msgid "&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark."
+msgstr ""
+
+#: admin/views/settings-page.php:17
+#: includes/class-zicer-settings.php:55
+#: includes/class-zicer-settings.php:56
+msgid "Settings"
+msgstr ""
+
+#: admin/views/settings-page.php:24
+msgid "Connection"
+msgstr ""
+
+#: admin/views/settings-page.php:28
+msgid "API Token"
+msgstr ""
+
+#: admin/views/settings-page.php:36
+msgid "Test Connection"
+msgstr ""
+
+#: admin/views/settings-page.php:40
+msgid "Disconnect"
+msgstr ""
+
+#: admin/views/settings-page.php:44
+msgid "You can create an API token in your ZICER profile settings."
+msgstr ""
+
+#: admin/views/settings-page.php:49
+#: admin/views/sync-log.php:46
+msgid "Status"
+msgstr ""
+
+#. translators: %s: user email
+#: admin/views/settings-page.php:55
+#, php-format
+msgid "Connected as %s"
+msgstr ""
+
+#: admin/views/settings-page.php:61
+msgid "Create a shop for higher rate limits"
+msgstr ""
+
+#. translators: %d: rate limit per minute
+#: admin/views/settings-page.php:68
+#, php-format
+msgid "Rate limit: %d/min"
+msgstr ""
+
+#: admin/views/settings-page.php:74
+msgid "Not connected"
+msgstr ""
+
+#: admin/views/settings-page.php:84
+msgid "Synchronization"
+msgstr ""
+
+#: admin/views/settings-page.php:88
+msgid "Real-time Sync"
+msgstr ""
+
+#: admin/views/settings-page.php:95
+msgid "Automatically sync products when created or updated"
+msgstr ""
+
+#: admin/views/settings-page.php:100
+msgid "Delete Unavailable"
+msgstr ""
+
+#: admin/views/settings-page.php:107
+msgid "Automatically remove from ZICER when product is unavailable"
+msgstr ""
+
+#: admin/views/settings-page.php:112
+msgid "Stock Threshold"
+msgstr ""
+
+#: admin/views/settings-page.php:120
+msgid "Product is considered available if stock is greater than this number. 0 = any stock quantity."
+msgstr ""
+
+#: admin/views/settings-page.php:129
+msgid "Title"
+msgstr ""
+
+#: admin/views/settings-page.php:133
+msgid "Truncate Title"
+msgstr ""
+
+#: admin/views/settings-page.php:140
+msgid "Truncate title to maximum length"
+msgstr ""
+
+#: admin/views/settings-page.php:145
+msgid "Maximum Length"
+msgstr ""
+
+#: admin/views/settings-page.php:153
+msgid "characters"
+msgstr ""
+
+#: admin/views/settings-page.php:161
+msgid "Description"
+msgstr ""
+
+#: admin/views/settings-page.php:165
+msgid "Description Mode"
+msgstr ""
+
+#: admin/views/settings-page.php:169
+msgid "Use product description"
+msgstr ""
+
+#: admin/views/settings-page.php:172
+msgid "Replace with template"
+msgstr ""
+
+#: admin/views/settings-page.php:175
+msgid "Add template before description"
+msgstr ""
+
+#: admin/views/settings-page.php:178
+msgid "Add template after description"
+msgstr ""
+
+#: admin/views/settings-page.php:184
+msgid "Description Template"
+msgstr ""
+
+#: admin/views/settings-page.php:198
+msgid "Available variables: {product_name}, {product_price}, {product_sku}, {shop_name}"
+msgstr ""
+
+#: admin/views/settings-page.php:207
+msgid "Images"
+msgstr ""
+
+#: admin/views/settings-page.php:211
+msgid "Image Sync"
+msgstr ""
+
+#: admin/views/settings-page.php:215
+msgid "All images"
+msgstr ""
+
+#: admin/views/settings-page.php:218
+msgid "Featured image only"
+msgstr ""
+
+#: admin/views/settings-page.php:221
+msgid "No images"
+msgstr ""
+
+#: admin/views/settings-page.php:227
+msgid "Maximum Images"
+msgstr ""
+
+#: admin/views/settings-page.php:242
+msgid "Price"
+msgstr ""
+
+#: admin/views/settings-page.php:246
+msgid "Currency Conversion"
+msgstr ""
+
+#. translators: %s: WooCommerce currency code
+#: admin/views/settings-page.php:258
+#, php-format
+msgid "Multiplier for conversion to KM. Current WooCommerce currency: %s"
+msgstr ""
+
+#: admin/views/settings-page.php:270
+msgid "Advanced"
+msgstr ""
+
+#: admin/views/settings-page.php:274
+msgid "Debug Logging"
+msgstr ""
+
+#: admin/views/settings-page.php:281
+msgid "Log all API requests and responses"
+msgstr ""
+
+#. translators: %s: link to log page
+#: admin/views/settings-page.php:287
+#, php-format
+msgid "View logs in the %s tab."
+msgstr ""
+
+#: admin/views/settings-page.php:288
+#: admin/views/sync-log.php:21
+#: includes/class-zicer-settings.php:82
+#: includes/class-zicer-settings.php:83
+msgid "Log"
+msgstr ""
+
+#: admin/views/settings-page.php:299
+msgid "Default Values"
+msgstr ""
+
+#: admin/views/settings-page.php:303
+msgid "Default Condition"
+msgstr ""
+
+#: admin/views/settings-page.php:316
+msgid "Default Region"
+msgstr ""
+
+#: admin/views/settings-page.php:320
+#: includes/class-zicer-product-meta.php:383
+msgid "-- Select --"
+msgstr ""
+
+#: admin/views/settings-page.php:339
+msgid "Default City"
+msgstr ""
+
+#: admin/views/settings-page.php:342
+msgid "-- Select region first --"
+msgstr ""
+
+#: admin/views/settings-page.php:350
+msgid "Save Settings"
+msgstr ""
+
+#: admin/views/sync-log.php:25
+msgid "Are you sure you want to clear all logs?"
+msgstr ""
+
+#: admin/views/sync-log.php:26
+msgid "Clear All Logs"
+msgstr ""
+
+#: admin/views/sync-log.php:35
+msgid "Logs cleared."
+msgstr ""
+
+#: admin/views/sync-log.php:45
+msgid "Date"
+msgstr ""
+
+#: admin/views/sync-log.php:47
+#: admin/views/sync-status.php:106
+#: admin/views/sync-status.php:148
+msgid "Product"
+msgstr ""
+
+#: admin/views/sync-log.php:48
+msgid "Message"
+msgstr ""
+
+#. translators: %d: total number of items
+#: admin/views/sync-log.php:82
+#, php-format
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/views/sync-log.php:106
+msgid "No log entries."
+msgstr ""
+
+#: admin/views/sync-status.php:21
+#: includes/class-zicer-settings.php:74
+msgid "Queue"
+msgstr ""
+
+#: admin/views/sync-status.php:27
+msgid "Pending"
+msgstr ""
+
+#: admin/views/sync-status.php:31
+#: admin/views/sync-status.php:46
+msgid "Processing"
+msgstr ""
+
+#: admin/views/sync-status.php:35
+msgid "Completed"
+msgstr ""
+
+#: admin/views/sync-status.php:39
+msgid "Failed"
+msgstr ""
+
+#: admin/views/sync-status.php:52
+#, php-format
+msgid "%d items in queue"
+msgstr ""
+
+#: admin/views/sync-status.php:57
+msgid "Process Now"
+msgstr ""
+
+#: admin/views/sync-status.php:66
+msgid "Actions"
+msgstr ""
+
+#: admin/views/sync-status.php:70
+msgid "Sync All Products"
+msgstr ""
+
+#: admin/views/sync-status.php:73
+msgid "Adds all products to the sync queue"
+msgstr ""
+
+#: admin/views/sync-status.php:80
+msgid "Retry Failed"
+msgstr ""
+
+#: admin/views/sync-status.php:83
+msgid "Clear Failed"
+msgstr ""
+
+#. translators: %d: rate limit per minute
+#: admin/views/sync-status.php:92
+#, php-format
+msgid "API rate limit: %d requests per minute"
+msgstr ""
+
+#: admin/views/sync-status.php:102
+msgid "Pending Items"
+msgstr ""
+
+#: admin/views/sync-status.php:107
+#: admin/views/sync-status.php:149
+msgid "Action"
+msgstr ""
+
+#: admin/views/sync-status.php:108
+msgid "Added"
+msgstr ""
+
+#: admin/views/sync-status.php:135
+#, php-format
+msgid "Showing 20 of %d pending items"
+msgstr ""
+
+#: admin/views/sync-status.php:144
+msgid "Failed Items"
+msgstr ""
+
+#: admin/views/sync-status.php:150
+msgid "Error"
+msgstr ""
+
+#: admin/views/sync-status.php:151
+msgid "Time"
+msgstr ""
+
+#. translators: %d: seconds to wait
+#: includes/class-zicer-api-client.php:99
+#, php-format
+msgid "Rate limit reached. Please try again in %d seconds."
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:53
+msgid "Zicer"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:94
+#: includes/class-zicer-product-meta.php:456
+msgid "View on ZICER"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:112
+msgid "ZICER sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:113
+#: includes/class-zicer-product-meta.php:434
+msgid "Synced"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:114
+msgid "Not synced"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:177
+msgid "Sync to ZICER"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:178
+#: includes/class-zicer-product-meta.php:507
+msgid "Remove from ZICER"
+msgstr ""
+
+#. translators: %d: number of items
+#: includes/class-zicer-product-meta.php:256
+#, php-format
+msgid "%d item added to sync queue."
+msgid_plural "%d items added to sync queue."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of items
+#: includes/class-zicer-product-meta.php:262
+#, php-format
+msgid "%d item added to removal queue."
+msgid_plural "%d items added to removal queue."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-zicer-product-meta.php:278
+#: includes/class-zicer-settings.php:44
+#: includes/class-zicer-settings.php:45
+msgid "ZICER Sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:294
+msgid "ZICER Condition"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:296
+msgid "-- Use default --"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:300
+msgid "Product condition for ZICER listing"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:305
+msgid "Exclude from ZICER sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:306
+msgid "Do not sync this product with ZICER"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:395
+msgid "From category mapping. Change to override."
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:399
+msgid "Manual override."
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:400
+msgid "Use mapping instead"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:405
+msgid "Load categories in ZICER settings first."
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:417
+msgid "Excluded from sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:421
+msgid "Listing not found"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:429
+msgid "Clear & Re-create"
+msgstr ""
+
+#. translators: %1$d: synced count, %2$d: total count
+#: includes/class-zicer-product-meta.php:438
+#, php-format
+msgid "%1$d/%2$d variations"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:449
+msgid "Last sync:"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:462
+msgid "Cannot sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:479
+msgid "Last sync failed"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:484
+msgid "Ready to sync"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:497
+msgid "Sync Now"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:587
+#: includes/class-zicer-sync.php:323
+msgid "No mapped ZICER category"
+msgstr ""
+
+#: includes/class-zicer-product-meta.php:599
+msgid "Region and city not configured"
+msgstr ""
+
+#: includes/class-zicer-settings.php:64
+msgid "Category Mapping"
+msgstr ""
+
+#: includes/class-zicer-settings.php:73
+msgid "Sync Queue"
+msgstr ""
+
+#: includes/class-zicer-settings.php:220
+msgid "Testing..."
+msgstr ""
+
+#: includes/class-zicer-settings.php:221
+msgid "Connected!"
+msgstr ""
+
+#: includes/class-zicer-settings.php:222
+msgid "Error:"
+msgstr ""
+
+#: includes/class-zicer-settings.php:223
+msgid "Syncing..."
+msgstr ""
+
+#: includes/class-zicer-settings.php:224
+msgid "Are you sure you want to start bulk synchronization?"
+msgstr ""
+
+#: includes/class-zicer-settings.php:236
+#: includes/class-zicer-settings.php:309
+#: includes/class-zicer-settings.php:327
+#: includes/class-zicer-settings.php:488
+#: includes/class-zicer-settings.php:502
+#: includes/class-zicer-settings.php:516
+#: includes/class-zicer-settings.php:530
+msgid "You do not have permission."
+msgstr ""
+
+#: includes/class-zicer-settings.php:449
+msgid "Region ID is required."
+msgstr ""
+
+#: includes/class-zicer-settings.php:537
+msgid "Invalid product ID."
+msgstr ""
+
+#: includes/class-zicer-settings.php:579
+msgid "New"
+msgstr ""
+
+#: includes/class-zicer-settings.php:580
+msgid "Open box"
+msgstr ""
+
+#: includes/class-zicer-settings.php:581
+msgid "Used"
+msgstr ""
+
+#: includes/class-zicer-settings.php:582
+msgid "Refurbished"
+msgstr ""
+
+#: includes/class-zicer-settings.php:583
+msgid "Not working"
+msgstr ""
+
+#: includes/class-zicer-settings.php:584
+msgid "Not specified"
+msgstr ""
+
+#: includes/class-zicer-sync.php:201
+msgid "Listing not found on ZICER (may have been deleted)"
+msgstr ""
+
+#: includes/class-zicer-sync.php:331
+msgid "Region and city are not configured"
+msgstr ""
+
+#: zicer-woo-sync.php:52
+msgid "ZICER Sync requires WooCommerce plugin."
+msgstr ""
+
+#: zicer-woo-sync.php:143
+msgid "Every Minute"
+msgstr ""
