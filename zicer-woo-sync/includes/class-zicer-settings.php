@@ -70,8 +70,8 @@ class Zicer_Settings {
 
         add_submenu_page(
             'zicer-sync',
-            __('Sync Status', 'zicer-woo-sync'),
-            __('Status', 'zicer-woo-sync'),
+            __('Sync Queue', 'zicer-woo-sync'),
+            __('Queue', 'zicer-woo-sync'),
             'manage_woocommerce',
             'zicer-status',
             [__CLASS__, 'render_status_page']
