@@ -15,10 +15,11 @@ $wc_categories = get_terms([
     'orderby'    => 'name',
 ]);
 
-$zicer_categories = Zicer_Category_Map::get_cached_categories();
-$flat_categories  = $zicer_categories ? Zicer_Category_Map::flatten_categories($zicer_categories) : [];
-$mapping          = Zicer_Category_Map::get_mapping();
-$saved            = isset($_GET['saved']) && $_GET['saved'] === '1';
+$zicer_categories    = Zicer_Category_Map::get_cached_categories();
+$flat_categories     = $zicer_categories ? Zicer_Category_Map::flatten_categories($zicer_categories) : [];
+$mapping             = Zicer_Category_Map::get_mapping();
+$saved               = isset($_GET['saved']) && $_GET['saved'] === '1';
+$categories_cache_time = get_option('zicer_categories_cache_time', 0);
 ?>
 
 <div class="wrap zicer-categories">
@@ -40,6 +41,22 @@ $saved            = isset($_GET['saved']) && $_GET['saved'] === '1';
                 <?php esc_html_e('ZICER categories are not loaded.', 'zicer-woo-sync'); ?>
                 <button type="button" id="zicer-load-categories" class="button">
                     <?php esc_html_e('Load Categories', 'zicer-woo-sync'); ?>
+                </button>
+            </p>
+        </div>
+    <?php else : ?>
+        <div class="zicer-categories-info">
+            <p>
+                <?php
+                printf(
+                    /* translators: %1$s: number of categories, %2$s: date/time */
+                    esc_html__('Loaded %1$s categories on %2$s.', 'zicer-woo-sync'),
+                    '<strong>' . count($flat_categories) . '</strong>',
+                    '<strong>' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $categories_cache_time) . '</strong>'
+                );
+                ?>
+                <button type="button" id="zicer-load-categories" class="button button-link">
+                    <?php esc_html_e('Refresh', 'zicer-woo-sync'); ?>
                 </button>
             </p>
         </div>
@@ -127,14 +144,16 @@ $saved            = isset($_GET['saved']) && $_GET['saved'] === '1';
                                     ?>
                                 </select>
                             </td>
-                            <td>
+                            <td class="zicer-suggest-cell">
                                 <button type="button"
                                         class="button zicer-suggest-category"
                                         data-term-id="<?php echo esc_attr($wc_cat->term_id); ?>"
-                                        data-term-name="<?php echo esc_attr($wc_cat->name); ?>">
+                                        data-term-name="<?php echo esc_attr($wc_cat->name); ?>"
+                                        title="<?php esc_attr_e('Get AI-suggested ZICER category based on category name', 'zicer-woo-sync'); ?>">
                                     <?php esc_html_e('Suggest', 'zicer-woo-sync'); ?>
                                 </button>
                                 <span class="spinner"></span>
+                                <span class="zicer-suggest-result"></span>
                             </td>
                         </tr>
                     <?php endforeach; ?>
