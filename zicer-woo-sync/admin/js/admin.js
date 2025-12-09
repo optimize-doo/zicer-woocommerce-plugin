@@ -60,7 +60,7 @@
 
         // Disconnect
         $('#zicer-disconnect').on('click', function() {
-            if (!confirm('Are you sure you want to disconnect? Previously synced products will keep their ZICER listing IDs.')) {
+            if (!confirm(zicerAdmin.strings.confirm_disconnect)) {
                 return;
             }
 
@@ -73,7 +73,7 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
@@ -122,7 +122,7 @@
                 }
             }).fail(function() {
                 $btn.prop('disabled', false).text('Test Connection');
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
             });
         });
 
@@ -141,14 +141,14 @@
                 // Always reload to show updated status in meta box
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Sync Now');
             });
         });
 
         // Delete listing
         $('.zicer-delete-listing').on('click', function() {
-            if (!confirm('Are you sure?')) {
+            if (!confirm(zicerAdmin.strings.confirm_delete)) {
                 return;
             }
 
@@ -164,7 +164,7 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
@@ -191,7 +191,7 @@
                     }, function(syncResponse) {
                         location.reload();
                     }).fail(function() {
-                        alert(zicerAdmin.strings.error + ' Sync failed');
+                        alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.sync_failed);
                         location.reload();
                     });
                 } else {
@@ -199,7 +199,7 @@
                     $btn.prop('disabled', false).text('Clear & Re-create');
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Clear & Re-create');
             });
         });
@@ -218,14 +218,14 @@
                 nonce: zicerAdmin.nonce
             }, function(response) {
                 if (response.success) {
-                    alert('Added ' + response.data.queued + ' products to queue.');
+                    alert(zicerAdmin.strings.added_to_queue.replace('%d', response.data.queued));
                     location.reload();
                 } else {
                     alert(zicerAdmin.strings.error + ' ' + response.data);
                     $btn.prop('disabled', false).text('Sync All Products');
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Sync All Products');
             });
         });
@@ -291,7 +291,7 @@
                     isProcessing = false;
                     $btn.prop('disabled', false);
                     $spinner.removeClass('is-active');
-                    alert(zicerAdmin.strings.error + ' Connection failed');
+                    alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 });
             }
 
@@ -300,7 +300,7 @@
 
         // Remove queue item
         $(document).on('click', '.zicer-remove-queue-item', function() {
-            if (!confirm('Remove this item from the queue?')) {
+            if (!confirm(zicerAdmin.strings.confirm_remove_item)) {
                 return;
             }
 
@@ -327,14 +327,14 @@
                     $btn.prop('disabled', false);
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
 
         // Clear all pending items
         $('#zicer-clear-pending').on('click', function() {
-            if (!confirm('Clear all pending items from the queue?')) {
+            if (!confirm(zicerAdmin.strings.confirm_clear_pending)) {
                 return;
             }
 
@@ -352,7 +352,7 @@
                     $btn.prop('disabled', false);
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
@@ -398,7 +398,7 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Load Categories');
             });
         });
@@ -457,7 +457,7 @@
                     $btn.prop('disabled', false).text('Refresh');
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Refresh');
             });
         });
@@ -511,14 +511,14 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
 
         // Clear failed
         $('#zicer-clear-failed').on('click', function() {
-            if (!confirm('Are you sure you want to clear all failed items?')) {
+            if (!confirm(zicerAdmin.strings.confirm_clear_failed)) {
                 return;
             }
 
@@ -531,7 +531,7 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
@@ -561,7 +561,7 @@
                     $btn.prop('disabled', false).text('Process Queue Now');
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' Connection failed');
+                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false).text('Process Queue Now');
             });
         });

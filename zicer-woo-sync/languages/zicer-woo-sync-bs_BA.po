@@ -654,3 +654,47 @@ msgstr "ZICER Sinkronizacija zahtijeva WooCommerce dodatak."
 #: zicer-woo-sync.php:143
 msgid "Every Minute"
 msgstr "Svaki minut"
+
+#: includes/class-zicer-settings.php:226
+msgid "Are you sure you want to disconnect? Previously synced products will keep their ZICER listing IDs."
+msgstr "Jeste li sigurni da želite prekinuti vezu? Prethodno sinkronizirani proizvodi će zadržati svoje ZICER ID-ove."
+
+#: includes/class-zicer-settings.php:227
+msgid "Are you sure?"
+msgstr "Jeste li sigurni?"
+
+#: includes/class-zicer-settings.php:228
+msgid "Clear all pending items from the queue?"
+msgstr "Obrisati sve stavke na čekanju iz reda?"
+
+#: includes/class-zicer-settings.php:229
+msgid "Are you sure you want to clear all failed items?"
+msgstr "Jeste li sigurni da želite obrisati sve neuspješne stavke?"
+
+#: includes/class-zicer-settings.php:230
+msgid "Remove this item from the queue?"
+msgstr "Ukloniti ovu stavku iz reda?"
+
+#: includes/class-zicer-settings.php:231
+msgid "Connection failed"
+msgstr "Konekcija nije uspjela"
+
+#: includes/class-zicer-settings.php:232
+msgid "Sync failed"
+msgstr "Sinkronizacija nije uspjela"
+
+#: includes/class-zicer-settings.php:233
+msgid "Added %d products to queue."
+msgstr "Dodano %d proizvoda u red."
+
+#: includes/class-zicer-settings.php:234
+msgid "Clearing..."
+msgstr "Brisanje..."
+
+#: admin/views/settings-page.php:47
+msgid "You can create an API token in your %s."
+msgstr "API token možete kreirati u vašim %s."
+
+#: admin/views/settings-page.php:48
+msgid "ZICER profile settings"
+msgstr "ZICER postavkama profila"
