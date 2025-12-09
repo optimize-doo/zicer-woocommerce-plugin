@@ -33,10 +33,10 @@ docker exec zicer-woo-cli wp option update woocommerce_price_decimal_sep ","
 
 # Create some test product categories
 echo "Creating test categories..."
-docker exec zicer-woo-cli wp term create product_cat "Elektronika" --description="Elektronski uređaji"
-docker exec zicer-woo-cli wp term create product_cat "Mobiteli" --parent=1 --description="Mobilni telefoni"
-docker exec zicer-woo-cli wp term create product_cat "Računari" --parent=1 --description="Računari i laptopi"
-docker exec zicer-woo-cli wp term create product_cat "Odjeća" --description="Odjeća i obuća"
+docker exec zicer-woo-cli wp term create product_cat "Electronics" --description="Electronic devices"
+docker exec zicer-woo-cli wp term create product_cat "Mobile Phones" --parent=1 --description="Mobile phones and smartphones"
+docker exec zicer-woo-cli wp term create product_cat "Computers" --parent=1 --description="Computers and laptops"
+docker exec zicer-woo-cli wp term create product_cat "Clothing" --description="Clothing and footwear"
 
 # Create test products
 echo "Creating test products..."
@@ -44,7 +44,7 @@ docker exec zicer-woo-cli wp wc product create \
     --name="iPhone 15 Pro Max 256GB" \
     --type="simple" \
     --regular_price="2499" \
-    --description="<p>Najnoviji Apple iPhone 15 Pro Max sa 256GB memorije.</p>" \
+    --description="<p>Latest Apple iPhone 15 Pro Max with 256GB storage.</p>" \
     --short_description="Apple iPhone 15 Pro Max" \
     --sku="IP15PM-256" \
     --manage_stock=true \
@@ -56,8 +56,8 @@ docker exec zicer-woo-cli wp wc product create \
     --name="Samsung Galaxy S24 Ultra" \
     --type="simple" \
     --regular_price="1899" \
-    --description="<p>Samsung Galaxy S24 Ultra sa naprednim AI funkcijama.</p>" \
-    --short_description="Samsung flagship telefon" \
+    --description="<p>Samsung Galaxy S24 Ultra with advanced AI features.</p>" \
+    --short_description="Samsung flagship phone" \
     --sku="SGS24U" \
     --manage_stock=true \
     --stock_quantity=10 \
@@ -68,8 +68,8 @@ docker exec zicer-woo-cli wp wc product create \
     --name="MacBook Pro 14 M3 Pro" \
     --type="simple" \
     --regular_price="3499" \
-    --description="<p>Apple MacBook Pro 14 inch sa M3 Pro čipom.</p>" \
-    --short_description="Apple laptop za profesionalce" \
+    --description="<p>Apple MacBook Pro 14 inch with M3 Pro chip.</p>" \
+    --short_description="Apple laptop for professionals" \
     --sku="MBP14-M3P" \
     --manage_stock=true \
     --stock_quantity=3 \
@@ -79,13 +79,13 @@ docker exec zicer-woo-cli wp wc product create \
 # Create a variable product
 echo "Creating variable product..."
 docker exec zicer-woo-cli wp wc product create \
-    --name="Majica Basic" \
+    --name="Basic T-Shirt" \
     --type="variable" \
-    --description="<p>Kvalitetna pamučna majica.</p>" \
-    --short_description="Pamučna majica" \
-    --sku="MAJ-BASIC" \
+    --description="<p>Quality cotton t-shirt.</p>" \
+    --short_description="Cotton t-shirt" \
+    --sku="TSHIRT-BASIC" \
     --categories='[{"id":4}]' \
-    --attributes='[{"name":"Veličina","options":["S","M","L","XL"],"visible":true,"variation":true}]' \
+    --attributes='[{"name":"Size","options":["S","M","L","XL"],"visible":true,"variation":true}]' \
     --user=1
 
 # Activate our plugin

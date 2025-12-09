@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ZICER WooCommerce Sync
  * Plugin URI: https://zicer.ba
- * Description: Sinhronizacija WooCommerce proizvoda sa ZICER marketplace-om
+ * Description: Synchronize WooCommerce products with ZICER marketplace
  * Version: 1.0.0
  * Author: ZICER
  * Text Domain: zicer-woo-sync
@@ -44,18 +44,18 @@ spl_autoload_register(function ($class) {
 /**
  * Initialize plugin after all plugins are loaded
  */
-add_action('plugins_loaded', function() {
+add_action('plugins_loaded', function () {
     // Check if WooCommerce is active
     if (!class_exists('WooCommerce')) {
-        add_action('admin_notices', function() {
+        add_action('admin_notices', function () {
             echo '<div class="error"><p>' .
-                 __('ZICER Sync zahtijeva WooCommerce plugin.', 'zicer-woo-sync') .
+                 esc_html__('ZICER Sync requires WooCommerce plugin.', 'zicer-woo-sync') .
                  '</p></div>';
         });
         return;
     }
 
-    // Load text domain
+    // Load text domain for translations
     load_plugin_textdomain(
         'zicer-woo-sync',
         false,
@@ -80,7 +80,7 @@ add_action('plugins_loaded', function() {
 /**
  * Activation hook - create database tables and schedule cron
  */
-register_activation_hook(__FILE__, function() {
+register_activation_hook(__FILE__, function () {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -114,7 +114,7 @@ register_activation_hook(__FILE__, function() {
         KEY product_id (product_id)
     ) $charset_collate;";
 
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql_queue);
     dbDelta($sql_log);
 
@@ -130,25 +130,25 @@ register_activation_hook(__FILE__, function() {
 /**
  * Deactivation hook - clear scheduled cron
  */
-register_deactivation_hook(__FILE__, function() {
+register_deactivation_hook(__FILE__, function () {
     wp_clear_scheduled_hook('zicer_process_queue');
 });
 
 /**
- * Add custom cron interval
+ * Add custom cron interval (every minute)
  */
-add_filter('cron_schedules', function($schedules) {
+add_filter('cron_schedules', function ($schedules) {
     $schedules['every_minute'] = [
         'interval' => 60,
-        'display' => __('Svake minute', 'zicer-woo-sync')
+        'display'  => __('Every Minute', 'zicer-woo-sync'),
     ];
     return $schedules;
 });
 
 /**
- * Declare HPOS compatibility
+ * Declare WooCommerce HPOS (High-Performance Order Storage) compatibility
  */
-add_action('before_woocommerce_init', function() {
+add_action('before_woocommerce_init', function () {
     if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
         \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
             'custom_order_tables',
