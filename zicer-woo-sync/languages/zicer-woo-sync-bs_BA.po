@@ -710,3 +710,67 @@ msgstr "Nije pronađeno"
 #: admin/views/settings-page.php:206
 msgid "Supported HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a"
 msgstr "Podržani HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a"
+
+#: admin/views/settings-page.php:23
+msgid "Terms of Use"
+msgstr "Uvjeti korištenja"
+
+#: admin/views/settings-page.php:26
+msgid "Please read and accept the following terms before connecting:"
+msgstr "Pročitajte i prihvatite sljedeće uvjete prije povezivanja:"
+
+#: admin/views/settings-page.php:29
+msgid "This plugin synchronizes your WooCommerce products with ZICER marketplace (zicer.ba)."
+msgstr "Ovaj dodatak sinkronizira vaše WooCommerce proizvode sa ZICER marketplace-om (zicer.ba)."
+
+#: admin/views/settings-page.php:30
+msgid "Products will be published publicly on zicer.ba and visible to all users."
+msgstr "Proizvodi će biti javno objavljeni na zicer.ba i vidljivi svim korisnicima."
+
+#: admin/views/settings-page.php:34
+msgid "You are responsible for ensuring your product data (titles, descriptions, prices, images) complies with %s."
+msgstr "Vi ste odgovorni da vaši podaci o proizvodima (naslovi, opisi, cijene, slike) budu u skladu sa %s."
+
+#: admin/views/settings-page.php:35
+msgid "ZICER terms of service"
+msgstr "ZICER uvjetima korištenja"
+
+#: admin/views/settings-page.php:32
+msgid "Always verify your listings on zicer.ba after synchronization."
+msgstr "Uvijek provjerite svoje oglase na zicer.ba nakon sinkronizacije."
+
+#: admin/views/settings-page.php:33
+msgid "Price conversion and other transformations should be verified for accuracy."
+msgstr "Konverzija cijena i druge transformacije trebaju biti provjerene za tačnost."
+
+#: admin/views/settings-page.php:36
+msgid "Disclaimer:"
+msgstr "Odricanje odgovornosti:"
+
+#: admin/views/settings-page.php:38
+msgid "This plugin is provided \"as is\" without warranty of any kind."
+msgstr "Ovaj dodatak se pruža \"kakav jeste\" bez ikakvih garancija."
+
+#: admin/views/settings-page.php:39
+msgid "Use at your own risk. The developers are not liable for any damages or losses."
+msgstr "Koristite na vlastitu odgovornost. Programeri nisu odgovorni za bilo kakve štete ili gubitke."
+
+#: admin/views/settings-page.php:40
+msgid "Always maintain backups of your data."
+msgstr "Uvijek održavajte sigurnosne kopije vaših podataka."
+
+#: admin/views/settings-page.php:41
+msgid "Test with a few products before bulk synchronization."
+msgstr "Testirajte sa nekoliko proizvoda prije grupne sinkronizacije."
+
+#: admin/views/settings-page.php:51
+msgid "I have read and accept the terms of use"
+msgstr "Pročitao/la sam i prihvatam uvjete korištenja"
+
+#: admin/views/settings-page.php:56
+msgid "Accept and Continue"
+msgstr "Prihvati i nastavi"
+
+#: includes/class-zicer-settings.php:321
+msgid "Security check failed."
+msgstr "Sigurnosna provjera nije uspjela."

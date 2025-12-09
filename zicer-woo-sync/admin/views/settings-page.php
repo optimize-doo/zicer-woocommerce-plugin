@@ -9,12 +9,62 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$connection   = get_option('zicer_connection_status', []);
-$is_connected = !empty($connection['connected']);
-$regions      = get_option('zicer_regions_cache', []);
+$connection     = get_option('zicer_connection_status', []);
+$is_connected   = !empty($connection['connected']);
+$regions        = get_option('zicer_regions_cache', []);
+$terms_accepted = get_option('zicer_terms_accepted', false);
 ?>
 <div class="wrap zicer-settings">
     <h1><?php esc_html_e('Settings', 'zicer-woo-sync'); ?></h1>
+
+    <?php if (!$terms_accepted && !$is_connected) : ?>
+    <!-- Terms and Conditions -->
+    <div class="zicer-card zicer-terms-card">
+        <h2><?php esc_html_e('Terms of Use', 'zicer-woo-sync'); ?></h2>
+
+        <div class="zicer-terms-content">
+            <p><strong><?php esc_html_e('Please read and accept the following terms before connecting:', 'zicer-woo-sync'); ?></strong></p>
+
+            <ul>
+                <li><?php esc_html_e('This plugin synchronizes your WooCommerce products with ZICER marketplace (zicer.ba).', 'zicer-woo-sync'); ?></li>
+                <li><?php esc_html_e('Products will be published publicly on zicer.ba and visible to all users.', 'zicer-woo-sync'); ?></li>
+                <li><?php
+                    printf(
+                        /* translators: %s: link to ZICER terms of service */
+                        esc_html__('You are responsible for ensuring your product data (titles, descriptions, prices, images) complies with %s.', 'zicer-woo-sync'),
+                        '<a href="https://zicer.ba/uslovi-koristenja" target="_blank">' . esc_html__('ZICER terms of service', 'zicer-woo-sync') . '</a>'
+                    );
+                ?></li>
+                <li><?php esc_html_e('Always verify your listings on zicer.ba after synchronization.', 'zicer-woo-sync'); ?></li>
+                <li><?php esc_html_e('Price conversion and other transformations should be verified for accuracy.', 'zicer-woo-sync'); ?></li>
+            </ul>
+
+            <p><strong><?php esc_html_e('Disclaimer:', 'zicer-woo-sync'); ?></strong></p>
+            <ul>
+                <li><?php esc_html_e('This plugin is provided "as is" without warranty of any kind.', 'zicer-woo-sync'); ?></li>
+                <li><?php esc_html_e('Use at your own risk. The developers are not liable for any damages or losses.', 'zicer-woo-sync'); ?></li>
+                <li><?php esc_html_e('Always maintain backups of your data.', 'zicer-woo-sync'); ?></li>
+                <li><?php esc_html_e('Test with a few products before bulk synchronization.', 'zicer-woo-sync'); ?></li>
+            </ul>
+        </div>
+
+        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <input type="hidden" name="action" value="zicer_accept_terms">
+            <?php wp_nonce_field('zicer_accept_terms', 'zicer_terms_nonce'); ?>
+            <p>
+                <label>
+                    <input type="checkbox" name="zicer_accept_terms" id="zicer_accept_terms" value="1" required>
+                    <?php esc_html_e('I have read and accept the terms of use', 'zicer-woo-sync'); ?>
+                </label>
+            </p>
+            <p>
+                <button type="submit" class="button button-primary" id="zicer-accept-terms-btn">
+                    <?php esc_html_e('Accept and Continue', 'zicer-woo-sync'); ?>
+                </button>
+            </p>
+        </form>
+    </div>
+    <?php else : ?>
 
     <form method="post" action="options.php">
         <?php settings_fields('zicer_settings'); ?>
@@ -197,6 +247,15 @@ $regions      = get_option('zicer_regions_cache', []);
                                 'textarea_name' => 'zicer_description_template',
                                 'textarea_rows' => 6,
                                 'media_buttons' => false,
+                                'teeny'         => false,
+                                'tinymce'       => [
+                                    'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,hr,link,unlink,undo,redo',
+                                    'toolbar2' => '',
+                                    'block_formats' => 'Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4',
+                                ],
+                                'quicktags'     => [
+                                    'buttons' => 'strong,em,u,s,link,ul,ol,li,block,close',
+                                ],
                             ]
                         );
                         ?>
@@ -357,6 +416,7 @@ $regions      = get_option('zicer_regions_cache', []);
 
         <?php submit_button(__('Save Settings', 'zicer-woo-sync')); ?>
     </form>
+    <?php endif; ?>
 
     <p class="zicer-footer"><?php esc_html_e('&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark.', 'zicer-woo-sync'); ?></p>
 </div>

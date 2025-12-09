@@ -523,6 +523,37 @@
     }
 }
 
+/* Terms card */
+.zicer-terms-card {
+    max-width: 700px;
+    border-left: 4px solid #facc15;
+}
+
+.zicer-terms-content {
+    background: #f9fafb;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.zicer-terms-content ul {
+    margin: 10px 0 10px 20px;
+}
+
+.zicer-terms-content li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.zicer-terms-card label {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.zicer-terms-card input[type="checkbox"] {
+    margin-right: 8px;
+}
+
 /* Footer copyright */
 .zicer-footer {
     margin-top: 30px;
