@@ -27,6 +27,10 @@ class Zicer_Product_Meta {
         // Product list columns
         add_filter('manage_edit-product_columns', [__CLASS__, 'add_product_column'], 20);
         add_action('manage_product_posts_custom_column', [__CLASS__, 'render_product_column'], 10, 2);
+
+        // Product list filter
+        add_action('restrict_manage_posts', [__CLASS__, 'add_sync_filter']);
+        add_filter('parse_query', [__CLASS__, 'filter_by_sync_status']);
     }
 
     /**
@@ -84,6 +88,77 @@ class Zicer_Product_Meta {
                 esc_attr($listing_id),
                 esc_attr__('View on ZICER', 'zicer-woo-sync')
             );
+        }
+    }
+
+    /**
+     * Add ZICER sync filter dropdown to product list
+     */
+    public static function add_sync_filter() {
+        global $typenow;
+
+        if ($typenow !== 'product') {
+            return;
+        }
+
+        $current = isset($_GET['zicer_sync']) ? sanitize_text_field($_GET['zicer_sync']) : '';
+        ?>
+        <select name="zicer_sync">
+            <option value=""><?php esc_html_e('ZICER sync', 'zicer-woo-sync'); ?></option>
+            <option value="synced" <?php selected($current, 'synced'); ?>><?php esc_html_e('Synced', 'zicer-woo-sync'); ?></option>
+            <option value="not_synced" <?php selected($current, 'not_synced'); ?>><?php esc_html_e('Not synced', 'zicer-woo-sync'); ?></option>
+        </select>
+        <?php
+    }
+
+    /**
+     * Filter products by ZICER sync status
+     *
+     * @param WP_Query $query The query object.
+     */
+    public static function filter_by_sync_status($query) {
+        global $pagenow, $typenow, $wpdb;
+
+        if ($pagenow !== 'edit.php' || $typenow !== 'product' || !$query->is_main_query()) {
+            return;
+        }
+
+        if (empty($_GET['zicer_sync'])) {
+            return;
+        }
+
+        $filter = sanitize_text_field($_GET['zicer_sync']);
+
+        // Get IDs of synced simple products
+        $synced_simple = $wpdb->get_col(
+            "SELECT DISTINCT post_id FROM {$wpdb->postmeta} pm
+             INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+             WHERE pm.meta_key = '_zicer_listing_id'
+             AND p.post_type = 'product'"
+        );
+
+        // Get parent IDs of synced variations
+        $synced_variable = $wpdb->get_col(
+            "SELECT DISTINCT p.post_parent FROM {$wpdb->postmeta} pm
+             INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+             WHERE pm.meta_key = '_zicer_listing_id'
+             AND p.post_type = 'product_variation'
+             AND p.post_parent > 0"
+        );
+
+        $synced_ids = array_unique(array_merge($synced_simple, $synced_variable));
+
+        if ($filter === 'synced') {
+            if (!empty($synced_ids)) {
+                $query->set('post__in', $synced_ids);
+            } else {
+                // No synced products - return empty
+                $query->set('post__in', [0]);
+            }
+        } elseif ($filter === 'not_synced') {
+            if (!empty($synced_ids)) {
+                $query->set('post__not_in', $synced_ids);
+            }
         }
     }
 
