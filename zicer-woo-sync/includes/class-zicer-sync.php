@@ -397,14 +397,75 @@ class Zicer_Sync {
 
         switch ($mode) {
             case 'replace':
-                return $template;
+                $description = $template;
+                break;
             case 'prepend':
-                return $template . "\n\n" . $product_desc;
+                $description = $template . "\n\n" . $product_desc;
+                break;
             case 'append':
-                return $product_desc . "\n\n" . $template;
+                $description = $product_desc . "\n\n" . $template;
+                break;
             default:
-                return $product_desc;
+                $description = $product_desc;
         }
+
+        // ZICER only supports limited HTML tags
+        return self::sanitize_description($description);
+    }
+
+    /**
+     * Sanitize description to only allow ZICER-supported HTML tags
+     *
+     * ZICER supports:
+     * - Text formatting: strong, em, u, s, mark
+     * - Headings: h1, h2, h3, h4
+     * - Block elements: blockquote, hr, p, br
+     * - Lists: ul, ol, li
+     * - Text position: sub, sup
+     * - Links: a (only href attribute)
+     *
+     * ZICER auto-converts: b→strong, i→em, strike→s, del→s
+     *
+     * @param string $description The description to sanitize.
+     * @return string
+     */
+    private static function sanitize_description($description) {
+        $allowed_tags = [
+            // Text formatting
+            'strong'     => [],
+            'em'         => [],
+            'u'          => [],
+            's'          => [],
+            'mark'       => [],
+            // Deprecated (ZICER converts these)
+            'b'          => [],
+            'i'          => [],
+            'strike'     => [],
+            'del'        => [],
+            // Headings
+            'h1'         => [],
+            'h2'         => [],
+            'h3'         => [],
+            'h4'         => [],
+            // Block elements
+            'blockquote' => [],
+            'hr'         => [],
+            'p'          => [],
+            'br'         => [],
+            // Lists
+            'ul'         => [],
+            'ol'         => [],
+            'li'         => [],
+            // Text position
+            'sub'        => [],
+            'sup'        => [],
+            // Links (ZICER only keeps href)
+            'a'          => [
+                'href' => [],
+            ],
+        ];
+
+        return wp_kses($description, $allowed_tags);
     }
 
     /**
