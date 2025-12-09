@@ -35,6 +35,11 @@ $regions      = get_option('zicer_regions_cache', []);
                         <button type="button" id="zicer-test-connection" class="button">
                             <?php esc_html_e('Test Connection', 'zicer-woo-sync'); ?>
                         </button>
+                        <?php if ($is_connected) : ?>
+                            <button type="button" id="zicer-disconnect" class="button">
+                                <?php esc_html_e('Disconnect', 'zicer-woo-sync'); ?>
+                            </button>
+                        <?php endif; ?>
                         <p class="description">
                             <?php esc_html_e('You can create an API token in your ZICER profile settings.', 'zicer-woo-sync'); ?>
                         </p>
@@ -52,6 +57,8 @@ $regions      = get_option('zicer_regions_cache', []);
                                 ); ?>
                                 <?php if (!empty($connection['shop'])) : ?>
                                     (<?php echo esc_html($connection['shop']); ?>)
+                                <?php elseif (empty($connection['has_shop'])) : ?>
+                                    &mdash; <a href="https://zicer.ba/" target="_blank"><?php esc_html_e('Create a shop for higher rate limits', 'zicer-woo-sync'); ?></a>
                                 <?php endif; ?>
                                 <?php if (!empty($connection['rate_limit'])) : ?>
                                     <span class="zicer-rate-limit">
@@ -258,6 +265,35 @@ $regions      = get_option('zicer_regions_cache', []);
             </table>
         </div>
 
+        <!-- Advanced Settings -->
+        <div class="zicer-card">
+            <h2><?php esc_html_e('Advanced', 'zicer-woo-sync'); ?></h2>
+
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('Debug Logging', 'zicer-woo-sync'); ?></th>
+                    <td>
+                        <label>
+                            <input type="checkbox"
+                                   name="zicer_debug_logging"
+                                   value="1"
+                                   <?php checked(get_option('zicer_debug_logging', '0'), '1'); ?>>
+                            <?php esc_html_e('Log all API requests and responses', 'zicer-woo-sync'); ?>
+                        </label>
+                        <p class="description">
+                            <?php
+                            printf(
+                                /* translators: %s: link to log page */
+                                esc_html__('View logs in the %s tab.', 'zicer-woo-sync'),
+                                '<a href="' . esc_url(admin_url('admin.php?page=zicer-log')) . '">' . esc_html__('Log', 'zicer-woo-sync') . '</a>'
+                            );
+                            ?>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <!-- Default Values -->
         <div class="zicer-card">
             <h2><?php esc_html_e('Default Values', 'zicer-woo-sync'); ?></h2>
@@ -280,9 +316,9 @@ $regions      = get_option('zicer_regions_cache', []);
                     <th><?php esc_html_e('Default Region', 'zicer-woo-sync'); ?></th>
                     <td>
                         <select name="zicer_default_region" id="zicer_default_region">
-                            <option value=""><?php esc_html_e('-- Select --', 'zicer-woo-sync'); ?></option>
+                            <?php $current_region = get_option('zicer_default_region', ''); ?>
+                            <option value="" <?php selected($current_region, ''); ?>><?php esc_html_e('-- Select --', 'zicer-woo-sync'); ?></option>
                             <?php
-                            $current_region = get_option('zicer_default_region', '');
                             foreach ($regions as $region) :
                                 $region_id = $region['uuid'] ?? $region['id'] ?? '';
                                 $disabled  = !empty($region['disabled']);

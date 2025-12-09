@@ -28,6 +28,10 @@
     color: #dc3232;
 }
 
+.zicer-warning {
+    color: #856404;
+}
+
 /* Product meta box */
 .zicer-product-meta .zicer-status {
     padding: 8px 12px;

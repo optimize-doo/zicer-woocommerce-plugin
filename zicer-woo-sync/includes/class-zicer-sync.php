@@ -30,6 +30,7 @@ class Zicer_Sync {
         add_action('wp_ajax_zicer_sync_product', [__CLASS__, 'ajax_sync_product']);
         add_action('wp_ajax_zicer_delete_listing', [__CLASS__, 'ajax_delete_listing']);
         add_action('wp_ajax_zicer_bulk_sync', [__CLASS__, 'ajax_bulk_sync']);
+        add_action('wp_ajax_zicer_clear_stale', [__CLASS__, 'ajax_clear_stale']);
 
         // Category mapping save
         add_action('admin_post_zicer_save_category_mapping', [__CLASS__, 'save_category_mapping']);
@@ -128,6 +129,15 @@ class Zicer_Sync {
             return new WP_Error('invalid_product', 'Product not found');
         }
 
+        // For variable products, sync each variation instead
+        if ($product->is_type('variable')) {
+            $results = [];
+            foreach ($product->get_children() as $variation_id) {
+                $results[$variation_id] = self::sync_product($variation_id);
+            }
+            return $results;
+        }
+
         // Skip excluded products
         if (get_post_meta($product_id, '_zicer_exclude', true) === 'yes') {
             return new WP_Error('excluded', 'Product excluded from sync');
@@ -162,12 +172,21 @@ class Zicer_Sync {
             // Update existing
             $result = $api->update_listing($listing_id, $data);
         } else {
-            // Create new
+            // Create new - clear synced images so they get re-uploaded
+            delete_post_meta($product_id, '_zicer_synced_images');
             $result = $api->create_listing($data);
         }
 
         if (is_wp_error($result)) {
-            update_post_meta($product_id, '_zicer_sync_error', $result->get_error_message());
+            $error_data = $result->get_error_data();
+            $error_msg  = $result->get_error_message();
+
+            // Mark 404 errors specially so UI can show "Clear & Re-create" option
+            if (isset($error_data['status']) && $error_data['status'] === 404) {
+                $error_msg = '404:' . __('Listing not found on ZICER (may have been deleted)', 'zicer-woo-sync');
+            }
+
+            update_post_meta($product_id, '_zicer_sync_error', $error_msg);
             Zicer_Logger::log('error', "Sync failed for product $product_id", [
                 'error' => $result->get_error_message(),
             ]);
@@ -199,6 +218,17 @@ class Zicer_Sync {
      * @return array|WP_Error
      */
     public static function delete_listing($product_id, $listing_id = null) {
+        $product = wc_get_product($product_id);
+
+        // For variable products, delete each variation's listing
+        if ($product && $product->is_type('variable')) {
+            $results = [];
+            foreach ($product->get_children() as $variation_id) {
+                $results[$variation_id] = self::delete_listing($variation_id);
+            }
+            return $results;
+        }
+
         if (!$listing_id) {
             $listing_id = get_post_meta($product_id, '_zicer_listing_id', true);
         }
@@ -213,6 +243,7 @@ class Zicer_Sync {
         if (!is_wp_error($result)) {
             delete_post_meta($product_id, '_zicer_listing_id');
             delete_post_meta($product_id, '_zicer_last_sync');
+            delete_post_meta($product_id, '_zicer_synced_images');
             Zicer_Logger::log('info', "Listing deleted for product $product_id", [
                 'listing_id' => $listing_id,
             ]);
@@ -249,9 +280,22 @@ class Zicer_Sync {
         // Get category - check for product-level override first
         $zicer_category = get_post_meta($product->get_id(), '_zicer_category', true);
 
+        // For variations, check parent's category override
+        if (!$zicer_category && $product->is_type('variation')) {
+            $parent_id = $product->get_parent_id();
+            $zicer_category = get_post_meta($parent_id, '_zicer_category', true);
+        }
+
         // Fall back to category mapping
         if (!$zicer_category) {
-            $wc_categories = $product->get_category_ids();
+            // Variations don't have WC categories - use parent's
+            if ($product->is_type('variation')) {
+                $parent = wc_get_product($product->get_parent_id());
+                $wc_categories = $parent ? $parent->get_category_ids() : [];
+            } else {
+                $wc_categories = $product->get_category_ids();
+            }
+
             foreach ($wc_categories as $cat_id) {
                 $zicer_category = Zicer_Category_Map::get_zicer_category($cat_id);
                 if ($zicer_category) {
@@ -441,6 +485,28 @@ class Zicer_Sync {
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         }
+
+        wp_send_json_success();
+    }
+
+    /**
+     * AJAX: Clear stale listing data (when listing was deleted on ZICER)
+     */
+    public static function ajax_clear_stale() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        if (!$product_id) {
+            wp_send_json_error('Invalid product ID');
+        }
+
+        // Clear all ZICER sync data
+        delete_post_meta($product_id, '_zicer_listing_id');
+        delete_post_meta($product_id, '_zicer_last_sync');
+        delete_post_meta($product_id, '_zicer_sync_error');
+        delete_post_meta($product_id, '_zicer_synced_images');
+
+        Zicer_Logger::log('info', "Cleared stale ZICER data for product $product_id");
 
         wp_send_json_success();
     }

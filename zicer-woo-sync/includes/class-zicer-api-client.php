@@ -126,11 +126,27 @@ class Zicer_API_Client {
             }
         }
 
+        $debug = get_option('zicer_debug_logging', '0') === '1';
+
+        if ($debug) {
+            Zicer_Logger::log('debug', "API: $method $endpoint", [
+                'body' => $data,
+            ]);
+        }
+
         $response = wp_remote_request($url, $args);
 
         if (is_wp_error($response)) {
             Zicer_Logger::log('error', 'API request failed: ' . $response->get_error_message());
             return $response;
+        }
+
+        $code = wp_remote_retrieve_response_code($response);
+
+        if ($debug) {
+            Zicer_Logger::log('debug', "API response: $code", [
+                'endpoint' => $endpoint,
+            ]);
         }
 
         // Update rate limit info from headers
@@ -346,16 +362,32 @@ class Zicer_API_Client {
             'timeout' => 120,
         ];
 
+        $debug = get_option('zicer_debug_logging', '0') === '1';
+
+        if ($debug) {
+            Zicer_Logger::log('debug', "API: POST /listings/$listing_id/media", [
+                'file' => $file_name,
+                'position' => $position,
+            ]);
+        }
+
         $response = wp_remote_request(
             ZICER_API_BASE_URL . "/listings/$listing_id/media",
             $args
         );
 
         if (is_wp_error($response)) {
+            Zicer_Logger::log('error', 'Media upload failed: ' . $response->get_error_message());
             return $response;
         }
 
         $code = wp_remote_retrieve_response_code($response);
+
+        if ($debug) {
+            Zicer_Logger::log('debug', "API response: $code", [
+                'endpoint' => "/listings/$listing_id/media",
+            ]);
+        }
         if ($code >= 400) {
             return new WP_Error('upload_error', 'Failed to upload media', ['status' => $code]);
         }
