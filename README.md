@@ -2,6 +2,33 @@
 
 WordPress/WooCommerce plugin for synchronizing products with the ZICER marketplace platform.
 
+## Installation
+
+### Requirements
+
+- WordPress 5.0 or higher
+- WooCommerce 5.0 or higher
+- PHP 7.4 or higher
+
+### Manual Installation
+
+1. Download the latest release from [GitHub Releases](https://github.com/aarsla/zicer.woo/releases)
+2. In WordPress admin, go to **Plugins → Add New → Upload Plugin**
+3. Upload the `zicer-woo-sync.zip` file
+4. Click **Install Now**, then **Activate**
+
+Alternatively, extract the zip and upload the `zicer-woo-sync` folder to `/wp-content/plugins/` via FTP.
+
+### Updates
+
+The plugin includes automatic update checking from GitHub:
+
+- **Automatic notifications**: When a new version is available, you'll see an update notice in **Plugins → Installed Plugins**
+- **One-click updates**: Click "Update Now" to install the latest version directly from WordPress admin
+- **Manual updates**: Download the new release and follow the installation steps above (deactivate first)
+
+Updates are checked against GitHub releases. Your settings and synced listings are preserved during updates.
+
 ## Development
 
 ### Starting the Test Environment
