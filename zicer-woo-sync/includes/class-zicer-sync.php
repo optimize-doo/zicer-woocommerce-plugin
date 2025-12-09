@@ -589,12 +589,27 @@ class Zicer_Sync {
         $product_ids = array_merge($product_ids, get_posts($args));
         $product_ids = array_unique($product_ids);
 
+        $queued = 0;
         foreach ($product_ids as $product_id) {
-            Zicer_Queue::add($product_id, 'sync');
+            $product = wc_get_product($product_id);
+            if (!$product) {
+                continue;
+            }
+
+            // For variable products, queue each variation
+            if ($product->is_type('variable')) {
+                foreach ($product->get_children() as $variation_id) {
+                    Zicer_Queue::add($variation_id, 'sync');
+                    $queued++;
+                }
+            } else {
+                Zicer_Queue::add($product_id, 'sync');
+                $queued++;
+            }
         }
 
         wp_send_json_success([
-            'queued' => count($product_ids),
+            'queued' => $queued,
         ]);
     }
 
