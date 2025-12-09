@@ -171,6 +171,18 @@ class Zicer_Queue {
     }
 
     /**
+     * Remove a single queue item by ID
+     *
+     * @param int $id Queue item ID.
+     * @return bool
+     */
+    public static function remove($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+        return (bool) $wpdb->delete($table, ['id' => $id], ['%d']);
+    }
+
+    /**
      * Retry failed items
      */
     public static function retry_failed() {

@@ -25,6 +25,7 @@ class Zicer_Settings {
         add_action('wp_ajax_zicer_test_connection', [__CLASS__, 'ajax_test_connection']);
         add_action('wp_ajax_zicer_disconnect', [__CLASS__, 'ajax_disconnect']);
         add_action('wp_ajax_zicer_clear_all_listings', [__CLASS__, 'ajax_clear_all_listings']);
+        add_action('wp_ajax_zicer_refresh_rate_limit', [__CLASS__, 'ajax_refresh_rate_limit']);
         add_action('wp_ajax_zicer_fetch_categories', [__CLASS__, 'ajax_fetch_categories']);
         add_action('wp_ajax_zicer_fetch_regions', [__CLASS__, 'ajax_fetch_regions']);
         add_action('wp_ajax_zicer_fetch_cities', [__CLASS__, 'ajax_fetch_cities']);
@@ -353,6 +354,32 @@ class Zicer_Settings {
         Zicer_Logger::log('info', "Cleared all ZICER listing data ($deleted meta entries)");
 
         wp_send_json_success(['deleted' => $deleted]);
+    }
+
+    /**
+     * AJAX: Refresh rate limit info
+     */
+    public static function ajax_refresh_rate_limit() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        $api = Zicer_API_Client::instance();
+        $result = $api->validate_connection();
+
+        // Force update the stored rate limit
+        update_option('zicer_rate_limit_info', [
+            'limit'     => $api->get_rate_limit_status()['limit'],
+            'remaining' => $api->get_rate_limit_status()['remaining'],
+            'reset'     => $api->get_rate_limit_status()['reset'],
+            'updated'   => time(),
+        ], false);
+
+        $info = get_option('zicer_rate_limit_info', []);
+
+        wp_send_json_success([
+            'limit'     => $info['limit'] ?? 60,
+            'remaining' => $info['remaining'] ?? 60,
+            'updated'   => __('just now', 'zicer-woo-sync'),
+        ]);
     }
 
     /**

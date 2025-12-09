@@ -105,4 +105,6 @@ $pages   = ceil($total / $limit);
     <?php else : ?>
         <p><?php esc_html_e('No log entries.', 'zicer-woo-sync'); ?></p>
     <?php endif; ?>
+
+    <p class="zicer-footer"><?php esc_html_e('&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark.', 'zicer-woo-sync'); ?></p>
 </div>

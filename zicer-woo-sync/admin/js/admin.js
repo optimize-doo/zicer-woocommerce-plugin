@@ -298,6 +298,66 @@
             processNext();
         });
 
+        // Remove queue item
+        $(document).on('click', '.zicer-remove-queue-item', function() {
+            var $btn = $(this);
+            var $row = $btn.closest('tr');
+            var id = $btn.data('id');
+
+            $btn.prop('disabled', true);
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_remove_queue_item',
+                nonce: zicerAdmin.nonce,
+                id: id
+            }, function(response) {
+                if (response.success) {
+                    $row.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                    // Update stats
+                    $('#stat-pending').text(response.data.pending);
+                    $('#stat-processing').text(response.data.processing);
+                } else {
+                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false);
+                }
+            }).fail(function() {
+                alert(zicerAdmin.strings.error + ' Connection failed');
+                $btn.prop('disabled', false);
+            });
+        });
+
+        // Refresh rate limit
+        $('#zicer-refresh-rate').on('click', function() {
+            var $btn = $(this);
+            var $icon = $btn.find('.dashicons');
+
+            $btn.prop('disabled', true);
+            $icon.addClass('spin');
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_refresh_rate_limit',
+                nonce: zicerAdmin.nonce
+            }, function(response) {
+                $btn.prop('disabled', false);
+                $icon.removeClass('spin');
+
+                if (response.success) {
+                    var used = response.data.limit - response.data.remaining;
+                    $('#stat-rate').text(used + '/' + response.data.limit);
+                    $('#stat-rate-updated').html(
+                        response.data.updated +
+                        ' <button type="button" id="zicer-refresh-rate" class="button-link" title="Refresh">' +
+                        '<span class="dashicons dashicons-update"></span></button>'
+                    );
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false);
+                $icon.removeClass('spin');
+            });
+        });
+
         // Load categories
         $('#zicer-load-categories').on('click', function() {
             var $btn = $(this);

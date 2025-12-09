@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 $stats      = Zicer_Queue::get_stats();
 $connection = get_option('zicer_connection_status', []);
-$rate_limit = $connection['rate_limit'] ?? 60;
+$rate_limit_info = get_option('zicer_rate_limit_info', []);
 $total_queue = $stats['pending'] + $stats['processing'];
 $pending_items = Zicer_Queue::get_pending_items(20);
 $failed_items = Zicer_Queue::get_failed_items(20);
@@ -21,7 +21,7 @@ $failed_items = Zicer_Queue::get_failed_items(20);
     <h1><?php esc_html_e('Queue', 'zicer-woo-sync'); ?></h1>
 
     <!-- Stats Grid -->
-    <div class="zicer-stats-grid">
+    <div class="zicer-stats-grid zicer-stats-grid-5">
         <div class="zicer-stat-card<?php echo $stats['pending'] > 0 ? ' pending' : ''; ?>">
             <span class="stat-number" id="stat-pending"><?php echo esc_html($stats['pending']); ?></span>
             <span class="stat-label"><?php esc_html_e('Pending', 'zicer-woo-sync'); ?></span>
@@ -37,6 +37,27 @@ $failed_items = Zicer_Queue::get_failed_items(20);
         <div class="zicer-stat-card<?php echo $stats['failed'] > 0 ? ' error' : ''; ?>">
             <span class="stat-number" id="stat-failed"><?php echo esc_html($stats['failed']); ?></span>
             <span class="stat-label"><?php esc_html_e('Failed', 'zicer-woo-sync'); ?></span>
+        </div>
+        <?php
+        $rate_used = !empty($rate_limit_info['limit']) ? ($rate_limit_info['limit'] - ($rate_limit_info['remaining'] ?? 0)) : 0;
+        ?>
+        <div class="zicer-stat-card zicer-stat-rate<?php echo !empty($rate_limit_info['remaining']) && $rate_limit_info['remaining'] < 10 ? ' error' : ''; ?>">
+            <?php if (!empty($rate_limit_info['limit'])) : ?>
+                <span class="stat-number" id="stat-rate"><?php echo esc_html($rate_used); ?>/<?php echo esc_html($rate_limit_info['limit']); ?></span>
+                <span class="stat-label"><?php esc_html_e('API Rate Limit', 'zicer-woo-sync'); ?></span>
+                <span class="stat-updated" id="stat-rate-updated">
+                    <?php echo esc_html(human_time_diff($rate_limit_info['updated'], time())); ?> <?php esc_html_e('ago', 'zicer-woo-sync'); ?>
+                    <button type="button" id="zicer-refresh-rate" class="button-link" title="<?php esc_attr_e('Refresh', 'zicer-woo-sync'); ?>">
+                        <span class="dashicons dashicons-update"></span>
+                    </button>
+                </span>
+            <?php else : ?>
+                <span class="stat-number">-</span>
+                <span class="stat-label"><?php esc_html_e('API Rate Limit', 'zicer-woo-sync'); ?></span>
+                <span class="stat-updated">
+                    <button type="button" id="zicer-refresh-rate" class="button-link"><?php esc_html_e('Refresh', 'zicer-woo-sync'); ?></button>
+                </span>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -84,16 +105,6 @@ $failed_items = Zicer_Queue::get_failed_items(20);
                 </button>
             </p>
         <?php endif; ?>
-
-        <p class="description">
-            <?php
-            printf(
-                /* translators: %d: rate limit per minute */
-                esc_html__('API rate limit: %d requests per minute', 'zicer-woo-sync'),
-                $rate_limit
-            );
-            ?>
-        </p>
     </div>
 
     <!-- Pending Items -->
@@ -106,11 +117,12 @@ $failed_items = Zicer_Queue::get_failed_items(20);
                     <th><?php esc_html_e('Product', 'zicer-woo-sync'); ?></th>
                     <th><?php esc_html_e('Action', 'zicer-woo-sync'); ?></th>
                     <th><?php esc_html_e('Added', 'zicer-woo-sync'); ?></th>
+                    <th style="width: 60px;"></th>
                 </tr>
             </thead>
             <tbody id="pending-items-body">
                 <?php foreach ($pending_items as $item) : ?>
-                    <tr>
+                    <tr data-queue-id="<?php echo esc_attr($item->id); ?>">
                         <td>
                             <?php if ($item->product_name) : ?>
                                 <a href="<?php echo esc_url(get_edit_post_link($item->product_id)); ?>">
@@ -126,6 +138,14 @@ $failed_items = Zicer_Queue::get_failed_items(20);
                             </span>
                         </td>
                         <td><?php echo esc_html($item->created_at); ?></td>
+                        <td>
+                            <button type="button"
+                                    class="button-link zicer-remove-queue-item"
+                                    data-id="<?php echo esc_attr($item->id); ?>"
+                                    title="<?php esc_attr_e('Remove', 'zicer-woo-sync'); ?>">
+                                <span class="dashicons dashicons-no-alt"></span>
+                            </button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -176,4 +196,6 @@ $failed_items = Zicer_Queue::get_failed_items(20);
         </table>
     </div>
     <?php endif; ?>
+
+    <p class="zicer-footer"><?php esc_html_e('&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark.', 'zicer-woo-sync'); ?></p>
 </div>

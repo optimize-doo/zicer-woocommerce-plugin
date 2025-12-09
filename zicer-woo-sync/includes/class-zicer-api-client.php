@@ -161,6 +161,22 @@ class Zicer_API_Client {
             $this->rate_limit_reset = (int) $headers['x-ratelimit-reset'];
         }
 
+        // Persist rate limit info: on first request, when low, or every 30 seconds
+        $stored = get_option('zicer_rate_limit_info', []);
+        $last_update = $stored['updated'] ?? 0;
+        $should_update = empty($stored)
+            || $this->rate_limit_remaining < 10
+            || (time() - $last_update) > 30;
+
+        if ($should_update) {
+            update_option('zicer_rate_limit_info', [
+                'limit'     => $this->rate_limit_limit,
+                'remaining' => $this->rate_limit_remaining,
+                'reset'     => $this->rate_limit_reset,
+                'updated'   => time(),
+            ], false);
+        }
+
         $code    = wp_remote_retrieve_response_code($response);
         $body    = wp_remote_retrieve_body($response);
         $decoded = json_decode($body, true);

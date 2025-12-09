@@ -1,0 +1,24 @@
+# Bosnian translation for ZICER WooCommerce Sync plugin.
+# Copyright (C) 2025 Optimize d.o.o.
+# This file is distributed under the same license as the ZICER WooCommerce Sync plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: ZICER WooCommerce Sync 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/zicer-woo-sync\n"
+"Last-Translator: ZICER <info@zicer.ba>\n"
+"Language-Team: Bosnian <bs@li.org>\n"
+"Language: bs_BA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-12-09T21:24:11+00:00\n"
+"PO-Revision-Date: 2025-12-09 22:00+0100\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: zicer-woo-sync\n"
+
+#: admin/views/category-mapping.php:171
+#: admin/views/settings-page.php:353
+#: admin/views/sync-log.php:109
+#: admin/views/sync-status.php:180
+msgid "&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark."
+msgstr "&copy; 2025 Optimize d.o.o. Sva prava zadržana. Zicer je zaštićeni znak (žig)."

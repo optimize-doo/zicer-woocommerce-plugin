@@ -167,4 +167,6 @@ $categories_cache_time = get_option('zicer_categories_cache_time', 0);
 
         <?php submit_button(__('Save Mapping', 'zicer-woo-sync')); ?>
     </form>
+
+    <p class="zicer-footer"><?php esc_html_e('&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark.', 'zicer-woo-sync'); ?></p>
 </div>

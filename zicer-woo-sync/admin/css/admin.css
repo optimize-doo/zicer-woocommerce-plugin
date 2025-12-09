@@ -82,12 +82,16 @@
     color: #ca8a04;
 }
 
-/* Stats grid - always 4 columns */
+/* Stats grid - 4 or 5 columns */
 .zicer-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
+}
+
+.zicer-stats-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
 }
 
 .zicer-stat-card {
@@ -147,6 +151,43 @@
 
 .zicer-stat-card.pending .stat-number {
     color: #ca8a04;
+}
+
+.zicer-stat-card .stat-updated {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+.zicer-stat-rate .stat-number {
+    font-size: 24px;
+}
+
+.zicer-stat-rate .button-link {
+    color: #9ca3af;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.zicer-stat-rate .button-link:hover {
+    color: #6b7280;
+}
+
+.zicer-stat-rate .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.zicer-stat-rate .dashicons.spin {
+    animation: zicer-spin 1s linear infinite;
+}
+
+@keyframes zicer-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Product list column */
@@ -423,10 +464,29 @@
 }
 
 /* Responsive adjustments */
+@media screen and (max-width: 1400px) {
+    .zicer-stats-grid-5 {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+    }
+
+    .zicer-stats-grid-5 .zicer-stat-card {
+        padding: 14px;
+    }
+
+    .zicer-stats-grid-5 .stat-number {
+        font-size: 24px;
+    }
+}
+
 @media screen and (max-width: 1200px) {
     .zicer-stats-grid {
         grid-template-columns: repeat(4, 1fr);
         gap: 12px;
+    }
+
+    .zicer-stats-grid-5 {
+        grid-template-columns: repeat(5, 1fr);
     }
 
     .zicer-stat-card {
@@ -438,14 +498,22 @@
     }
 }
 
+@media screen and (max-width: 1000px) {
+    .zicer-stats-grid-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media screen and (max-width: 782px) {
-    .zicer-stats-grid {
+    .zicer-stats-grid,
+    .zicer-stats-grid-5 {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media screen and (max-width: 480px) {
-    .zicer-stats-grid {
+    .zicer-stats-grid,
+    .zicer-stats-grid-5 {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
@@ -453,4 +521,13 @@
     .zicer-stat-card .stat-number {
         font-size: 24px;
     }
+}
+
+/* Footer copyright */
+.zicer-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    font-size: 12px;
+    color: #9ca3af;
 }
