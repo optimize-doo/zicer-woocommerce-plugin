@@ -56,13 +56,27 @@ class Zicer_Sync {
             return;
         }
 
-        // Handle variable products
+        // Only auto-sync if product has a ZICER category (override or mapped)
+        $has_category = get_post_meta($product_id, '_zicer_category', true);
+        if (!$has_category) {
+            foreach ($product->get_category_ids() as $cat_id) {
+                if (Zicer_Category_Map::get_zicer_category($cat_id)) {
+                    $has_category = true;
+                    break;
+                }
+            }
+        }
+        if (!$has_category) {
+            return; // Skip silently - product not configured for ZICER
+        }
+
+        // Sync immediately (don't rely on cron)
         if ($product->is_type('variable')) {
             foreach ($product->get_children() as $variation_id) {
-                Zicer_Queue::add($variation_id, 'sync');
+                self::sync_product($variation_id);
             }
         } else {
-            Zicer_Queue::add($product_id, 'sync');
+            self::sync_product($product_id);
         }
     }
 
@@ -78,7 +92,8 @@ class Zicer_Sync {
 
         $listing_id = get_post_meta($post_id, '_zicer_listing_id', true);
         if ($listing_id) {
-            Zicer_Queue::add($post_id, 'delete', ['listing_id' => $listing_id]);
+            // Delete immediately from ZICER
+            self::delete_listing($post_id, $listing_id);
         }
     }
 

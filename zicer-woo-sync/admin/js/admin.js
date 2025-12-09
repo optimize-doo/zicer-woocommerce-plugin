@@ -20,6 +20,18 @@
             });
         }
 
+        // Clear category override link
+        $('.zicer-clear-override').on('click', function(e) {
+            e.preventDefault();
+            var $select = $('#_zicer_category');
+            var mappedCategory = $select.data('mapped-category');
+            if (mappedCategory) {
+                $select.val(mappedCategory).trigger('change');
+            } else {
+                $select.val('').trigger('change');
+            }
+        });
+
         // Test connection
         $('#zicer-test-connection').on('click', function() {
             var $btn = $(this);
