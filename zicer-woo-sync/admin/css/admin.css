@@ -124,6 +124,34 @@
     margin-left: 5px;
 }
 
+.zicer-categories-info {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.zicer-categories-info .button-link {
+    margin-left: 10px;
+}
+
+/* Suggest result feedback */
+.zicer-suggest-cell {
+    white-space: nowrap;
+}
+
+.zicer-suggest-result {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+.zicer-suggest-result.success {
+    color: #46b450;
+}
+
+.zicer-suggest-result.error {
+    color: #dc3232;
+}
+
 /* Select2 customization */
 .zicer-categories .select2-container {
     max-width: 400px;

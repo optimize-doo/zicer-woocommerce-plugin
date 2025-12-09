@@ -144,8 +144,10 @@
             var termId = $btn.data('term-id');
             var $select = $('select[name="mapping[' + termId + ']"]');
             var $spinner = $btn.next('.spinner');
+            var $result = $btn.siblings('.zicer-suggest-result');
 
             $spinner.addClass('is-active');
+            $result.removeClass('success error').text('');
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_suggest_category',
@@ -155,15 +157,21 @@
                 $spinner.removeClass('is-active');
                 if (response.success && response.data.length > 0) {
                     var suggestion = response.data[0];
-                    // Try to find the suggestion in the select options
-                    if (suggestion.uuid) {
-                        $select.val(suggestion.uuid);
-                    } else if (suggestion.id) {
-                        $select.val(suggestion.id);
+                    var suggestionId = suggestion.uuid || suggestion.id;
+
+                    // Try to find and select the suggestion
+                    if (suggestionId && $select.find('option[value="' + suggestionId + '"]').length) {
+                        $select.val(suggestionId).trigger('change');
+                        $result.addClass('success').text('✓');
+                    } else {
+                        $result.addClass('error').text('No match found');
                     }
+                } else {
+                    $result.addClass('error').text('No suggestions');
                 }
             }).fail(function() {
                 $spinner.removeClass('is-active');
+                $result.addClass('error').text('Error');
             });
         });
 
