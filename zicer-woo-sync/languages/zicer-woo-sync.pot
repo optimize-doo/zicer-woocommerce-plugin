@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-09T21:24:11+00:00\n"
+"POT-Creation-Date: 2025-12-09T21:47:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: zicer-woo-sync\n"
@@ -35,7 +35,7 @@ msgid "ZICER"
 msgstr ""
 
 #: admin/views/category-mapping.php:26
-#: includes/class-zicer-settings.php:65
+#: includes/class-zicer-settings.php:66
 msgid "Categories"
 msgstr ""
 
@@ -63,6 +63,8 @@ msgstr ""
 
 #: admin/views/category-mapping.php:59
 #: admin/views/settings-page.php:334
+#: admin/views/sync-status.php:50
+#: admin/views/sync-status.php:58
 msgid "Refresh"
 msgstr ""
 
@@ -114,13 +116,13 @@ msgstr ""
 #: admin/views/category-mapping.php:171
 #: admin/views/settings-page.php:353
 #: admin/views/sync-log.php:109
-#: admin/views/sync-status.php:180
+#: admin/views/sync-status.php:207
 msgid "&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark."
 msgstr ""
 
 #: admin/views/settings-page.php:17
-#: includes/class-zicer-settings.php:55
 #: includes/class-zicer-settings.php:56
+#: includes/class-zicer-settings.php:57
 msgid "Settings"
 msgstr ""
 
@@ -307,8 +309,8 @@ msgstr ""
 
 #: admin/views/settings-page.php:288
 #: admin/views/sync-log.php:21
-#: includes/class-zicer-settings.php:82
 #: includes/class-zicer-settings.php:83
+#: includes/class-zicer-settings.php:84
 msgid "Log"
 msgstr ""
 
@@ -358,8 +360,8 @@ msgid "Date"
 msgstr ""
 
 #: admin/views/sync-log.php:47
-#: admin/views/sync-status.php:106
-#: admin/views/sync-status.php:148
+#: admin/views/sync-status.php:117
+#: admin/views/sync-status.php:175
 msgid "Product"
 msgstr ""
 
@@ -380,7 +382,7 @@ msgid "No log entries."
 msgstr ""
 
 #: admin/views/sync-status.php:21
-#: includes/class-zicer-settings.php:74
+#: includes/class-zicer-settings.php:75
 msgid "Queue"
 msgstr ""
 
@@ -389,7 +391,7 @@ msgid "Pending"
 msgstr ""
 
 #: admin/views/sync-status.php:31
-#: admin/views/sync-status.php:46
+#: admin/views/sync-status.php:67
 msgid "Processing"
 msgstr ""
 
@@ -401,68 +403,79 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
-#: admin/views/sync-status.php:52
+#: admin/views/sync-status.php:47
+#: admin/views/sync-status.php:56
+msgid "API Rate Limit"
+msgstr ""
+
+#: admin/views/sync-status.php:49
+msgid "ago"
+msgstr ""
+
+#: admin/views/sync-status.php:73
 #, php-format
 msgid "%d items in queue"
 msgstr ""
 
-#: admin/views/sync-status.php:57
+#: admin/views/sync-status.php:78
 msgid "Process Now"
 msgstr ""
 
-#: admin/views/sync-status.php:66
+#: admin/views/sync-status.php:87
 msgid "Actions"
 msgstr ""
 
-#: admin/views/sync-status.php:70
+#: admin/views/sync-status.php:91
 msgid "Sync All Products"
 msgstr ""
 
-#: admin/views/sync-status.php:73
+#: admin/views/sync-status.php:94
 msgid "Adds all products to the sync queue"
 msgstr ""
 
-#: admin/views/sync-status.php:80
+#: admin/views/sync-status.php:101
 msgid "Retry Failed"
 msgstr ""
 
-#: admin/views/sync-status.php:83
+#: admin/views/sync-status.php:104
 msgid "Clear Failed"
 msgstr ""
 
-#. translators: %d: rate limit per minute
-#: admin/views/sync-status.php:92
-#, php-format
-msgid "API rate limit: %d requests per minute"
-msgstr ""
-
-#: admin/views/sync-status.php:102
+#: admin/views/sync-status.php:113
 msgid "Pending Items"
 msgstr ""
 
-#: admin/views/sync-status.php:107
-#: admin/views/sync-status.php:149
+#: admin/views/sync-status.php:118
+#: admin/views/sync-status.php:176
 msgid "Action"
 msgstr ""
 
-#: admin/views/sync-status.php:108
+#: admin/views/sync-status.php:119
 msgid "Added"
 msgstr ""
 
-#: admin/views/sync-status.php:135
+#: admin/views/sync-status.php:124
+msgid "Clear All"
+msgstr ""
+
+#: admin/views/sync-status.php:152
+msgid "Remove"
+msgstr ""
+
+#: admin/views/sync-status.php:162
 #, php-format
 msgid "Showing 20 of %d pending items"
 msgstr ""
 
-#: admin/views/sync-status.php:144
+#: admin/views/sync-status.php:171
 msgid "Failed Items"
 msgstr ""
 
-#: admin/views/sync-status.php:150
+#: admin/views/sync-status.php:177
 msgid "Error"
 msgstr ""
 
-#: admin/views/sync-status.php:151
+#: admin/views/sync-status.php:178
 msgid "Time"
 msgstr ""
 
@@ -495,12 +508,11 @@ msgid "Not synced"
 msgstr ""
 
 #: includes/class-zicer-product-meta.php:177
-msgid "Sync to ZICER"
+msgid "Queue: Add to ZICER"
 msgstr ""
 
 #: includes/class-zicer-product-meta.php:178
-#: includes/class-zicer-product-meta.php:507
-msgid "Remove from ZICER"
+msgid "Queue: Remove from ZICER"
 msgstr ""
 
 #. translators: %d: number of items
@@ -520,8 +532,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: includes/class-zicer-product-meta.php:278
-#: includes/class-zicer-settings.php:44
 #: includes/class-zicer-settings.php:45
+#: includes/class-zicer-settings.php:46
 msgid "ZICER Sync"
 msgstr ""
 
@@ -599,8 +611,12 @@ msgstr ""
 msgid "Sync Now"
 msgstr ""
 
+#: includes/class-zicer-product-meta.php:507
+msgid "Remove from ZICER"
+msgstr ""
+
 #: includes/class-zicer-product-meta.php:587
-#: includes/class-zicer-sync.php:323
+#: includes/class-zicer-sync.php:325
 msgid "No mapped ZICER category"
 msgstr ""
 
@@ -608,81 +624,85 @@ msgstr ""
 msgid "Region and city not configured"
 msgstr ""
 
-#: includes/class-zicer-settings.php:64
+#: includes/class-zicer-settings.php:65
 msgid "Category Mapping"
 msgstr ""
 
-#: includes/class-zicer-settings.php:73
+#: includes/class-zicer-settings.php:74
 msgid "Sync Queue"
 msgstr ""
 
-#: includes/class-zicer-settings.php:220
+#: includes/class-zicer-settings.php:221
 msgid "Testing..."
 msgstr ""
 
-#: includes/class-zicer-settings.php:221
+#: includes/class-zicer-settings.php:222
 msgid "Connected!"
 msgstr ""
 
-#: includes/class-zicer-settings.php:222
+#: includes/class-zicer-settings.php:223
 msgid "Error:"
 msgstr ""
 
-#: includes/class-zicer-settings.php:223
+#: includes/class-zicer-settings.php:224
 msgid "Syncing..."
 msgstr ""
 
-#: includes/class-zicer-settings.php:224
+#: includes/class-zicer-settings.php:225
 msgid "Are you sure you want to start bulk synchronization?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:236
-#: includes/class-zicer-settings.php:309
-#: includes/class-zicer-settings.php:327
-#: includes/class-zicer-settings.php:488
-#: includes/class-zicer-settings.php:502
-#: includes/class-zicer-settings.php:516
-#: includes/class-zicer-settings.php:530
+#: includes/class-zicer-settings.php:237
+#: includes/class-zicer-settings.php:310
+#: includes/class-zicer-settings.php:328
+#: includes/class-zicer-settings.php:515
+#: includes/class-zicer-settings.php:529
+#: includes/class-zicer-settings.php:543
+#: includes/class-zicer-settings.php:557
 msgid "You do not have permission."
 msgstr ""
 
-#: includes/class-zicer-settings.php:449
+#: includes/class-zicer-settings.php:381
+msgid "just now"
+msgstr ""
+
+#: includes/class-zicer-settings.php:476
 msgid "Region ID is required."
 msgstr ""
 
-#: includes/class-zicer-settings.php:537
+#: includes/class-zicer-settings.php:564
 msgid "Invalid product ID."
 msgstr ""
 
-#: includes/class-zicer-settings.php:579
+#: includes/class-zicer-settings.php:606
 msgid "New"
 msgstr ""
 
-#: includes/class-zicer-settings.php:580
+#: includes/class-zicer-settings.php:607
 msgid "Open box"
 msgstr ""
 
-#: includes/class-zicer-settings.php:581
+#: includes/class-zicer-settings.php:608
 msgid "Used"
 msgstr ""
 
-#: includes/class-zicer-settings.php:582
+#: includes/class-zicer-settings.php:609
 msgid "Refurbished"
 msgstr ""
 
-#: includes/class-zicer-settings.php:583
+#: includes/class-zicer-settings.php:610
 msgid "Not working"
 msgstr ""
 
-#: includes/class-zicer-settings.php:584
+#: includes/class-zicer-settings.php:611
 msgid "Not specified"
 msgstr ""
 
-#: includes/class-zicer-sync.php:201
+#: includes/class-zicer-sync.php:203
 msgid "Listing not found on ZICER (may have been deleted)"
 msgstr ""
 
-#: includes/class-zicer-sync.php:331
+#: includes/class-zicer-sync.php:333
 msgid "Region and city are not configured"
 msgstr ""
 
