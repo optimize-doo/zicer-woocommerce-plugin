@@ -41,7 +41,13 @@ $regions      = get_option('zicer_regions_cache', []);
                             </button>
                         <?php endif; ?>
                         <p class="description">
-                            <?php esc_html_e('You can create an API token in your ZICER profile settings.', 'zicer-woo-sync'); ?>
+                            <?php
+                            printf(
+                                /* translators: %s: link to ZICER profile */
+                                esc_html__('You can create an API token in your %s.', 'zicer-woo-sync'),
+                                '<a href="https://zicer.ba/moje-integracije" target="_blank">' . esc_html__('ZICER profile settings', 'zicer-woo-sync') . '</a>'
+                            );
+                            ?>
                         </p>
                     </td>
                 </tr>
