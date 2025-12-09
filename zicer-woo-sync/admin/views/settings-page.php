@@ -414,6 +414,20 @@ $terms_accepted = get_option('zicer_terms_accepted', false);
             </table>
         </div>
 
+        <!-- Terms reminder -->
+        <div class="zicer-card zicer-terms-reminder">
+            <p>
+                <?php
+                printf(
+                    /* translators: %s: link to terms of service */
+                    esc_html__('By using this plugin you have accepted the %s.', 'zicer-woo-sync'),
+                    '<a href="https://zicer.ba/uslovi-koristenja" target="_blank">' . esc_html__('terms of use', 'zicer-woo-sync') . '</a>'
+                );
+                ?>
+                <?php esc_html_e('This plugin is provided "as is" without warranty. Use at your own risk.', 'zicer-woo-sync'); ?>
+            </p>
+        </div>
+
         <?php submit_button(__('Save Settings', 'zicer-woo-sync')); ?>
     </form>
     <?php endif; ?>

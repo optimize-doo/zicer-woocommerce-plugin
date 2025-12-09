@@ -774,3 +774,15 @@ msgstr "Prihvati i nastavi"
 #: includes/class-zicer-settings.php:321
 msgid "Security check failed."
 msgstr "Sigurnosna provjera nije uspjela."
+
+#: admin/views/settings-page.php:426
+msgid "By using this plugin you have accepted the %s."
+msgstr "Korištenjem ovog dodatka prihvatili ste %s."
+
+#: admin/views/settings-page.php:427
+msgid "terms of use"
+msgstr "uvjete korištenja"
+
+#: admin/views/settings-page.php:430
+msgid "This plugin is provided \"as is\" without warranty. Use at your own risk."
+msgstr "Ovaj dodatak se pruža \"kakav jeste\" bez garancije. Koristite na vlastitu odgovornost."
