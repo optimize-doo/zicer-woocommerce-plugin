@@ -34,6 +34,8 @@ class Zicer_Settings {
         add_action('wp_ajax_zicer_retry_failed', [__CLASS__, 'ajax_retry_failed']);
         add_action('wp_ajax_zicer_clear_failed', [__CLASS__, 'ajax_clear_failed']);
         add_action('wp_ajax_zicer_process_queue', [__CLASS__, 'ajax_process_queue']);
+        add_action('wp_ajax_zicer_enqueue_product', [__CLASS__, 'ajax_enqueue_product']);
+        add_action('wp_ajax_zicer_dequeue_product', [__CLASS__, 'ajax_dequeue_product']);
         add_action('wp_ajax_zicer_save_product_category', [__CLASS__, 'ajax_save_product_category']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
         add_action('admin_post_zicer_accept_terms', [__CLASS__, 'handle_accept_terms']);
@@ -251,6 +253,7 @@ class Zicer_Settings {
                 'clear_recreate'       => __('Clear & Re-create', 'zicer-woo-sync'),
                 'sync_all_products'    => __('Sync All Products', 'zicer-woo-sync'),
                 'complete'             => __('Complete!', 'zicer-woo-sync'),
+                'items_remaining'      => __('items remaining', 'zicer-woo-sync'),
                 'loading'              => __('Loading...', 'zicer-woo-sync'),
                 'load_categories'      => __('Load Categories', 'zicer-woo-sync'),
                 'refresh'              => __('Refresh', 'zicer-woo-sync'),
@@ -736,8 +739,89 @@ class Zicer_Settings {
             wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
         }
 
+        // Clear old stats on first call (when there are no processing items yet)
+        $stats = Zicer_Queue::get_stats();
+        if ($stats['processing'] === 0 && $stats['completed'] > 0) {
+            Zicer_Queue::clear_completed();
+            Zicer_Queue::clear_failed();
+        }
+
         Zicer_Queue::process();
         wp_send_json_success(Zicer_Queue::get_stats());
+    }
+
+    /**
+     * AJAX: Add product to sync queue
+     */
+    public static function ajax_enqueue_product() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        if (!$product_id) {
+            wp_send_json_error(__('Invalid product ID.', 'zicer-woo-sync'));
+        }
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            wp_send_json_error(__('Product not found.', 'zicer-woo-sync'));
+        }
+
+        $queued = 0;
+
+        // For variable products, queue all variations
+        if ($product->is_type('variable')) {
+            foreach ($product->get_children() as $variation_id) {
+                Zicer_Queue::add($variation_id, 'sync');
+                $queued++;
+            }
+        } else {
+            Zicer_Queue::add($product_id, 'sync');
+            $queued++;
+        }
+
+        wp_send_json_success(['queued' => $queued]);
+    }
+
+    /**
+     * AJAX: Remove product from queue
+     */
+    public static function ajax_dequeue_product() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        if (!$product_id) {
+            wp_send_json_error(__('Invalid product ID.', 'zicer-woo-sync'));
+        }
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            wp_send_json_error(__('Product not found.', 'zicer-woo-sync'));
+        }
+
+        $removed = 0;
+
+        // For variable products, dequeue all variations
+        if ($product->is_type('variable')) {
+            foreach ($product->get_children() as $variation_id) {
+                if (Zicer_Queue::remove_pending($variation_id)) {
+                    $removed++;
+                }
+            }
+        } else {
+            if (Zicer_Queue::remove_pending($product_id)) {
+                $removed++;
+            }
+        }
+
+        wp_send_json_success(['removed' => $removed]);
     }
 
     /**

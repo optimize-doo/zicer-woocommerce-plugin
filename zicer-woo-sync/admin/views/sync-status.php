@@ -128,13 +128,23 @@ $failed_items = Zicer_Queue::get_failed_items(20);
                 </tr>
             </thead>
             <tbody id="pending-items-body">
-                <?php foreach ($pending_items as $item) : ?>
+                <?php foreach ($pending_items as $item) :
+                    $product = wc_get_product($item->product_id);
+                    $is_variation = $product && $product->is_type('variation');
+                    $is_variable = $product && $product->is_type('variable');
+                    $variation_count = $is_variable ? count($product->get_children()) : 0;
+                ?>
                     <tr data-queue-id="<?php echo esc_attr($item->id); ?>">
                         <td>
                             <?php if ($item->product_name) : ?>
                                 <a href="<?php echo esc_url(get_edit_post_link($item->product_id)); ?>">
                                     <?php echo esc_html($item->product_name); ?>
                                 </a>
+                                <?php if ($is_variation) : ?>
+                                    <span class="zicer-badge zicer-badge-variation"><?php esc_html_e('variation', 'zicer-woo-sync'); ?></span>
+                                <?php elseif ($is_variable && $variation_count > 0) : ?>
+                                    <span class="zicer-badge zicer-badge-variable"><?php echo esc_html($variation_count); ?> <?php esc_html_e('variations', 'zicer-woo-sync'); ?></span>
+                                <?php endif; ?>
                             <?php else : ?>
                                 #<?php echo esc_html($item->product_id); ?>
                             <?php endif; ?>

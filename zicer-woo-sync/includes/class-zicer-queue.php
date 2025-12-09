@@ -40,24 +40,11 @@ class Zicer_Queue {
         global $wpdb;
         $table = $wpdb->prefix . 'zicer_sync_queue';
 
-        // Check for existing pending item with same action
-        $existing = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM $table WHERE product_id = %d AND action = %s AND status = 'pending'",
-            $product_id,
-            $action
-        ));
-
-        if ($existing) {
-            return $existing;
-        }
-
-        // Remove any conflicting pending action (sync vs delete)
-        $conflicting_action = ($action === 'sync') ? 'delete' : 'sync';
+        // Remove any existing queue items for this product (pending or processing)
+        // New action always takes precedence
         $wpdb->delete($table, [
             'product_id' => $product_id,
-            'action'     => $conflicting_action,
-            'status'     => 'pending',
-        ]);
+        ], ['%d']);
 
         $wpdb->insert($table, [
             'product_id' => $product_id,
@@ -188,6 +175,15 @@ class Zicer_Queue {
     }
 
     /**
+     * Clear completed items
+     */
+    public static function clear_completed() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+        $wpdb->delete($table, ['status' => 'completed']);
+    }
+
+    /**
      * Remove a single queue item by ID
      *
      * @param int $id Queue item ID.
@@ -197,6 +193,38 @@ class Zicer_Queue {
         global $wpdb;
         $table = $wpdb->prefix . 'zicer_sync_queue';
         return (bool) $wpdb->delete($table, ['id' => $id], ['%d']);
+    }
+
+    /**
+     * Remove pending queue items for a product
+     *
+     * @param int $product_id Product ID.
+     * @return bool True if items were removed.
+     */
+    public static function remove_pending($product_id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+        $deleted = $wpdb->delete($table, [
+            'product_id' => $product_id,
+            'status'     => 'pending',
+        ], ['%d', '%s']);
+        return $deleted > 0;
+    }
+
+    /**
+     * Get queue status for a product
+     *
+     * @param int $product_id Product ID.
+     * @return array|null Queue item info or null if not in queue.
+     */
+    public static function get_product_status($product_id) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+        $item = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table WHERE product_id = %d AND status IN ('pending', 'processing') ORDER BY created_at DESC LIMIT 1",
+            $product_id
+        ));
+        return $item;
     }
 
     /**

@@ -625,6 +625,10 @@ class Zicer_Sync {
     public static function ajax_bulk_sync() {
         check_ajax_referer('zicer_admin', 'nonce');
 
+        // Clear completed and failed stats from previous runs
+        Zicer_Queue::clear_completed();
+        Zicer_Queue::clear_failed();
+
         $args = [
             'post_type'      => 'product',
             'posts_per_page' => -1,

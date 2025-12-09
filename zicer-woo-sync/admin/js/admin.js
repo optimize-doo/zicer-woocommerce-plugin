@@ -380,6 +380,44 @@
             });
         });
 
+        // Enqueue product
+        $('.zicer-enqueue').on('click', function() {
+            var $btn = $(this);
+            var productId = $btn.data('product-id');
+
+            $btn.prop('disabled', true);
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_enqueue_product',
+                nonce: zicerAdmin.nonce,
+                product_id: productId
+            }, function(response) {
+                location.reload();
+            }).fail(function() {
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false);
+            });
+        });
+
+        // Dequeue product
+        $('.zicer-dequeue').on('click', function() {
+            var $btn = $(this);
+            var productId = $btn.data('product-id');
+
+            $btn.prop('disabled', true);
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_dequeue_product',
+                nonce: zicerAdmin.nonce,
+                product_id: productId
+            }, function(response) {
+                location.reload();
+            }).fail(function() {
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false);
+            });
+        });
+
         // Clear stale data and re-sync (when listing deleted on ZICER)
         $('.zicer-clear-stale').on('click', function() {
             var $btn = $(this);
@@ -450,6 +488,7 @@
 
             var $btn = $(this);
             var $spinner = $('#zicer-process-spinner');
+            var $progressCard = $('#zicer-progress-card');
             var $progress = $('#zicer-progress-fill');
             var $progressText = $('#zicer-progress-text');
 
@@ -457,8 +496,17 @@
             $btn.prop('disabled', true);
             $spinner.addClass('is-active');
 
+            // Show progress card if hidden
+            $progressCard.show();
+
+            // Reset progress bar
+            $progress.css('width', '0%');
+
             // Get initial total
             initialTotal = parseInt($('#stat-pending').text()) + parseInt($('#stat-processing').text());
+
+            // Show initial state
+            $progressText.text(initialTotal + ' ' + zicerAdmin.strings.items_remaining);
 
             function processNext() {
                 $.post(zicerAdmin.ajaxUrl, {
@@ -479,7 +527,7 @@
 
                         // Update progress bar
                         $progress.css('width', percent + '%');
-                        $progressText.text(remaining + ' items remaining');
+                        $progressText.text(remaining + ' ' + zicerAdmin.strings.items_remaining);
 
                         // Continue if more items
                         if (remaining > 0) {

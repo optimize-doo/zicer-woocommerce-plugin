@@ -219,6 +219,11 @@ class Zicer_Product_Meta {
                         if ($listing_id) {
                             Zicer_Queue::add($variation_id, 'delete', ['listing_id' => $listing_id]);
                             $queued++;
+                        } else {
+                            // No listing yet - just remove from sync queue if pending
+                            if (Zicer_Queue::remove_pending($variation_id)) {
+                                $queued++;
+                            }
                         }
                     }
                 } else {
@@ -226,6 +231,11 @@ class Zicer_Product_Meta {
                     if ($listing_id) {
                         Zicer_Queue::add($post_id, 'delete', ['listing_id' => $listing_id]);
                         $queued++;
+                    } else {
+                        // No listing yet - just remove from sync queue if pending
+                        if (Zicer_Queue::remove_pending($post_id)) {
+                            $queued++;
+                        }
                     }
                 }
             }
@@ -487,6 +497,49 @@ class Zicer_Product_Meta {
 
             <hr>
 
+            <!-- Queue Status -->
+            <?php
+            $queue_item = Zicer_Queue::get_product_status($post->ID);
+            $queued_variations = 0;
+
+            // For variable products, check if variations are in queue
+            if (!$queue_item && $product->is_type('variable')) {
+                $variations = $product->get_children();
+                foreach ($variations as $variation_id) {
+                    if (Zicer_Queue::get_product_status($variation_id)) {
+                        $queued_variations++;
+                    }
+                }
+            }
+
+            if ($queue_item || $queued_variations > 0) :
+            ?>
+                <p class="zicer-queue-status">
+                    <span class="dashicons dashicons-clock"></span>
+                    <?php if ($queue_item && $queue_item->status === 'processing') : ?>
+                        <?php esc_html_e('Processing...', 'zicer-woo-sync'); ?>
+                    <?php elseif ($queued_variations > 0) : ?>
+                        <?php
+                        printf(
+                            /* translators: %d: number of variations */
+                            esc_html__('%d variations in queue', 'zicer-woo-sync'),
+                            $queued_variations
+                        );
+                        ?>
+                    <?php else : ?>
+                        <?php
+                        printf(
+                            /* translators: %s: action type (sync/delete) */
+                            esc_html__('In queue: %s', 'zicer-woo-sync'),
+                            esc_html($queue_item->action)
+                        );
+                        ?>
+                    <?php endif; ?>
+                </p>
+            <?php endif;
+            $is_in_queue = $queue_item || $queued_variations > 0;
+            ?>
+
             <!-- Actions -->
             <p>
                 <button type="button"
@@ -496,6 +549,24 @@ class Zicer_Product_Meta {
                         <?php disabled((bool) $current_issue); ?>>
                     <?php esc_html_e('Sync Now', 'zicer-woo-sync'); ?>
                 </button>
+            </p>
+            <p>
+                <?php if ($is_in_queue) : ?>
+                    <button type="button"
+                            class="button zicer-dequeue"
+                            style="width: 100%;"
+                            data-product-id="<?php echo esc_attr($post->ID); ?>">
+                        <?php esc_html_e('Remove from Queue', 'zicer-woo-sync'); ?>
+                    </button>
+                <?php else : ?>
+                    <button type="button"
+                            class="button zicer-enqueue"
+                            style="width: 100%;"
+                            data-product-id="<?php echo esc_attr($post->ID); ?>"
+                            <?php disabled((bool) $current_issue); ?>>
+                        <?php esc_html_e('Add to Queue', 'zicer-woo-sync'); ?>
+                    </button>
+                <?php endif; ?>
             </p>
 
             <?php if ($listing_id) : ?>
