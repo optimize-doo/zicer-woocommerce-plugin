@@ -89,7 +89,6 @@ class Zicer_Settings {
     public static function register_settings() {
         // Connection settings
         register_setting('zicer_settings', 'zicer_api_token');
-        register_setting('zicer_settings', 'zicer_connection_status');
 
         // Location settings (from shop profile)
         register_setting('zicer_settings', 'zicer_default_region');
