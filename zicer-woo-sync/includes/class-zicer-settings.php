@@ -97,10 +97,14 @@ class Zicer_Settings {
 
         // Sync settings
         register_setting('zicer_settings', 'zicer_realtime_sync', [
-            'default' => '1',
+            'type'              => 'string',
+            'default'           => '1',
+            'sanitize_callback' => [__CLASS__, 'sanitize_checkbox'],
         ]);
         register_setting('zicer_settings', 'zicer_delete_on_unavailable', [
-            'default' => '1',
+            'type'              => 'string',
+            'default'           => '1',
+            'sanitize_callback' => [__CLASS__, 'sanitize_checkbox'],
         ]);
         register_setting('zicer_settings', 'zicer_sync_images', [
             'default' => 'all', // 'all', 'featured', 'none'
@@ -111,7 +115,9 @@ class Zicer_Settings {
 
         // Title settings
         register_setting('zicer_settings', 'zicer_truncate_title', [
-            'default' => '0',
+            'type'              => 'string',
+            'default'           => '0',
+            'sanitize_callback' => [__CLASS__, 'sanitize_checkbox'],
         ]);
         register_setting('zicer_settings', 'zicer_title_max_length', [
             'default' => 65,
@@ -142,6 +148,16 @@ class Zicer_Settings {
 
         // Fallback category
         register_setting('zicer_settings', 'zicer_fallback_category');
+    }
+
+    /**
+     * Sanitize checkbox value
+     *
+     * @param mixed $value The value to sanitize.
+     * @return string '1' if checked, '0' if not.
+     */
+    public static function sanitize_checkbox($value) {
+        return $value ? '1' : '0';
     }
 
     /**
