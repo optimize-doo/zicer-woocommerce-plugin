@@ -231,14 +231,17 @@ class Zicer_Sync {
      * @return array|WP_Error
      */
     public static function build_listing_data($product) {
-        // Get category
-        $wc_categories  = $product->get_category_ids();
-        $zicer_category = null;
+        // Get category - check for product-level override first
+        $zicer_category = get_post_meta($product->get_id(), '_zicer_category', true);
 
-        foreach ($wc_categories as $cat_id) {
-            $zicer_category = Zicer_Category_Map::get_zicer_category($cat_id);
-            if ($zicer_category) {
-                break;
+        // Fall back to category mapping
+        if (!$zicer_category) {
+            $wc_categories = $product->get_category_ids();
+            foreach ($wc_categories as $cat_id) {
+                $zicer_category = Zicer_Category_Map::get_zicer_category($cat_id);
+                if ($zicer_category) {
+                    break;
+                }
             }
         }
 

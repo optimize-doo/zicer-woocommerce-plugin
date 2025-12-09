@@ -69,10 +69,15 @@ class Zicer_Product_Meta {
      * @param WP_Post $post The post object.
      */
     public static function render_meta_box($post) {
-        $listing_id = get_post_meta($post->ID, '_zicer_listing_id', true);
-        $last_sync  = get_post_meta($post->ID, '_zicer_last_sync', true);
-        $sync_error = get_post_meta($post->ID, '_zicer_sync_error', true);
-        $excluded   = get_post_meta($post->ID, '_zicer_exclude', true);
+        $listing_id        = get_post_meta($post->ID, '_zicer_listing_id', true);
+        $last_sync         = get_post_meta($post->ID, '_zicer_last_sync', true);
+        $sync_error        = get_post_meta($post->ID, '_zicer_sync_error', true);
+        $excluded          = get_post_meta($post->ID, '_zicer_exclude', true);
+        $category_override = get_post_meta($post->ID, '_zicer_category', true);
+
+        // Get ZICER categories for dropdown
+        $zicer_categories = Zicer_Category_Map::get_cached_categories();
+        $flat_categories  = $zicer_categories ? Zicer_Category_Map::flatten_categories($zicer_categories) : [];
 
         wp_nonce_field('zicer_product_meta', 'zicer_meta_nonce');
         ?>
@@ -127,6 +132,36 @@ class Zicer_Product_Meta {
                     </button>
                 </p>
             <?php endif; ?>
+
+            <hr>
+
+            <p>
+                <label for="_zicer_category"><strong><?php esc_html_e('Category Override', 'zicer-woo-sync'); ?></strong></label>
+            </p>
+            <?php if (!empty($flat_categories)) : ?>
+                <p>
+                    <select name="_zicer_category"
+                            id="_zicer_category"
+                            class="zicer-select2"
+                            style="width: 100%;">
+                        <option value=""><?php esc_html_e('-- Use mapped category --', 'zicer-woo-sync'); ?></option>
+                        <?php foreach ($flat_categories as $cat) : ?>
+                            <option value="<?php echo esc_attr($cat['id']); ?>"
+                                    <?php selected($category_override, $cat['id']); ?>
+                                    <?php disabled(!empty($cat['disabled'])); ?>>
+                                <?php echo esc_html($cat['path']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+                <p class="description">
+                    <?php esc_html_e('Override the mapped category for this product only.', 'zicer-woo-sync'); ?>
+                </p>
+            <?php else : ?>
+                <p class="description">
+                    <?php esc_html_e('Load categories in ZICER settings first.', 'zicer-woo-sync'); ?>
+                </p>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -145,8 +180,11 @@ class Zicer_Product_Meta {
         $condition = isset($_POST['_zicer_condition']) ?
                      sanitize_text_field(wp_unslash($_POST['_zicer_condition'])) : '';
         $exclude   = isset($_POST['_zicer_exclude']) ? 'yes' : 'no';
+        $category  = isset($_POST['_zicer_category']) ?
+                     sanitize_text_field(wp_unslash($_POST['_zicer_category'])) : '';
 
         update_post_meta($post_id, '_zicer_condition', $condition);
         update_post_meta($post_id, '_zicer_exclude', $exclude);
+        update_post_meta($post_id, '_zicer_category', $category);
     }
 }
