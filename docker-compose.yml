@@ -16,6 +16,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./zicer-woo-sync:/var/www/html/wp-content/plugins/zicer-woo-sync
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
       - db
     networks:
