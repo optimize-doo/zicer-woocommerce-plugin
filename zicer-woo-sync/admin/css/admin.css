@@ -1,0 +1,163 @@
+/**
+ * ZICER Admin Styles
+ *
+ * @package Zicer_Woo_Sync
+ */
+
+/* Cards */
+.zicer-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.zicer-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Connection status */
+#zicer-connection-status.connected {
+    color: #46b450;
+}
+
+#zicer-connection-status.disconnected {
+    color: #dc3232;
+}
+
+/* Product meta box */
+.zicer-product-meta .zicer-status {
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.zicer-product-meta .zicer-status.synced {
+    background: #d4edda;
+    color: #155724;
+}
+
+.zicer-product-meta .zicer-status.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.zicer-product-meta .zicer-status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.zicer-product-meta .zicer-status.excluded {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.zicer-product-meta .zicer-info {
+    font-size: 12px;
+    color: #666;
+}
+
+.zicer-product-meta .zicer-error {
+    font-size: 12px;
+    color: #dc3232;
+}
+
+.zicer-product-meta hr {
+    margin: 15px 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+/* Stats grid */
+.zicer-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.zicer-stat-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 20px;
+    text-align: center;
+}
+
+.zicer-stat-card .stat-number {
+    display: block;
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.zicer-stat-card .stat-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.zicer-stat-card.success .stat-number {
+    color: #46b450;
+}
+
+.zicer-stat-card.error .stat-number {
+    color: #dc3232;
+}
+
+/* Category mapping */
+.zicer-categories .zicer-category-select {
+    width: 100%;
+    max-width: 400px;
+}
+
+.zicer-categories .spinner {
+    float: none;
+    margin: 0 5px;
+    vertical-align: middle;
+}
+
+.zicer-categories .count {
+    color: #999;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* Log status badges */
+.zicer-log-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.zicer-log-info {
+    background: #d4edda;
+    color: #155724;
+}
+
+.zicer-log-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.zicer-log-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .zicer-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .zicer-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

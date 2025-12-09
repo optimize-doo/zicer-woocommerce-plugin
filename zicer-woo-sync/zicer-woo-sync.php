@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 define('ZICER_WOO_VERSION', '1.0.0');
 define('ZICER_WOO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZICER_WOO_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('ZICER_API_BASE_URL', 'https://api.zicer.ba/api');
+define('ZICER_API_BASE_URL', 'https://api.zicer.dev/api');
 
 /**
  * Autoloader for plugin classes
