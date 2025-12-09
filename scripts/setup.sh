@@ -5,13 +5,16 @@
 
 set -e
 
-echo "Waiting for WordPress to be ready..."
-sleep 10
+echo "Checking database connection..."
+until docker exec zicer-woo-cli wp db check 2>/dev/null; do
+    sleep 2
+done
+echo "Database ready!"
 
 # Install WordPress
 echo "Installing WordPress..."
 docker exec zicer-woo-cli wp core install \
-    --url="http://localhost:8080" \
+    --url="http://localhost:8088" \
     --title="ZICER Test Shop" \
     --admin_user="admin" \
     --admin_password="admin123" \
@@ -100,8 +103,8 @@ echo "=========================================="
 echo "Setup complete!"
 echo "=========================================="
 echo ""
-echo "WordPress:    http://localhost:8080"
-echo "Admin:        http://localhost:8080/wp-admin"
+echo "WordPress:    http://localhost:8088"
+echo "Admin:        http://localhost:8088/wp-admin"
 echo "              Username: admin"
 echo "              Password: admin123"
 echo ""

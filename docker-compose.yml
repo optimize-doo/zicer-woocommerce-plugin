@@ -6,7 +6,7 @@ services:
     container_name: zicer-woo-wordpress
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8088:80"
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
@@ -22,7 +22,7 @@ services:
       - zicer-network
 
   db:
-    image: mysql:8.0
+    image: mariadb:latest
     container_name: zicer-woo-db
     restart: unless-stopped
     environment:
@@ -53,6 +53,12 @@ services:
   wpcli:
     image: wordpress:cli
     container_name: zicer-woo-cli
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
     volumes:
       - wordpress_data:/var/www/html
       - ./zicer-woo-sync:/var/www/html/wp-content/plugins/zicer-woo-sync

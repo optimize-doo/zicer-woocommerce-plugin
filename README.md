@@ -16,8 +16,8 @@ make up
 
 ### Access
 
-- **WordPress**: http://localhost:8080
-- **Admin panel**: http://localhost:8080/wp-admin
+- **WordPress**: http://localhost:8088
+- **Admin panel**: http://localhost:8088/wp-admin
   - Username: `admin`
   - Password: `admin123`
 - **phpMyAdmin**: http://localhost:8081
