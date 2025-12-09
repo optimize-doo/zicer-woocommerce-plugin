@@ -5,7 +5,7 @@ up:
 	docker-compose up -d
 	@echo "Waiting for services to start..."
 	@sleep 5
-	@echo "WordPress: http://localhost:8080"
+	@echo "WordPress: http://localhost:8088"
 	@echo "phpMyAdmin: http://localhost:8081"
 
 # Stop Docker containers
