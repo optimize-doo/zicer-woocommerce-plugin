@@ -554,6 +554,18 @@
     margin-right: 8px;
 }
 
+/* Terms reminder */
+.zicer-terms-reminder {
+    background: #f9fafb;
+    border-color: #e5e7eb;
+}
+
+.zicer-terms-reminder p {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
 /* Footer copyright */
 .zicer-footer {
     margin-top: 30px;
