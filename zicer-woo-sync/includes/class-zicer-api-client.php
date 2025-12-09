@@ -31,6 +31,13 @@ class Zicer_API_Client {
     private $api_token;
 
     /**
+     * Rate limit total
+     *
+     * @var int
+     */
+    private $rate_limit_limit = 60;
+
+    /**
      * Rate limit remaining
      *
      * @var int
@@ -128,6 +135,9 @@ class Zicer_API_Client {
 
         // Update rate limit info from headers
         $headers = wp_remote_retrieve_headers($response);
+        if (isset($headers['x-ratelimit-limit'])) {
+            $this->rate_limit_limit = (int) $headers['x-ratelimit-limit'];
+        }
         if (isset($headers['x-ratelimit-remaining'])) {
             $this->rate_limit_remaining = (int) $headers['x-ratelimit-remaining'];
         }
@@ -360,6 +370,7 @@ class Zicer_API_Client {
      */
     public function get_rate_limit_status() {
         return [
+            'limit'     => $this->rate_limit_limit,
             'remaining' => $this->rate_limit_remaining,
             'reset'     => $this->rate_limit_reset,
             'reset_in'  => max(0, $this->rate_limit_reset - time()),
