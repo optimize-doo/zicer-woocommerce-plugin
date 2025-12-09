@@ -70,12 +70,26 @@ zicer.woo/
 - Optional title truncation
 - Auto-remove unavailable products
 
+## Token Management
+
+To connect the plugin to ZICER, you need an API token:
+
+1. **Create a token**: Log in to [ZICER](https://zicer.ba), go to your profile settings, and generate an API token
+2. **Token format**: Tokens start with `zic_` prefix (e.g., `zic_abc123...`)
+3. **Enter token**: In WordPress admin, go to **ZICER Sync → Settings** and paste your token
+4. **Verify connection**: Click "Connect" to validate the token and retrieve your shop info
+
+**Token permissions:**
+- Tokens have full access to your ZICER shop listings
+- Revoking a token on ZICER immediately disconnects the plugin
+- Generate a new token anytime from your ZICER profile
+
+**Switching accounts:**
+- To connect a different ZICER account, disconnect first, then enter a new token
+- Disconnecting does not delete synced listings from ZICER
+
 ## Internationalization
 
 The plugin supports both English and Bosnian languages:
 - Default language: English
 - Translation file: `languages/zicer-woo-sync-bs_BA.po`
-
-## Documentation
-
-Detailed implementation plan: `thoughts/plans/2025-12-09-zicer-woo-sync-plugin.md`
