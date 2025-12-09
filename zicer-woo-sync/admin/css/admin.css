@@ -32,6 +32,27 @@
     color: #856404;
 }
 
+/* Product list column */
+.column-zicer_sync {
+    width: 50px;
+    text-align: center;
+}
+
+.zicer-external-link {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.zicer-external-link:hover {
+    color: #135e96;
+}
+
+.zicer-external-link .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
 /* Product meta box */
 .zicer-product-meta .zicer-status {
     padding: 8px 12px;

@@ -23,6 +23,68 @@ class Zicer_Product_Meta {
         add_action('add_meta_boxes', [__CLASS__, 'add_meta_box']);
         add_action('woocommerce_process_product_meta', [__CLASS__, 'save_meta']);
         add_action('woocommerce_product_options_general_product_data', [__CLASS__, 'add_general_fields']);
+
+        // Product list columns
+        add_filter('manage_edit-product_columns', [__CLASS__, 'add_product_column'], 20);
+        add_action('manage_product_posts_custom_column', [__CLASS__, 'render_product_column'], 10, 2);
+    }
+
+    /**
+     * Add ZICER column to product list
+     *
+     * @param array $columns Existing columns.
+     * @return array Modified columns.
+     */
+    public static function add_product_column($columns) {
+        $new_columns = [];
+        foreach ($columns as $key => $value) {
+            $new_columns[$key] = $value;
+            // Add after featured (star) column
+            if ($key === 'featured') {
+                $new_columns['zicer_sync'] = __('Zicer', 'zicer-woo-sync');
+            }
+        }
+        return $new_columns;
+    }
+
+    /**
+     * Render ZICER column content
+     *
+     * @param string $column  Column name.
+     * @param int    $post_id Post ID.
+     */
+    public static function render_product_column($column, $post_id) {
+        if ($column !== 'zicer_sync') {
+            return;
+        }
+
+        $product = wc_get_product($post_id);
+        if (!$product) {
+            return;
+        }
+
+        $listing_id = null;
+
+        if ($product->is_type('variable')) {
+            // Get first synced variation's listing ID
+            foreach ($product->get_children() as $variation_id) {
+                $var_listing = get_post_meta($variation_id, '_zicer_listing_id', true);
+                if ($var_listing) {
+                    $listing_id = $var_listing;
+                    break;
+                }
+            }
+        } else {
+            $listing_id = get_post_meta($post_id, '_zicer_listing_id', true);
+        }
+
+        if ($listing_id) {
+            printf(
+                '<a href="https://zicer.ba/oglasi/%s" target="_blank" title="%s" class="zicer-external-link"><span class="dashicons dashicons-external"></span></a>',
+                esc_attr($listing_id),
+                esc_attr__('View on ZICER', 'zicer-woo-sync')
+            );
+        }
     }
 
     /**
