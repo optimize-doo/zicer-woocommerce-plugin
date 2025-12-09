@@ -786,3 +786,91 @@ msgstr "uvjete korištenja"
 #: admin/views/settings-page.php:430
 msgid "This plugin is provided \"as is\" without warranty. Use at your own risk."
 msgstr "Ovaj dodatak se pruža \"kakav jeste\" bez garancije. Koristite na vlastitu odgovornost."
+
+#: includes/class-zicer-settings.php:243
+msgid "OK"
+msgstr "U redu"
+
+#: includes/class-zicer-settings.php:244
+msgid "Cancel"
+msgstr "Odustani"
+
+#: includes/class-zicer-settings.php:245
+msgid "Yes"
+msgstr "Da"
+
+#: includes/class-zicer-settings.php:246
+msgid "No"
+msgstr "Ne"
+
+#: includes/class-zicer-settings.php:248
+msgid "Test Connection"
+msgstr "Testiraj konekciju"
+
+#: includes/class-zicer-settings.php:249
+msgid "Sync Now"
+msgstr "Sinkroniziraj sada"
+
+#: includes/class-zicer-settings.php:250
+msgid "Clear & Re-create"
+msgstr "Obriši i ponovo kreiraj"
+
+#: includes/class-zicer-settings.php:251
+msgid "Sync All Products"
+msgstr "Sinkroniziraj sve proizvode"
+
+#: includes/class-zicer-settings.php:252
+msgid "Complete!"
+msgstr "Završeno!"
+
+#: includes/class-zicer-settings.php:253
+msgid "Loading..."
+msgstr "Učitavanje..."
+
+#: includes/class-zicer-settings.php:254
+msgid "Load Categories"
+msgstr "Učitaj kategorije"
+
+#: includes/class-zicer-settings.php:255
+msgid "Refresh"
+msgstr "Osvježi"
+
+#: includes/class-zicer-settings.php:257
+msgid "Different Account"
+msgstr "Drugi nalog"
+
+#: includes/class-zicer-settings.php:258
+msgid "You are connecting with a different ZICER account."
+msgstr "Povezujete se sa drugim ZICER nalogom."
+
+#: includes/class-zicer-settings.php:259
+msgid "Previous:"
+msgstr "Prethodni:"
+
+#: includes/class-zicer-settings.php:260
+msgid "New:"
+msgstr "Novi:"
+
+#: includes/class-zicer-settings.php:261
+msgid "Unknown"
+msgstr "Nepoznato"
+
+#: includes/class-zicer-settings.php:262
+msgid "Your products have sync data linked to the previous account. What would you like to do?"
+msgstr "Vaši proizvodi imaju podatke o sinkronizaciji povezane sa prethodnim nalogom. Šta želite uraditi?"
+
+#: includes/class-zicer-settings.php:263
+msgid "Clear sync data"
+msgstr "Obriši podatke sinkronizacije"
+
+#: includes/class-zicer-settings.php:264
+msgid "Remove all ZICER listing IDs from your products. Next sync will create new listings on the new account. Your WooCommerce products are not affected."
+msgstr "Ukloni sve ZICER ID-ove oglasa sa vaših proizvoda. Sljedeća sinkronizacija će kreirati nove oglase na novom nalogu. Vaši WooCommerce proizvodi nisu pogođeni."
+
+#: includes/class-zicer-settings.php:265
+msgid "Keep sync data"
+msgstr "Zadrži podatke sinkronizacije"
+
+#: includes/class-zicer-settings.php:266
+msgid "Keep existing listing IDs. Warning: Syncing will fail because these IDs belong to the old account."
+msgstr "Zadrži postojeće ID-ove oglasa. Upozorenje: Sinkronizacija neće uspjeti jer ovi ID-ovi pripadaju starom nalogu."

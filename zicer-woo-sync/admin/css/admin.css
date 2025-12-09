@@ -574,3 +574,183 @@
     font-size: 12px;
     color: #9ca3af;
 }
+
+/* ==========================================================================
+   ZICER Modal Dialog Styles (jQuery UI Dialog customization)
+   ========================================================================== */
+
+/* Dialog wrapper */
+.zicer-ui-dialog {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Title bar */
+.zicer-ui-dialog .ui-dialog-titlebar {
+    background: #facc15;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    padding: 12px 16px;
+    position: relative;
+}
+
+.zicer-ui-dialog .ui-dialog-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Close button */
+.zicer-ui-dialog .ui-dialog-titlebar-close {
+    background: transparent !important;
+    border: none !important;
+    color: #000;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.zicer-ui-dialog .ui-dialog-titlebar-close:hover {
+    opacity: 1;
+    background: transparent !important;
+}
+
+.zicer-ui-dialog .ui-dialog-titlebar-close .ui-button-icon,
+.zicer-ui-dialog .ui-dialog-titlebar-close .ui-icon {
+    display: none !important;
+}
+
+.zicer-ui-dialog .ui-dialog-titlebar-close::after {
+    content: '×';
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 24px;
+    display: block;
+    text-align: center;
+    color: #000;
+}
+
+/* Content area */
+.zicer-ui-dialog .ui-dialog-content {
+    padding: 20px 24px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #374151;
+}
+
+.zicer-ui-dialog .ui-dialog-content p {
+    margin: 0 0 12px 0;
+}
+
+.zicer-ui-dialog .ui-dialog-content p:last-child {
+    margin-bottom: 0;
+}
+
+.zicer-ui-dialog .ui-dialog-content code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+/* Button pane */
+.zicer-ui-dialog .ui-dialog-buttonpane {
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 16px;
+    margin-top: 0;
+}
+
+.zicer-ui-dialog .ui-dialog-buttonset {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Buttons */
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    line-height: 1;
+}
+
+/* Remove default jQuery UI button icon spacing */
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button .ui-button-text {
+    padding: 0;
+}
+
+/* Primary button (first button / Yes / OK) */
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button:first-child {
+    background: #facc15;
+    border: 1px solid #eab308;
+    color: #000;
+}
+
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button:first-child:hover {
+    background: #eab308;
+    border-color: #ca8a04;
+}
+
+/* Secondary button (No / Cancel) */
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button:not(:first-child) {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button:not(:first-child):hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+/* Confirm dialog - swap button order for better UX */
+.zicer-ui-dialog-confirm .ui-dialog-buttonset {
+    flex-direction: row-reverse;
+}
+
+/* Modal overlay */
+.ui-widget-overlay {
+    background: #000;
+    opacity: 0.5;
+}
+
+/* Focus states for accessibility */
+.zicer-ui-dialog .ui-dialog-buttonset .ui-button:focus {
+    outline: 2px solid #facc15;
+    outline-offset: 2px;
+}
+
+/* Animation */
+.zicer-ui-dialog {
+    animation: zicerModalFadeIn 0.15s ease-out;
+}
+
+@keyframes zicerModalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

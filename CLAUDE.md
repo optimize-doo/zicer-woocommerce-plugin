@@ -156,6 +156,56 @@ add_action('woocommerce_product_options_general_product_data', ...);
 - **Hooks:** Check `is_wp_error()` on API responses
 - **Security:** Use nonces, capability checks, sanitization
 
+## Internationalization (i18n)
+
+**CRITICAL:** All user-facing strings must be translatable. This includes:
+
+### PHP Strings
+```php
+__('String', 'zicer-woo-sync')           // Returns translated string
+esc_html__('String', 'zicer-woo-sync')   // Returns escaped translated string
+```
+
+### JavaScript Strings
+All JS strings are passed via `wp_localize_script()` in `class-zicer-settings.php`:
+```php
+wp_localize_script('zicer-admin', 'zicerAdmin', [
+    'strings' => [
+        'my_string' => __('My String', 'zicer-woo-sync'),
+    ],
+]);
+```
+Then used in JS as: `zicerAdmin.strings.my_string`
+
+**NEVER hardcode strings in JavaScript.** Always add to `zicerAdmin.strings`.
+
+### Translation Workflow
+After adding/changing strings:
+```bash
+make pot                    # Regenerate .pot template
+# Then manually update languages/zicer-woo-sync-bs_BA.po with translations
+docker exec zicer-woo-cli wp i18n make-mo /var/www/html/wp-content/plugins/zicer-woo-sync/languages/
+```
+
+### Languages
+- **English (EN):** Default, strings in code
+- **Bosnian (BS):** `languages/zicer-woo-sync-bs_BA.po` - keep updated!
+
+## UI Components
+
+### Modals (jQuery UI Dialog)
+Custom modal system in `admin/js/admin.js`:
+```javascript
+ZicerModal.alert(message, callback);           // Alert dialog
+ZicerModal.confirm(message, onConfirm, onCancel);  // Confirm dialog
+ZicerModal.custom({ title, content, buttons, width });  // Custom dialog
+```
+**Do NOT use native `alert()` or `confirm()`.** Always use `ZicerModal`.
+
+### Branding
+- Primary color: `#facc15` (ZICER yellow)
+- Font: Poppins (loaded via Google Fonts)
+
 ## Testing Workflow
 
 1. Edit files in `zicer-woo-sync/` (mounted in Docker)
@@ -183,3 +233,44 @@ docker exec zicer-woo-cli wp db query "SELECT * FROM wp_zicer_sync_log"
 docker exec zicer-woo-cli wp plugin deactivate zicer-woo-sync
 docker exec zicer-woo-cli wp plugin activate zicer-woo-sync
 ```
+
+## Key Implementation Patterns
+
+### AJAX Handlers
+All AJAX actions follow this pattern in `class-zicer-settings.php`:
+```php
+// 1. Register in init()
+add_action('wp_ajax_zicer_my_action', [__CLASS__, 'ajax_my_action']);
+
+// 2. Implement handler
+public static function ajax_my_action() {
+    check_ajax_referer('zicer_admin', 'nonce');
+    if (!current_user_can('manage_woocommerce')) {
+        wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+    }
+    // ... logic ...
+    wp_send_json_success($data);
+}
+```
+
+### Adding New Translatable JS Strings
+1. Add to PHP (`class-zicer-settings.php` in `enqueue_scripts()`):
+   ```php
+   'my_new_string' => __('My new string', 'zicer-woo-sync'),
+   ```
+2. Use in JS: `zicerAdmin.strings.my_new_string`
+3. Add translation to `languages/zicer-woo-sync-bs_BA.po`
+4. Compile: `docker exec zicer-woo-cli wp i18n make-mo ...`
+
+### State Management
+- **Connection state:** Stored in `zicer_connection_status` option
+- **User identity:** `zicer_connected_user_id` / `zicer_connected_user_email` persist across disconnects
+- **Terms acceptance:** `zicer_terms_accepted` - cleared on disconnect
+
+## Common Pitfalls to Avoid
+
+1. **Hardcoded JS strings** - Always use `zicerAdmin.strings.*`
+2. **Forgetting translations** - Update .po file AND compile .mo
+3. **Order of operations** - Read values BEFORE updating options when comparing old/new
+4. **Modal blocking** - Use callbacks, not synchronous patterns
+5. **Missing nonce checks** - Every AJAX handler needs `check_ajax_referer()`

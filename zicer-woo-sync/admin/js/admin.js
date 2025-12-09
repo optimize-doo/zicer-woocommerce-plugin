@@ -9,7 +9,197 @@
 (function($) {
     'use strict';
 
+    /**
+     * Modal dialog system using jQuery UI Dialog
+     */
+    var ZicerModal = {
+        $dialog: null,
+
+        /**
+         * Initialize the modal system
+         */
+        init: function() {
+            // Create dialog container if it doesn't exist
+            if (!$('#zicer-modal').length) {
+                $('body').append(
+                    '<div id="zicer-modal" class="zicer-modal-dialog" style="display:none;">' +
+                        '<div class="zicer-modal-content"></div>' +
+                    '</div>'
+                );
+            }
+            this.$dialog = $('#zicer-modal');
+        },
+
+        /**
+         * Show an alert modal (replaces window.alert)
+         *
+         * @param {string} message - The message to display
+         * @param {Function} callback - Optional callback after closing
+         */
+        alert: function(message, callback) {
+            var self = this;
+            var buttons = {};
+
+            buttons[zicerAdmin.strings.ok] = function() {
+                $(this).dialog('close');
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            };
+
+            this.$dialog.find('.zicer-modal-content').html(
+                '<p>' + self.escapeHtml(message) + '</p>'
+            );
+
+            this.$dialog.dialog({
+                title: 'ZICER',
+                dialogClass: 'zicer-ui-dialog',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: true,
+                width: 400,
+                buttons: buttons,
+                close: function() {
+                    $(this).dialog('destroy');
+                }
+            });
+        },
+
+        /**
+         * Show a confirm modal (replaces window.confirm)
+         *
+         * @param {string} message - The message to display
+         * @param {Function} onConfirm - Callback when confirmed
+         * @param {Function} onCancel - Optional callback when cancelled
+         */
+        confirm: function(message, onConfirm, onCancel) {
+            var self = this;
+            var buttons = {};
+
+            buttons[zicerAdmin.strings.yes] = function() {
+                $(this).dialog('close');
+                if (typeof onConfirm === 'function') {
+                    onConfirm();
+                }
+            };
+
+            buttons[zicerAdmin.strings.no] = function() {
+                $(this).dialog('close');
+                if (typeof onCancel === 'function') {
+                    onCancel();
+                }
+            };
+
+            this.$dialog.find('.zicer-modal-content').html(
+                '<p>' + self.escapeHtml(message) + '</p>'
+            );
+
+            this.$dialog.dialog({
+                title: 'ZICER',
+                dialogClass: 'zicer-ui-dialog zicer-ui-dialog-confirm',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: true,
+                width: 450,
+                buttons: buttons,
+                close: function() {
+                    $(this).dialog('destroy');
+                    if (typeof onCancel === 'function') {
+                        // Only call onCancel if dialog was closed via X or escape
+                        // Not if a button was clicked (buttons handle their own callbacks)
+                    }
+                }
+            });
+        },
+
+        /**
+         * Show a custom modal with HTML content
+         *
+         * @param {object} options - Dialog options
+         */
+        custom: function(options) {
+            var defaults = {
+                title: 'ZICER',
+                content: '',
+                width: 500,
+                buttons: {},
+                onClose: null
+            };
+
+            var settings = $.extend({}, defaults, options);
+
+            this.$dialog.find('.zicer-modal-content').html(settings.content);
+
+            this.$dialog.dialog({
+                title: settings.title,
+                dialogClass: 'zicer-ui-dialog',
+                modal: true,
+                draggable: false,
+                resizable: false,
+                closeOnEscape: true,
+                width: settings.width,
+                buttons: settings.buttons,
+                close: function() {
+                    $(this).dialog('destroy');
+                    if (typeof settings.onClose === 'function') {
+                        settings.onClose();
+                    }
+                }
+            });
+        },
+
+        /**
+         * Escape HTML entities
+         *
+         * @param {string} text - Text to escape
+         * @return {string} Escaped text
+         */
+        escapeHtml: function(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    };
+
+    /**
+     * Validate API token format
+     * Token format: zic_ + 32 hex characters = 36 total
+     * Example: zic_81f5c4a7840e228b098f77d1e22636dd
+     *
+     * @param {string} token - The token to validate
+     * @return {boolean} True if valid format
+     */
+    function isValidTokenFormat(token) {
+        if (!token || typeof token !== 'string') {
+            return false;
+        }
+        // Token must be exactly: zic_ (4 chars) + 32 hex chars = 36 total
+        return /^zic_[a-f0-9]{32}$/.test(token);
+    }
+
     $(document).ready(function() {
+
+        // Initialize modal system
+        ZicerModal.init();
+
+        // Token validation - enable/disable Test Connection button
+        var $tokenInput = $('#zicer_api_token');
+        var $testBtn = $('#zicer-test-connection');
+
+        function updateTestButtonState() {
+            var token = $tokenInput.val();
+            $testBtn.prop('disabled', !isValidTokenFormat(token));
+        }
+
+        if ($tokenInput.length && $testBtn.length) {
+            // Initial state
+            updateTestButtonState();
+
+            // Update on input
+            $tokenInput.on('input', updateTestButtonState);
+        }
 
         // Initialize Select2 for category dropdowns
         if ($.fn.select2) {
@@ -60,21 +250,20 @@
 
         // Disconnect
         $('#zicer-disconnect').on('click', function() {
-            if (!confirm(zicerAdmin.strings.confirm_disconnect)) {
-                return;
-            }
-
             var $btn = $(this);
-            $btn.prop('disabled', true);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_disconnect',
-                nonce: zicerAdmin.nonce
-            }, function(response) {
-                location.reload();
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+            ZicerModal.confirm(zicerAdmin.strings.confirm_disconnect, function() {
+                $btn.prop('disabled', true);
+
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_disconnect',
+                    nonce: zicerAdmin.nonce
+                }, function(response) {
+                    location.reload();
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                    $btn.prop('disabled', false);
+                });
             });
         });
 
@@ -90,26 +279,50 @@
                 nonce: zicerAdmin.nonce,
                 token: token
             }, function(response) {
-                $btn.prop('disabled', false).text('Test Connection');
+                $btn.prop('disabled', false).text(zicerAdmin.strings.test_connection);
                 if (response.success) {
                     // Check if different account
                     if (response.data.different_account) {
-                        var msg = 'Warning: You are connecting with a different account.\n\n' +
-                            'Previous: ' + (response.data.previous_email || 'Unknown') + '\n' +
-                            'New: ' + (response.data.user.email || 'Unknown') + '\n\n' +
-                            'Previously synced products have listing IDs from the old account.\n' +
-                            'Do you want to clear all ZICER listing data?\n\n' +
-                            'Click OK to clear, Cancel to keep existing data.';
+                        var newToken = response.data.new_token;
+                        var buttons = {};
 
-                        if (confirm(msg)) {
+                        buttons[zicerAdmin.strings.clear_data] = function() {
+                            $(this).dialog('close');
                             $.post(zicerAdmin.ajaxUrl, {
-                                action: 'zicer_clear_all_listings',
-                                nonce: zicerAdmin.nonce
+                                action: 'zicer_confirm_new_account',
+                                nonce: zicerAdmin.nonce,
+                                token: newToken,
+                                clear_data: 'true'
                             }, function() {
                                 location.reload();
                             });
-                            return;
-                        }
+                        };
+                        buttons[zicerAdmin.strings.keep_data] = function() {
+                            $(this).dialog('close');
+                            $.post(zicerAdmin.ajaxUrl, {
+                                action: 'zicer_confirm_new_account',
+                                nonce: zicerAdmin.nonce,
+                                token: newToken,
+                                clear_data: 'false'
+                            }, function() {
+                                location.reload();
+                            });
+                        };
+
+                        ZicerModal.custom({
+                            title: 'ZICER - ' + zicerAdmin.strings.different_account_title,
+                            content: '<p><strong>' + ZicerModal.escapeHtml(zicerAdmin.strings.different_account_warning) + '</strong></p>' +
+                                '<p>' + ZicerModal.escapeHtml(zicerAdmin.strings.previous) + ' <code>' + ZicerModal.escapeHtml(response.data.previous_email || zicerAdmin.strings.unknown) + '</code><br>' +
+                                ZicerModal.escapeHtml(zicerAdmin.strings.new) + ' <code>' + ZicerModal.escapeHtml(response.data.user.email || zicerAdmin.strings.unknown) + '</code></p>' +
+                                '<p>' + ZicerModal.escapeHtml(zicerAdmin.strings.different_account_msg) + '</p>' +
+                                '<p><strong>' + ZicerModal.escapeHtml(zicerAdmin.strings.clear_data) + ':</strong><br>' +
+                                '<small>' + ZicerModal.escapeHtml(zicerAdmin.strings.clear_data_desc) + '</small></p>' +
+                                '<p><strong>' + ZicerModal.escapeHtml(zicerAdmin.strings.keep_data) + ':</strong><br>' +
+                                '<small>' + ZicerModal.escapeHtml(zicerAdmin.strings.keep_data_desc) + '</small></p>',
+                            width: 550,
+                            buttons: buttons
+                        });
+                        return;
                     }
 
                     $('#zicer-connection-status')
@@ -118,11 +331,11 @@
                         .html('&#10003; ' + zicerAdmin.strings.connected);
                     location.reload();
                 } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
                 }
             }).fail(function() {
-                $btn.prop('disabled', false).text('Test Connection');
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.test_connection);
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
             });
         });
 
@@ -141,31 +354,29 @@
                 // Always reload to show updated status in meta box
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Sync Now');
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.sync_now);
             });
         });
 
         // Delete listing
         $('.zicer-delete-listing').on('click', function() {
-            if (!confirm(zicerAdmin.strings.confirm_delete)) {
-                return;
-            }
-
             var $btn = $(this);
             var productId = $btn.data('product-id');
 
-            $btn.prop('disabled', true);
+            ZicerModal.confirm(zicerAdmin.strings.confirm_delete, function() {
+                $btn.prop('disabled', true);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_delete_listing',
-                nonce: zicerAdmin.nonce,
-                product_id: productId
-            }, function(response) {
-                location.reload();
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_delete_listing',
+                    nonce: zicerAdmin.nonce,
+                    product_id: productId
+                }, function(response) {
+                    location.reload();
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                    $btn.prop('disabled', false);
+                });
             });
         });
 
@@ -174,7 +385,7 @@
             var $btn = $(this);
             var productId = $btn.data('product-id');
 
-            $btn.prop('disabled', true).text('Clearing...');
+            $btn.prop('disabled', true).text(zicerAdmin.strings.clearing);
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_clear_stale',
@@ -183,7 +394,7 @@
             }, function(response) {
                 if (response.success) {
                     // Now sync the product
-                    $btn.text('Syncing...');
+                    $btn.text(zicerAdmin.strings.syncing);
                     $.post(zicerAdmin.ajaxUrl, {
                         action: 'zicer_sync_product',
                         nonce: zicerAdmin.nonce,
@@ -191,42 +402,42 @@
                     }, function(syncResponse) {
                         location.reload();
                     }).fail(function() {
-                        alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.sync_failed);
+                        ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.sync_failed);
                         location.reload();
                     });
                 } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Clear & Re-create');
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false).text(zicerAdmin.strings.clear_recreate);
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Clear & Re-create');
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.clear_recreate);
             });
         });
 
         // Bulk sync
         $('#zicer-bulk-sync').on('click', function() {
-            if (!confirm(zicerAdmin.strings.confirm_bulk)) {
-                return;
-            }
-
             var $btn = $(this);
-            $btn.prop('disabled', true).text(zicerAdmin.strings.syncing);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_bulk_sync',
-                nonce: zicerAdmin.nonce
-            }, function(response) {
-                if (response.success) {
-                    alert(zicerAdmin.strings.added_to_queue.replace('%d', response.data.queued));
-                    location.reload();
-                } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Sync All Products');
-                }
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Sync All Products');
+            ZicerModal.confirm(zicerAdmin.strings.confirm_bulk, function() {
+                $btn.prop('disabled', true).text(zicerAdmin.strings.syncing);
+
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_bulk_sync',
+                    nonce: zicerAdmin.nonce
+                }, function(response) {
+                    if (response.success) {
+                        ZicerModal.alert(zicerAdmin.strings.added_to_queue.replace('%d', response.data.queued), function() {
+                            location.reload();
+                        });
+                    } else {
+                        ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
+                        $btn.prop('disabled', false).text(zicerAdmin.strings.sync_all_products);
+                    }
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                    $btn.prop('disabled', false).text(zicerAdmin.strings.sync_all_products);
+                });
             });
         });
 
@@ -276,7 +487,7 @@
                         } else {
                             isProcessing = false;
                             $spinner.removeClass('is-active');
-                            $progressText.text('Complete!');
+                            $progressText.text(zicerAdmin.strings.complete);
                             setTimeout(function() {
                                 location.reload();
                             }, 1000);
@@ -285,13 +496,13 @@
                         isProcessing = false;
                         $btn.prop('disabled', false);
                         $spinner.removeClass('is-active');
-                        alert(zicerAdmin.strings.error + ' ' + response.data);
+                        ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
                     }
                 }).fail(function() {
                     isProcessing = false;
                     $btn.prop('disabled', false);
                     $spinner.removeClass('is-active');
-                    alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 });
             }
 
@@ -300,60 +511,57 @@
 
         // Remove queue item
         $(document).on('click', '.zicer-remove-queue-item', function() {
-            if (!confirm(zicerAdmin.strings.confirm_remove_item)) {
-                return;
-            }
-
             var $btn = $(this);
             var $row = $btn.closest('tr');
             var id = $btn.data('id');
 
-            $btn.prop('disabled', true);
+            ZicerModal.confirm(zicerAdmin.strings.confirm_remove_item, function() {
+                $btn.prop('disabled', true);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_remove_queue_item',
-                nonce: zicerAdmin.nonce,
-                id: id
-            }, function(response) {
-                if (response.success) {
-                    $row.fadeOut(300, function() {
-                        $(this).remove();
-                    });
-                    // Update stats
-                    $('#stat-pending').text(response.data.pending);
-                    $('#stat-processing').text(response.data.processing);
-                } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_remove_queue_item',
+                    nonce: zicerAdmin.nonce,
+                    id: id
+                }, function(response) {
+                    if (response.success) {
+                        $row.fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        // Update stats
+                        $('#stat-pending').text(response.data.pending);
+                        $('#stat-processing').text(response.data.processing);
+                    } else {
+                        ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
+                        $btn.prop('disabled', false);
+                    }
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                     $btn.prop('disabled', false);
-                }
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+                });
             });
         });
 
         // Clear all pending items
         $('#zicer-clear-pending').on('click', function() {
-            if (!confirm(zicerAdmin.strings.confirm_clear_pending)) {
-                return;
-            }
-
             var $btn = $(this);
-            $btn.prop('disabled', true);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_clear_pending',
-                nonce: zicerAdmin.nonce
-            }, function(response) {
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
+            ZicerModal.confirm(zicerAdmin.strings.confirm_clear_pending, function() {
+                $btn.prop('disabled', true);
+
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_clear_pending',
+                    nonce: zicerAdmin.nonce
+                }, function(response) {
+                    if (response.success) {
+                        location.reload();
+                    } else {
+                        ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
+                        $btn.prop('disabled', false);
+                    }
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                     $btn.prop('disabled', false);
-                }
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+                });
             });
         });
 
@@ -390,7 +598,7 @@
         // Load categories
         $('#zicer-load-categories').on('click', function() {
             var $btn = $(this);
-            $btn.prop('disabled', true).text('Loading...');
+            $btn.prop('disabled', true).text(zicerAdmin.strings.loading);
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_fetch_categories',
@@ -398,8 +606,8 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Load Categories');
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.load_categories);
             });
         });
 
@@ -444,7 +652,7 @@
         // Refresh regions
         $('#zicer-refresh-regions').on('click', function() {
             var $btn = $(this);
-            $btn.prop('disabled', true).text('Loading...');
+            $btn.prop('disabled', true).text(zicerAdmin.strings.loading);
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_fetch_regions',
@@ -453,12 +661,12 @@
                 if (response.success) {
                     location.reload();
                 } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Refresh');
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false).text(zicerAdmin.strings.refresh);
                 }
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Refresh');
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.refresh);
             });
         });
 
@@ -511,58 +719,27 @@
             }, function(response) {
                 location.reload();
             }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
                 $btn.prop('disabled', false);
             });
         });
 
         // Clear failed
         $('#zicer-clear-failed').on('click', function() {
-            if (!confirm(zicerAdmin.strings.confirm_clear_failed)) {
-                return;
-            }
-
             var $btn = $(this);
-            $btn.prop('disabled', true);
 
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_clear_failed',
-                nonce: zicerAdmin.nonce
-            }, function(response) {
-                location.reload();
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
-            });
-        });
+            ZicerModal.confirm(zicerAdmin.strings.confirm_clear_failed, function() {
+                $btn.prop('disabled', true);
 
-        // Process queue
-        $('#zicer-process-queue').on('click', function() {
-            var $btn = $(this);
-            $btn.prop('disabled', true).text('Processing...');
-
-            $.post(zicerAdmin.ajaxUrl, {
-                action: 'zicer_process_queue',
-                nonce: zicerAdmin.nonce
-            }, function(response) {
-                if (response.success) {
-                    var stats = response.data;
-                    if (stats.pending > 0 || stats.processing > 0) {
-                        // More items to process, click again
-                        $btn.text('Processing... (' + stats.pending + ' remaining)');
-                        setTimeout(function() {
-                            $btn.click();
-                        }, 500);
-                    } else {
-                        location.reload();
-                    }
-                } else {
-                    alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Process Queue Now');
-                }
-            }).fail(function() {
-                alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false).text('Process Queue Now');
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_clear_failed',
+                    nonce: zicerAdmin.nonce
+                }, function(response) {
+                    location.reload();
+                }).fail(function() {
+                    ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                    $btn.prop('disabled', false);
+                });
             });
         });
 
