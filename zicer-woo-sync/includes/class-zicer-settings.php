@@ -232,6 +232,8 @@ class Zicer_Settings {
                 'sync_failed'          => __('Sync failed', 'zicer-woo-sync'),
                 'added_to_queue'       => __('Added %d products to queue.', 'zicer-woo-sync'),
                 'clearing'             => __('Clearing...', 'zicer-woo-sync'),
+                'no_suggestions'       => __('No suggestions', 'zicer-woo-sync'),
+                'no_match_found'       => __('No match found', 'zicer-woo-sync'),
             ],
         ]);
     }
@@ -414,7 +416,43 @@ class Zicer_Settings {
         update_option('zicer_categories_cache', $categories);
         update_option('zicer_categories_cache_time', time());
 
+        // Clean up stale mappings (categories that no longer exist)
+        self::cleanup_stale_mappings($categories);
+
         wp_send_json_success($categories);
+    }
+
+    /**
+     * Remove mappings for categories that no longer exist
+     *
+     * @param array $categories Current ZICER categories.
+     */
+    private static function cleanup_stale_mappings($categories) {
+        // Build list of valid category IDs
+        $valid_ids = [];
+        foreach ($categories as $category) {
+            $valid_ids[] = $category['uuid'] ?? $category['id'] ?? null;
+        }
+        $valid_ids = array_filter($valid_ids);
+
+        // Clean up category mappings
+        $mapping = get_option('zicer_category_mapping', []);
+        $cleaned = false;
+        foreach ($mapping as $wc_term_id => $zicer_id) {
+            if (!empty($zicer_id) && !in_array($zicer_id, $valid_ids, true)) {
+                unset($mapping[$wc_term_id]);
+                $cleaned = true;
+            }
+        }
+        if ($cleaned) {
+            update_option('zicer_category_mapping', $mapping);
+        }
+
+        // Clean up fallback category
+        $fallback = get_option('zicer_fallback_category', '');
+        if (!empty($fallback) && !in_array($fallback, $valid_ids, true)) {
+            delete_option('zicer_fallback_category');
+        }
     }
 
     /**
