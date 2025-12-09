@@ -274,9 +274,10 @@ $regions      = get_option('zicer_regions_cache', []);
                             <?php
                             $current_region = get_option('zicer_default_region', '');
                             foreach ($regions as $region) :
+                                $region_id = $region['uuid'] ?? $region['id'] ?? '';
                             ?>
-                                <option value="<?php echo esc_attr($region['id']); ?>"
-                                        <?php selected($current_region, $region['id']); ?>>
+                                <option value="<?php echo esc_attr($region_id); ?>"
+                                        <?php selected($current_region, $region_id); ?>>
                                     <?php echo esc_html($region['title']); ?>
                                 </option>
                             <?php endforeach; ?>

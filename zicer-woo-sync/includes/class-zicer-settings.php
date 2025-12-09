@@ -265,8 +265,38 @@ class Zicer_Settings {
             wp_send_json_error($result->get_error_message());
         }
 
-        update_option('zicer_regions_cache', $result['data'] ?? []);
-        wp_send_json_success($result['data'] ?? []);
+        // Flatten regions including cantons for easier selection
+        $regions = self::flatten_regions($result['data'] ?? []);
+
+        update_option('zicer_regions_cache', $regions);
+        wp_send_json_success($regions);
+    }
+
+    /**
+     * Flatten regions hierarchy into a flat list
+     *
+     * @param array  $regions     Regions array.
+     * @param string $parent_name Parent region name for display.
+     * @return array Flattened regions.
+     */
+    private static function flatten_regions($regions, $parent_name = '') {
+        $flat = [];
+
+        foreach ($regions as $region) {
+            $title = $parent_name ? "$parent_name > {$region['title']}" : $region['title'];
+
+            $flat[] = [
+                'uuid'  => $region['uuid'] ?? $region['id'] ?? '',
+                'title' => $title,
+            ];
+
+            // Add cantons (nested regions)
+            if (!empty($region['cantons'])) {
+                $flat = array_merge($flat, self::flatten_regions($region['cantons'], $region['title']));
+            }
+        }
+
+        return $flat;
     }
 
     /**
@@ -275,15 +305,22 @@ class Zicer_Settings {
     public static function ajax_fetch_cities() {
         check_ajax_referer('zicer_admin', 'nonce');
 
-        $region_id = sanitize_text_field(wp_unslash($_POST['region_id']));
-        $api       = Zicer_API_Client::instance();
-        $result    = $api->get_cities($region_id);
+        $region_id = isset($_POST['region_id']) ? sanitize_text_field(wp_unslash($_POST['region_id'])) : '';
+
+        if (empty($region_id)) {
+            wp_send_json_error(__('Region ID is required.', 'zicer-woo-sync'));
+        }
+
+        $api    = Zicer_API_Client::instance();
+        $result = $api->get_cities($region_id);
 
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         }
 
-        wp_send_json_success($result['data'] ?? []);
+        // Handle both 'data' and 'hydra:member' response formats
+        $cities = $result['data'] ?? $result['hydra:member'] ?? [];
+        wp_send_json_success($cities);
     }
 
     /**
