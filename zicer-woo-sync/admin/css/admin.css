@@ -55,6 +55,11 @@
     color: #383d41;
 }
 
+.zicer-product-meta .zicer-status.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
 .zicer-product-meta .zicer-info {
     font-size: 12px;
     color: #666;

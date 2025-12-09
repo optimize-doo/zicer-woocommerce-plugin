@@ -79,6 +79,9 @@ class Zicer_Product_Meta {
         $zicer_categories = Zicer_Category_Map::get_cached_categories();
         $flat_categories  = $zicer_categories ? Zicer_Category_Map::flatten_categories($zicer_categories) : [];
 
+        // Check current sync readiness
+        $current_issue = self::check_sync_readiness($post->ID, $category_override);
+
         wp_nonce_field('zicer_product_meta', 'zicer_meta_nonce');
         ?>
         <div class="zicer-product-meta">
@@ -102,14 +105,19 @@ class Zicer_Product_Meta {
                         <?php esc_html_e('View on ZICER', 'zicer-woo-sync'); ?>
                     </a>
                 </p>
-            <?php elseif ($sync_error) : ?>
+            <?php elseif ($current_issue) : ?>
                 <p class="zicer-status error">
-                    &#10007; <?php esc_html_e('Error', 'zicer-woo-sync'); ?>
+                    &#10007; <?php esc_html_e('Cannot sync', 'zicer-woo-sync'); ?>
+                </p>
+                <p class="zicer-error"><?php echo esc_html($current_issue); ?></p>
+            <?php elseif ($sync_error) : ?>
+                <p class="zicer-status warning">
+                    &#9888; <?php esc_html_e('Last sync failed', 'zicer-woo-sync'); ?>
                 </p>
                 <p class="zicer-error"><?php echo esc_html($sync_error); ?></p>
             <?php else : ?>
                 <p class="zicer-status pending">
-                    <?php esc_html_e('Not synced', 'zicer-woo-sync'); ?>
+                    <?php esc_html_e('Ready to sync', 'zicer-woo-sync'); ?>
                 </p>
             <?php endif; ?>
 
@@ -186,5 +194,42 @@ class Zicer_Product_Meta {
         update_post_meta($post_id, '_zicer_condition', $condition);
         update_post_meta($post_id, '_zicer_exclude', $exclude);
         update_post_meta($post_id, '_zicer_category', $category);
+    }
+
+    /**
+     * Check if product is ready to sync
+     *
+     * @param int    $product_id        Product ID.
+     * @param string $category_override Category override value.
+     * @return string|null Issue message or null if ready.
+     */
+    private static function check_sync_readiness($product_id, $category_override) {
+        // Check for category
+        if (!$category_override) {
+            $product       = wc_get_product($product_id);
+            $wc_categories = $product ? $product->get_category_ids() : [];
+            $has_category  = false;
+
+            foreach ($wc_categories as $cat_id) {
+                if (Zicer_Category_Map::get_zicer_category($cat_id)) {
+                    $has_category = true;
+                    break;
+                }
+            }
+
+            if (!$has_category) {
+                return __('No mapped ZICER category', 'zicer-woo-sync');
+            }
+        }
+
+        // Check for region/city
+        $region = get_option('zicer_default_region');
+        $city   = get_option('zicer_default_city');
+
+        if (!$region || !$city) {
+            return __('Region and city not configured', 'zicer-woo-sync');
+        }
+
+        return null;
     }
 }
