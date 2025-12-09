@@ -22,3 +22,11 @@ msgstr ""
 #: admin/views/sync-status.php:180
 msgid "&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark."
 msgstr "&copy; 2025 Optimize d.o.o. Sva prava zadržana. Zicer je zaštićeni znak (žig)."
+
+#: includes/class-zicer-product-meta.php:177
+msgid "Queue: Add to ZICER"
+msgstr "Red: Dodaj na ZICER"
+
+#: includes/class-zicer-product-meta.php:178
+msgid "Queue: Remove from ZICER"
+msgstr "Red: Ukloni sa ZICER-a"
