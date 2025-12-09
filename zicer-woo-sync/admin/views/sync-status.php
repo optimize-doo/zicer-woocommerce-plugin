@@ -9,14 +9,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$stats       = Zicer_Queue::get_stats();
-$rate_limit  = Zicer_API_Client::instance()->get_rate_limit_status();
-$connection  = get_option('zicer_connection_status', []);
-
-// Use stored rate limit from connection if available (more accurate than default)
-if (isset($connection['rate_limit']) && $rate_limit['limit'] === 60) {
-    $rate_limit['limit'] = $connection['rate_limit'];
-}
+$stats      = Zicer_Queue::get_stats();
+$connection = get_option('zicer_connection_status', []);
+$rate_limit = $connection['rate_limit'] ?? 60;
 ?>
 
 <div class="wrap zicer-status">
@@ -46,11 +41,9 @@ if (isset($connection['rate_limit']) && $rate_limit['limit'] === 60) {
         <p>
             <?php
             printf(
-                /* translators: %1$d: remaining requests, %2$d: total limit, %3$d: seconds until reset */
-                esc_html__('Remaining requests: %1$d / %2$d | Resets in: %3$d seconds', 'zicer-woo-sync'),
-                $rate_limit['remaining'],
-                $rate_limit['limit'],
-                $rate_limit['reset_in']
+                /* translators: %d: rate limit per minute */
+                esc_html__('%d requests per minute', 'zicer-woo-sync'),
+                $rate_limit
             );
             ?>
         </p>
