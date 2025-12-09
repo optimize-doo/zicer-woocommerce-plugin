@@ -40,7 +40,7 @@ class Zicer_Queue {
         global $wpdb;
         $table = $wpdb->prefix . 'zicer_sync_queue';
 
-        // Check for existing pending item
+        // Check for existing pending item with same action
         $existing = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM $table WHERE product_id = %d AND action = %s AND status = 'pending'",
             $product_id,
@@ -50,6 +50,14 @@ class Zicer_Queue {
         if ($existing) {
             return $existing;
         }
+
+        // Remove any conflicting pending action (sync vs delete)
+        $conflicting_action = ($action === 'sync') ? 'delete' : 'sync';
+        $wpdb->delete($table, [
+            'product_id' => $product_id,
+            'action'     => $conflicting_action,
+            'status'     => 'pending',
+        ]);
 
         $wpdb->insert($table, [
             'product_id' => $product_id,
