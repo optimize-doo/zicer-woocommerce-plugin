@@ -222,12 +222,80 @@
                     location.reload();
                 } else {
                     alert(zicerAdmin.strings.error + ' ' + response.data);
-                    $btn.prop('disabled', false).text('Start Bulk Sync');
+                    $btn.prop('disabled', false).text('Sync All Products');
                 }
             }).fail(function() {
                 alert(zicerAdmin.strings.error + ' Connection failed');
-                $btn.prop('disabled', false).text('Start Bulk Sync');
+                $btn.prop('disabled', false).text('Sync All Products');
             });
+        });
+
+        // Process queue with progress
+        var isProcessing = false;
+        var initialTotal = 0;
+
+        $('#zicer-process-queue').on('click', function() {
+            if (isProcessing) return;
+
+            var $btn = $(this);
+            var $spinner = $('#zicer-process-spinner');
+            var $progress = $('#zicer-progress-fill');
+            var $progressText = $('#zicer-progress-text');
+
+            isProcessing = true;
+            $btn.prop('disabled', true);
+            $spinner.addClass('is-active');
+
+            // Get initial total
+            initialTotal = parseInt($('#stat-pending').text()) + parseInt($('#stat-processing').text());
+
+            function processNext() {
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_process_queue',
+                    nonce: zicerAdmin.nonce
+                }, function(response) {
+                    if (response.success) {
+                        var stats = response.data;
+                        var remaining = stats.pending + stats.processing;
+                        var processed = initialTotal - remaining;
+                        var percent = initialTotal > 0 ? Math.round((processed / initialTotal) * 100) : 0;
+
+                        // Update stats
+                        $('#stat-pending').text(stats.pending);
+                        $('#stat-processing').text(stats.processing);
+                        $('#stat-completed').text(stats.completed);
+                        $('#stat-failed').text(stats.failed);
+
+                        // Update progress bar
+                        $progress.css('width', percent + '%');
+                        $progressText.text(remaining + ' items remaining');
+
+                        // Continue if more items
+                        if (remaining > 0) {
+                            setTimeout(processNext, 1000);
+                        } else {
+                            isProcessing = false;
+                            $spinner.removeClass('is-active');
+                            $progressText.text('Complete!');
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        }
+                    } else {
+                        isProcessing = false;
+                        $btn.prop('disabled', false);
+                        $spinner.removeClass('is-active');
+                        alert(zicerAdmin.strings.error + ' ' + response.data);
+                    }
+                }).fail(function() {
+                    isProcessing = false;
+                    $btn.prop('disabled', false);
+                    $spinner.removeClass('is-active');
+                    alert(zicerAdmin.strings.error + ' Connection failed');
+                });
+            }
+
+            processNext();
         });
 
         // Load categories

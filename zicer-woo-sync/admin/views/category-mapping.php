@@ -23,7 +23,7 @@ $categories_cache_time = get_option('zicer_categories_cache_time', 0);
 ?>
 
 <div class="wrap zicer-categories">
-    <h1><?php esc_html_e('Category Mapping', 'zicer-woo-sync'); ?></h1>
+    <h1><?php esc_html_e('Categories', 'zicer-woo-sync'); ?></h1>
 
     <?php if ($saved) : ?>
         <div class="notice notice-success is-dismissible">

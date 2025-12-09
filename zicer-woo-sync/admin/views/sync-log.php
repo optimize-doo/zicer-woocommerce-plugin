@@ -18,7 +18,7 @@ $pages   = ceil($total / $limit);
 ?>
 
 <div class="wrap zicer-log">
-    <h1><?php esc_html_e('Sync Log', 'zicer-woo-sync'); ?></h1>
+    <h1><?php esc_html_e('Log', 'zicer-woo-sync'); ?></h1>
 
     <form method="post" action="" style="margin-bottom: 20px;">
         <?php wp_nonce_field('zicer_clear_logs', 'zicer_clear_nonce'); ?>
