@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 define('ZICER_WOO_VERSION', '1.0.0');
 define('ZICER_WOO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZICER_WOO_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('ZICER_API_BASE_URL', 'https://api.zicer.dev/api');
+define('ZICER_API_BASE_URL', 'https://api.zicer.ba/api');
 
 /**
  * Autoloader for plugin classes
@@ -40,6 +40,22 @@ spl_autoload_register(function ($class) {
         require $file;
     }
 });
+
+/**
+ * Plugin Update Checker - enables automatic updates from GitHub
+ */
+if (file_exists(ZICER_WOO_PLUGIN_DIR . 'vendor/autoload.php')) {
+    require ZICER_WOO_PLUGIN_DIR . 'vendor/autoload.php';
+
+    $zicer_update_checker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/optimize-doo/zicer-woo-sync/',  // TODO: Update with actual repo URL
+        __FILE__,
+        'zicer-woo-sync'
+    );
+
+    // Use GitHub releases (create releases like v1.0.0)
+    $zicer_update_checker->getVcsApi()->enableReleaseAssets();
+}
 
 /**
  * Initialize plugin after all plugins are loaded

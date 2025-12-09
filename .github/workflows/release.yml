@@ -1,0 +1,37 @@
+name: Build Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+
+      - name: Install dependencies
+        run: |
+          cd zicer-woo-sync
+          composer install --no-dev --optimize-autoloader
+
+      - name: Create plugin ZIP
+        run: |
+          zip -r zicer-woo-sync.zip zicer-woo-sync \
+            -x "zicer-woo-sync/.git/*" \
+            -x "zicer-woo-sync/.gitignore" \
+            -x "zicer-woo-sync/composer.lock"
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: zicer-woo-sync.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
