@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-12-09T21:55:49+00:00\n"
+"POT-Creation-Date: 2025-12-09T22:31:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: zicer-woo-sync\n"
@@ -35,7 +35,7 @@ msgid "ZICER"
 msgstr ""
 
 #: admin/views/category-mapping.php:26
-#: includes/class-zicer-settings.php:66
+#: includes/class-zicer-settings.php:67
 msgid "Categories"
 msgstr ""
 
@@ -62,7 +62,7 @@ msgid "Loaded %1$s categories on %2$s."
 msgstr ""
 
 #: admin/views/category-mapping.php:59
-#: admin/views/settings-page.php:340
+#: admin/views/settings-page.php:401
 #: admin/views/sync-status.php:50
 #: admin/views/sync-status.php:58
 msgid "Refresh"
@@ -114,238 +114,318 @@ msgid "Save Mapping"
 msgstr ""
 
 #: admin/views/category-mapping.php:171
-#: admin/views/settings-page.php:359
+#: admin/views/settings-page.php:435
 #: admin/views/sync-log.php:109
 #: admin/views/sync-status.php:207
 msgid "&copy; 2025 Optimize d.o.o. All rights reserved. Zicer is a registered trademark."
 msgstr ""
 
-#: admin/views/settings-page.php:17
-#: includes/class-zicer-settings.php:56
+#: admin/views/settings-page.php:18
 #: includes/class-zicer-settings.php:57
+#: includes/class-zicer-settings.php:58
 msgid "Settings"
 msgstr ""
 
-#: admin/views/settings-page.php:24
+#: admin/views/settings-page.php:23
+msgid "Terms of Use"
+msgstr ""
+
+#: admin/views/settings-page.php:26
+msgid "Please read and accept the following terms before connecting:"
+msgstr ""
+
+#: admin/views/settings-page.php:29
+msgid "This plugin synchronizes your WooCommerce products with ZICER marketplace (zicer.ba)."
+msgstr ""
+
+#: admin/views/settings-page.php:30
+msgid "Products will be published publicly on zicer.ba and visible to all users."
+msgstr ""
+
+#. translators: %s: link to ZICER terms of service
+#: admin/views/settings-page.php:34
+#, php-format
+msgid "You are responsible for ensuring your product data (titles, descriptions, prices, images) complies with %s."
+msgstr ""
+
+#: admin/views/settings-page.php:35
+msgid "ZICER terms of service"
+msgstr ""
+
+#: admin/views/settings-page.php:38
+msgid "Always verify your listings on zicer.ba after synchronization."
+msgstr ""
+
+#: admin/views/settings-page.php:39
+msgid "Price conversion and other transformations should be verified for accuracy."
+msgstr ""
+
+#: admin/views/settings-page.php:42
+msgid "Disclaimer:"
+msgstr ""
+
+#: admin/views/settings-page.php:44
+msgid "This plugin is provided \"as is\" without warranty of any kind."
+msgstr ""
+
+#: admin/views/settings-page.php:45
+msgid "Use at your own risk. The developers are not liable for any damages or losses."
+msgstr ""
+
+#: admin/views/settings-page.php:46
+msgid "Always maintain backups of your data."
+msgstr ""
+
+#: admin/views/settings-page.php:47
+msgid "Test with a few products before bulk synchronization."
+msgstr ""
+
+#: admin/views/settings-page.php:57
+msgid "I have read and accept the terms of use"
+msgstr ""
+
+#: admin/views/settings-page.php:62
+msgid "Accept and Continue"
+msgstr ""
+
+#: admin/views/settings-page.php:74
 msgid "Connection"
 msgstr ""
 
-#: admin/views/settings-page.php:28
+#: admin/views/settings-page.php:78
 msgid "API Token"
 msgstr ""
 
-#: admin/views/settings-page.php:36
+#: admin/views/settings-page.php:86
 msgid "Test Connection"
 msgstr ""
 
-#: admin/views/settings-page.php:40
+#: admin/views/settings-page.php:90
 msgid "Disconnect"
 msgstr ""
 
 #. translators: %s: link to ZICER profile
-#: admin/views/settings-page.php:47
+#: admin/views/settings-page.php:97
 #, php-format
 msgid "You can create an API token in your %s."
 msgstr ""
 
-#: admin/views/settings-page.php:48
+#: admin/views/settings-page.php:98
 msgid "ZICER profile settings"
 msgstr ""
 
-#: admin/views/settings-page.php:55
+#: admin/views/settings-page.php:105
 #: admin/views/sync-log.php:46
 msgid "Status"
 msgstr ""
 
 #. translators: %s: user email
-#: admin/views/settings-page.php:61
+#: admin/views/settings-page.php:111
 #, php-format
 msgid "Connected as %s"
 msgstr ""
 
-#: admin/views/settings-page.php:67
+#: admin/views/settings-page.php:117
 msgid "Create a shop for higher rate limits"
 msgstr ""
 
 #. translators: %d: rate limit per minute
-#: admin/views/settings-page.php:74
+#: admin/views/settings-page.php:124
 #, php-format
 msgid "Rate limit: %d/min"
 msgstr ""
 
-#: admin/views/settings-page.php:80
+#: admin/views/settings-page.php:130
 msgid "Not connected"
 msgstr ""
 
-#: admin/views/settings-page.php:90
+#: admin/views/settings-page.php:140
 msgid "Synchronization"
 msgstr ""
 
-#: admin/views/settings-page.php:94
+#: admin/views/settings-page.php:144
 msgid "Real-time Sync"
 msgstr ""
 
-#: admin/views/settings-page.php:101
+#: admin/views/settings-page.php:151
 msgid "Automatically sync products when created or updated"
 msgstr ""
 
-#: admin/views/settings-page.php:106
+#: admin/views/settings-page.php:156
 msgid "Delete Unavailable"
 msgstr ""
 
-#: admin/views/settings-page.php:113
+#: admin/views/settings-page.php:163
 msgid "Automatically remove from ZICER when product is unavailable"
 msgstr ""
 
-#: admin/views/settings-page.php:118
+#: admin/views/settings-page.php:168
 msgid "Stock Threshold"
 msgstr ""
 
-#: admin/views/settings-page.php:126
+#: admin/views/settings-page.php:176
 msgid "Product is considered available if stock is greater than this number. 0 = any stock quantity."
 msgstr ""
 
-#: admin/views/settings-page.php:135
+#: admin/views/settings-page.php:185
 msgid "Title"
 msgstr ""
 
-#: admin/views/settings-page.php:139
+#: admin/views/settings-page.php:189
 msgid "Truncate Title"
 msgstr ""
 
-#: admin/views/settings-page.php:146
+#: admin/views/settings-page.php:196
 msgid "Truncate title to maximum length"
 msgstr ""
 
-#: admin/views/settings-page.php:151
+#: admin/views/settings-page.php:201
 msgid "Maximum Length"
 msgstr ""
 
-#: admin/views/settings-page.php:159
+#: admin/views/settings-page.php:209
 msgid "characters"
 msgstr ""
 
-#: admin/views/settings-page.php:167
+#: admin/views/settings-page.php:217
 msgid "Description"
 msgstr ""
 
-#: admin/views/settings-page.php:171
+#: admin/views/settings-page.php:221
 msgid "Description Mode"
 msgstr ""
 
-#: admin/views/settings-page.php:175
+#: admin/views/settings-page.php:225
 msgid "Use product description"
 msgstr ""
 
-#: admin/views/settings-page.php:178
+#: admin/views/settings-page.php:228
 msgid "Replace with template"
 msgstr ""
 
-#: admin/views/settings-page.php:181
+#: admin/views/settings-page.php:231
 msgid "Add template before description"
 msgstr ""
 
-#: admin/views/settings-page.php:184
+#: admin/views/settings-page.php:234
 msgid "Add template after description"
 msgstr ""
 
-#: admin/views/settings-page.php:190
+#: admin/views/settings-page.php:240
 msgid "Description Template"
 msgstr ""
 
-#: admin/views/settings-page.php:204
+#: admin/views/settings-page.php:263
 msgid "Available variables: {product_name}, {product_price}, {product_sku}, {shop_name}"
 msgstr ""
 
-#: admin/views/settings-page.php:213
+#: admin/views/settings-page.php:265
+msgid "Supported HTML: strong, em, u, s, mark, h1-h4, p, br, hr, blockquote, ul, ol, li, sub, sup, a"
+msgstr ""
+
+#: admin/views/settings-page.php:274
 msgid "Images"
 msgstr ""
 
-#: admin/views/settings-page.php:217
+#: admin/views/settings-page.php:278
 msgid "Image Sync"
 msgstr ""
 
-#: admin/views/settings-page.php:221
+#: admin/views/settings-page.php:282
 msgid "All images"
 msgstr ""
 
-#: admin/views/settings-page.php:224
+#: admin/views/settings-page.php:285
 msgid "Featured image only"
 msgstr ""
 
-#: admin/views/settings-page.php:227
+#: admin/views/settings-page.php:288
 msgid "No images"
 msgstr ""
 
-#: admin/views/settings-page.php:233
+#: admin/views/settings-page.php:294
 msgid "Maximum Images"
 msgstr ""
 
-#: admin/views/settings-page.php:248
+#: admin/views/settings-page.php:309
 msgid "Price"
 msgstr ""
 
-#: admin/views/settings-page.php:252
+#: admin/views/settings-page.php:313
 msgid "Currency Conversion"
 msgstr ""
 
 #. translators: %s: WooCommerce currency code
-#: admin/views/settings-page.php:264
+#: admin/views/settings-page.php:325
 #, php-format
 msgid "Multiplier for conversion to KM. Current WooCommerce currency: %s"
 msgstr ""
 
-#: admin/views/settings-page.php:276
+#: admin/views/settings-page.php:337
 msgid "Advanced"
 msgstr ""
 
-#: admin/views/settings-page.php:280
+#: admin/views/settings-page.php:341
 msgid "Debug Logging"
 msgstr ""
 
-#: admin/views/settings-page.php:287
+#: admin/views/settings-page.php:348
 msgid "Log all API requests and responses"
 msgstr ""
 
 #. translators: %s: link to log page
-#: admin/views/settings-page.php:293
+#: admin/views/settings-page.php:354
 #, php-format
 msgid "View logs in the %s tab."
 msgstr ""
 
-#: admin/views/settings-page.php:294
+#: admin/views/settings-page.php:355
 #: admin/views/sync-log.php:21
-#: includes/class-zicer-settings.php:83
 #: includes/class-zicer-settings.php:84
+#: includes/class-zicer-settings.php:85
 msgid "Log"
 msgstr ""
 
-#: admin/views/settings-page.php:305
+#: admin/views/settings-page.php:366
 msgid "Default Values"
 msgstr ""
 
-#: admin/views/settings-page.php:309
+#: admin/views/settings-page.php:370
 msgid "Default Condition"
 msgstr ""
 
-#: admin/views/settings-page.php:322
+#: admin/views/settings-page.php:383
 msgid "Default Region"
 msgstr ""
 
-#: admin/views/settings-page.php:326
+#: admin/views/settings-page.php:387
 #: includes/class-zicer-product-meta.php:383
 msgid "-- Select --"
 msgstr ""
 
-#: admin/views/settings-page.php:345
+#: admin/views/settings-page.php:406
 msgid "Default City"
 msgstr ""
 
-#: admin/views/settings-page.php:348
+#: admin/views/settings-page.php:409
 msgid "-- Select region first --"
 msgstr ""
 
-#: admin/views/settings-page.php:356
+#. translators: %s: link to terms of service
+#: admin/views/settings-page.php:423
+#, php-format
+msgid "By using this plugin you have accepted the %s."
+msgstr ""
+
+#: admin/views/settings-page.php:424
+msgid "terms of use"
+msgstr ""
+
+#: admin/views/settings-page.php:427
+msgid "This plugin is provided \"as is\" without warranty. Use at your own risk."
+msgstr ""
+
+#: admin/views/settings-page.php:431
 msgid "Save Settings"
 msgstr ""
 
@@ -388,7 +468,7 @@ msgid "No log entries."
 msgstr ""
 
 #: admin/views/sync-status.php:21
-#: includes/class-zicer-settings.php:75
+#: includes/class-zicer-settings.php:76
 msgid "Queue"
 msgstr ""
 
@@ -538,8 +618,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: includes/class-zicer-product-meta.php:278
-#: includes/class-zicer-settings.php:45
 #: includes/class-zicer-settings.php:46
+#: includes/class-zicer-settings.php:47
 msgid "ZICER Sync"
 msgstr ""
 
@@ -630,114 +710,143 @@ msgstr ""
 msgid "Region and city not configured"
 msgstr ""
 
-#: includes/class-zicer-settings.php:65
+#: includes/class-zicer-settings.php:66
 msgid "Category Mapping"
 msgstr ""
 
-#: includes/class-zicer-settings.php:74
+#: includes/class-zicer-settings.php:75
 msgid "Sync Queue"
 msgstr ""
 
-#: includes/class-zicer-settings.php:221
+#: includes/class-zicer-settings.php:226
 msgid "Testing..."
 msgstr ""
 
-#: includes/class-zicer-settings.php:222
+#: includes/class-zicer-settings.php:227
 msgid "Connected!"
 msgstr ""
 
-#: includes/class-zicer-settings.php:223
+#: includes/class-zicer-settings.php:228
 msgid "Error:"
 msgstr ""
 
-#: includes/class-zicer-settings.php:224
+#: includes/class-zicer-settings.php:229
 msgid "Syncing..."
 msgstr ""
 
-#: includes/class-zicer-settings.php:225
+#: includes/class-zicer-settings.php:230
 msgid "Are you sure you want to start bulk synchronization?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:226
+#: includes/class-zicer-settings.php:231
 msgid "Are you sure you want to disconnect? Previously synced products will keep their ZICER listing IDs."
 msgstr ""
 
-#: includes/class-zicer-settings.php:227
+#: includes/class-zicer-settings.php:232
 msgid "Are you sure?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:228
+#: includes/class-zicer-settings.php:233
 msgid "Clear all pending items from the queue?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:229
+#: includes/class-zicer-settings.php:234
 msgid "Are you sure you want to clear all failed items?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:230
+#: includes/class-zicer-settings.php:235
 msgid "Remove this item from the queue?"
 msgstr ""
 
-#: includes/class-zicer-settings.php:231
+#: includes/class-zicer-settings.php:236
 msgid "Connection failed"
 msgstr ""
 
-#: includes/class-zicer-settings.php:232
+#: includes/class-zicer-settings.php:237
 msgid "Sync failed"
 msgstr ""
 
-#: includes/class-zicer-settings.php:233
+#: includes/class-zicer-settings.php:238
 #, php-format
 msgid "Added %d products to queue."
 msgstr ""
 
-#: includes/class-zicer-settings.php:234
+#: includes/class-zicer-settings.php:239
 msgid "Clearing..."
 msgstr ""
 
+#: includes/class-zicer-settings.php:240
+msgid "No suggestions"
+msgstr ""
+
+#: includes/class-zicer-settings.php:241
+msgid "No match found"
+msgstr ""
+
+#: includes/class-zicer-settings.php:243
+msgid "OK"
+msgstr ""
+
+#: includes/class-zicer-settings.php:244
+msgid "Cancel"
+msgstr ""
+
+#: includes/class-zicer-settings.php:245
+msgid "Yes"
+msgstr ""
+
 #: includes/class-zicer-settings.php:246
-#: includes/class-zicer-settings.php:319
-#: includes/class-zicer-settings.php:337
-#: includes/class-zicer-settings.php:524
-#: includes/class-zicer-settings.php:538
-#: includes/class-zicer-settings.php:552
-#: includes/class-zicer-settings.php:566
+msgid "No"
+msgstr ""
+
+#: includes/class-zicer-settings.php:258
+#: includes/class-zicer-settings.php:334
+#: includes/class-zicer-settings.php:352
+#: includes/class-zicer-settings.php:371
+#: includes/class-zicer-settings.php:594
+#: includes/class-zicer-settings.php:608
+#: includes/class-zicer-settings.php:622
+#: includes/class-zicer-settings.php:636
 msgid "You do not have permission."
 msgstr ""
 
-#: includes/class-zicer-settings.php:390
+#: includes/class-zicer-settings.php:330
+msgid "Security check failed."
+msgstr ""
+
+#: includes/class-zicer-settings.php:424
 msgid "just now"
 msgstr ""
 
-#: includes/class-zicer-settings.php:485
+#: includes/class-zicer-settings.php:555
 msgid "Region ID is required."
 msgstr ""
 
-#: includes/class-zicer-settings.php:573
+#: includes/class-zicer-settings.php:643
 msgid "Invalid product ID."
 msgstr ""
 
-#: includes/class-zicer-settings.php:615
+#: includes/class-zicer-settings.php:685
 msgid "New"
 msgstr ""
 
-#: includes/class-zicer-settings.php:616
+#: includes/class-zicer-settings.php:686
 msgid "Open box"
 msgstr ""
 
-#: includes/class-zicer-settings.php:617
+#: includes/class-zicer-settings.php:687
 msgid "Used"
 msgstr ""
 
-#: includes/class-zicer-settings.php:618
+#: includes/class-zicer-settings.php:688
 msgid "Refurbished"
 msgstr ""
 
-#: includes/class-zicer-settings.php:619
+#: includes/class-zicer-settings.php:689
 msgid "Not working"
 msgstr ""
 
-#: includes/class-zicer-settings.php:620
+#: includes/class-zicer-settings.php:690
 msgid "Not specified"
 msgstr ""
 

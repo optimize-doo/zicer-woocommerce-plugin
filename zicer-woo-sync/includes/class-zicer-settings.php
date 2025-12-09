@@ -23,6 +23,7 @@ class Zicer_Settings {
         add_action('admin_menu', [__CLASS__, 'add_menu']);
         add_action('admin_init', [__CLASS__, 'register_settings']);
         add_action('wp_ajax_zicer_test_connection', [__CLASS__, 'ajax_test_connection']);
+        add_action('wp_ajax_zicer_confirm_new_account', [__CLASS__, 'ajax_confirm_new_account']);
         add_action('wp_ajax_zicer_disconnect', [__CLASS__, 'ajax_disconnect']);
         add_action('wp_ajax_zicer_clear_all_listings', [__CLASS__, 'ajax_clear_all_listings']);
         add_action('wp_ajax_zicer_refresh_rate_limit', [__CLASS__, 'ajax_refresh_rate_limit']);
@@ -207,10 +208,14 @@ class Zicer_Settings {
             true
         );
 
+        // jQuery UI Dialog for custom modals
+        wp_enqueue_script('jquery-ui-dialog');
+        wp_enqueue_style('wp-jquery-ui-dialog');
+
         wp_enqueue_script(
             'zicer-admin',
             ZICER_WOO_PLUGIN_URL . 'admin/js/admin.js',
-            ['jquery', 'select2'],
+            ['jquery', 'select2', 'jquery-ui-dialog'],
             ZICER_WOO_VERSION,
             true
         );
@@ -235,6 +240,31 @@ class Zicer_Settings {
                 'clearing'             => __('Clearing...', 'zicer-woo-sync'),
                 'no_suggestions'       => __('No suggestions', 'zicer-woo-sync'),
                 'no_match_found'       => __('No match found', 'zicer-woo-sync'),
+                // Modal button labels
+                'ok'                   => __('OK', 'zicer-woo-sync'),
+                'cancel'               => __('Cancel', 'zicer-woo-sync'),
+                'yes'                  => __('Yes', 'zicer-woo-sync'),
+                'no'                   => __('No', 'zicer-woo-sync'),
+                // Additional UI strings
+                'test_connection'      => __('Test Connection', 'zicer-woo-sync'),
+                'sync_now'             => __('Sync Now', 'zicer-woo-sync'),
+                'clear_recreate'       => __('Clear & Re-create', 'zicer-woo-sync'),
+                'sync_all_products'    => __('Sync All Products', 'zicer-woo-sync'),
+                'complete'             => __('Complete!', 'zicer-woo-sync'),
+                'loading'              => __('Loading...', 'zicer-woo-sync'),
+                'load_categories'      => __('Load Categories', 'zicer-woo-sync'),
+                'refresh'              => __('Refresh', 'zicer-woo-sync'),
+                // Different account warning
+                'different_account_title'   => __('Different Account', 'zicer-woo-sync'),
+                'different_account_warning' => __('You are connecting with a different ZICER account.', 'zicer-woo-sync'),
+                'previous'             => __('Previous:', 'zicer-woo-sync'),
+                'new'                  => __('New:', 'zicer-woo-sync'),
+                'unknown'              => __('Unknown', 'zicer-woo-sync'),
+                'different_account_msg'=> __('Your products have sync data linked to the previous account. What would you like to do?', 'zicer-woo-sync'),
+                'clear_data'           => __('Clear sync data', 'zicer-woo-sync'),
+                'clear_data_desc'      => __('Remove all ZICER listing IDs from your products. Next sync will create new listings on the new account. Your WooCommerce products are not affected.', 'zicer-woo-sync'),
+                'keep_data'            => __('Keep sync data', 'zicer-woo-sync'),
+                'keep_data_desc'       => __('Keep existing listing IDs. Warning: Syncing will fail because these IDs belong to the old account.', 'zicer-woo-sync'),
             ],
         ]);
     }
@@ -281,14 +311,33 @@ class Zicer_Settings {
         $new_user_id = $result['uuid'] ?? $result['id'] ?? '';
         $new_user_email = $result['email'] ?? '';
 
-        // Check if connecting with a different account
+        // Check if connecting with a different account (get previous values BEFORE updating)
         $previous_user_id = get_option('zicer_connected_user_id', '');
+        $previous_user_email = get_option('zicer_connected_user_email', '');
         $is_different_account = $previous_user_id && $new_user_id && $previous_user_id !== $new_user_id;
 
-        // Store the connected user ID permanently (survives disconnect)
-        if ($new_user_id) {
+        // Only store the connected user ID if NOT a different account
+        // If different account, user must choose clear/keep first (handled via separate AJAX)
+        if ($new_user_id && !$is_different_account) {
             update_option('zicer_connected_user_id', $new_user_id);
             update_option('zicer_connected_user_email', $new_user_email);
+        }
+
+        // Don't save connection status if different account - user must choose first
+        if ($is_different_account) {
+            // Revert the token save - user hasn't confirmed yet
+            delete_option('zicer_api_token');
+
+            wp_send_json_success([
+                'user'              => $result,
+                'shop'              => $shop_data,
+                'has_shop'          => $has_shop,
+                'rate_limit'        => $rate_limit['limit'],
+                'different_account' => true,
+                'previous_email'    => $previous_user_email,
+                'new_token'         => $token, // Send token back so JS can save it after user confirms
+            ]);
+            return;
         }
 
         update_option('zicer_connection_status', [
@@ -308,8 +357,82 @@ class Zicer_Settings {
             'has_shop'          => $has_shop,
             'rate_limit'        => $rate_limit['limit'],
             'different_account' => $is_different_account,
-            'previous_email'    => $is_different_account ? get_option('zicer_connected_user_email', '') : null,
+            'previous_email'    => $is_different_account ? $previous_user_email : null,
         ]);
+    }
+
+    /**
+     * AJAX: Confirm connecting with new account (after different account warning)
+     */
+    public static function ajax_confirm_new_account() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '';
+        $clear_data = isset($_POST['clear_data']) && $_POST['clear_data'] === 'true';
+
+        if (empty($token)) {
+            wp_send_json_error(__('Token is required.', 'zicer-woo-sync'));
+        }
+
+        // Validate the token again
+        $api = Zicer_API_Client::instance();
+        $api->set_token($token);
+        $result = $api->validate_connection();
+
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+
+        // Clear listing data if requested
+        if ($clear_data) {
+            global $wpdb;
+            $meta_keys = ['_zicer_listing_id', '_zicer_last_sync', '_zicer_sync_error', '_zicer_synced_images'];
+            foreach ($meta_keys as $key) {
+                $wpdb->delete($wpdb->postmeta, ['meta_key' => $key], ['%s']);
+            }
+            Zicer_Logger::log('info', 'Cleared all ZICER listing data for new account');
+        }
+
+        // Now save everything
+        $new_user_id = $result['uuid'] ?? $result['id'] ?? '';
+        $new_user_email = $result['email'] ?? '';
+
+        update_option('zicer_api_token', $token);
+        update_option('zicer_connected_user_id', $new_user_id);
+        update_option('zicer_connected_user_email', $new_user_email);
+
+        $shop = $api->get_shop();
+        $shop_data = null;
+        $has_shop = !is_wp_error($shop) && !empty($shop['title']);
+
+        if ($has_shop) {
+            $shop_data = $shop;
+            if (!get_option('zicer_default_region') && isset($shop['region']['id'])) {
+                update_option('zicer_default_region', $shop['region']['id']);
+            }
+            if (!get_option('zicer_default_city') && isset($shop['city']['id'])) {
+                update_option('zicer_default_city', $shop['city']['id']);
+            }
+        }
+
+        $rate_limit = $api->get_rate_limit_status();
+
+        update_option('zicer_connection_status', [
+            'connected'       => true,
+            'user'            => $new_user_email,
+            'user_id'         => $new_user_id,
+            'shop'            => $shop_data['title'] ?? null,
+            'has_shop'        => $has_shop,
+            'last_check'      => current_time('mysql'),
+            'rate_limit'      => $rate_limit['limit'],
+            'rate_remaining'  => $rate_limit['remaining'],
+        ]);
+
+        wp_send_json_success(['cleared' => $clear_data]);
     }
 
     /**
@@ -345,6 +468,7 @@ class Zicer_Settings {
 
         delete_option('zicer_api_token');
         delete_option('zicer_connection_status');
+        delete_option('zicer_terms_accepted');
         // Note: zicer_connected_user_id and zicer_connected_user_email are kept
         // to detect if a different account connects later
 
