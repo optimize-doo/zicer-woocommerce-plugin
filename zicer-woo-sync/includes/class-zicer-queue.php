@@ -129,6 +129,13 @@ class Zicer_Queue {
                 'error_message' => $result->get_error_message(),
                 'processed_at'  => current_time('mysql'),
             ], ['id' => $item->id]);
+
+            // Log failure
+            if ($new_status === 'failed') {
+                Zicer_Logger::log('error', "Queue {$item->action} failed for product {$item->product_id}", [
+                    'error' => $result->get_error_message(),
+                ]);
+            }
         } else {
             $wpdb->update($table, [
                 'status'       => 'completed',
@@ -174,5 +181,26 @@ class Zicer_Queue {
             'attempts'      => 0,
             'error_message' => null,
         ], ['status' => 'failed']);
+    }
+
+    /**
+     * Get failed items with details
+     *
+     * @param int $limit Number of items to return.
+     * @return array
+     */
+    public static function get_failed_items($limit = 20) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT q.*, p.post_title as product_name
+             FROM $table q
+             LEFT JOIN {$wpdb->posts} p ON q.product_id = p.ID
+             WHERE q.status = 'failed'
+             ORDER BY q.processed_at DESC
+             LIMIT %d",
+            $limit
+        ));
     }
 }
