@@ -32,6 +32,32 @@
             }
         });
 
+        // Save category and enable/disable sync button when category changes
+        $('#_zicer_category').on('change', function() {
+            var $select = $(this);
+            var $syncBtn = $('.zicer-sync-now');
+            var productId = $syncBtn.data('product-id');
+            var category = $select.val();
+            var mappedCategory = $select.data('mapped-category');
+
+            // Enable if category selected, disable if empty and no mapped category
+            if (category || mappedCategory) {
+                $syncBtn.prop('disabled', false);
+            } else {
+                $syncBtn.prop('disabled', true);
+            }
+
+            // Save category via AJAX
+            if (productId) {
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_save_product_category',
+                    nonce: zicerAdmin.nonce,
+                    product_id: productId,
+                    category: category
+                });
+            }
+        });
+
         // Test connection
         $('#zicer-test-connection').on('click', function() {
             var $btn = $(this);
@@ -279,6 +305,36 @@
             }).fail(function() {
                 alert(zicerAdmin.strings.error + ' Connection failed');
                 $btn.prop('disabled', false);
+            });
+        });
+
+        // Process queue
+        $('#zicer-process-queue').on('click', function() {
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Processing...');
+
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_process_queue',
+                nonce: zicerAdmin.nonce
+            }, function(response) {
+                if (response.success) {
+                    var stats = response.data;
+                    if (stats.pending > 0 || stats.processing > 0) {
+                        // More items to process, click again
+                        $btn.text('Processing... (' + stats.pending + ' remaining)');
+                        setTimeout(function() {
+                            $btn.click();
+                        }, 500);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert(zicerAdmin.strings.error + ' ' + response.data);
+                    $btn.prop('disabled', false).text('Process Queue Now');
+                }
+            }).fail(function() {
+                alert(zicerAdmin.strings.error + ' Connection failed');
+                $btn.prop('disabled', false).text('Process Queue Now');
             });
         });
 

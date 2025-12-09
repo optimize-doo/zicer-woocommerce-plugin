@@ -29,6 +29,8 @@ class Zicer_Settings {
         add_action('wp_ajax_zicer_suggest_category', [__CLASS__, 'ajax_suggest_category']);
         add_action('wp_ajax_zicer_retry_failed', [__CLASS__, 'ajax_retry_failed']);
         add_action('wp_ajax_zicer_clear_failed', [__CLASS__, 'ajax_clear_failed']);
+        add_action('wp_ajax_zicer_process_queue', [__CLASS__, 'ajax_process_queue']);
+        add_action('wp_ajax_zicer_save_product_category', [__CLASS__, 'ajax_save_product_category']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
     }
 
@@ -408,6 +410,41 @@ class Zicer_Settings {
         }
 
         Zicer_Queue::clear_failed();
+        wp_send_json_success();
+    }
+
+    /**
+     * AJAX: Process queue manually
+     */
+    public static function ajax_process_queue() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        Zicer_Queue::process();
+        wp_send_json_success(Zicer_Queue::get_stats());
+    }
+
+    /**
+     * AJAX: Save product ZICER category
+     */
+    public static function ajax_save_product_category() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        $category   = isset($_POST['category']) ? sanitize_text_field(wp_unslash($_POST['category'])) : '';
+
+        if (!$product_id) {
+            wp_send_json_error(__('Invalid product ID.', 'zicer-woo-sync'));
+        }
+
+        update_post_meta($product_id, '_zicer_category', $category);
         wp_send_json_success();
     }
 

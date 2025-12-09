@@ -61,6 +61,17 @@ $rate_limit = $connection['rate_limit'] ?? 60;
             </span>
         </p>
 
+        <?php if ($stats['pending'] > 0 || $stats['processing'] > 0) : ?>
+            <p>
+                <button type="button" id="zicer-process-queue" class="button">
+                    <?php esc_html_e('Process Queue Now', 'zicer-woo-sync'); ?>
+                </button>
+                <span class="description">
+                    <?php esc_html_e('Manually trigger queue processing', 'zicer-woo-sync'); ?>
+                </span>
+            </p>
+        <?php endif; ?>
+
         <?php if ($stats['failed'] > 0) : ?>
             <p>
                 <button type="button" id="zicer-retry-failed" class="button">
@@ -72,6 +83,43 @@ $rate_limit = $connection['rate_limit'] ?? 60;
             </p>
         <?php endif; ?>
     </div>
+
+    <?php
+    $failed_items = Zicer_Queue::get_failed_items();
+    if (!empty($failed_items)) :
+    ?>
+    <div class="zicer-card">
+        <h2><?php esc_html_e('Failed Items', 'zicer-woo-sync'); ?></h2>
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e('Product', 'zicer-woo-sync'); ?></th>
+                    <th><?php esc_html_e('Action', 'zicer-woo-sync'); ?></th>
+                    <th><?php esc_html_e('Error', 'zicer-woo-sync'); ?></th>
+                    <th><?php esc_html_e('Time', 'zicer-woo-sync'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($failed_items as $item) : ?>
+                    <tr>
+                        <td>
+                            <?php if ($item->product_name) : ?>
+                                <a href="<?php echo esc_url(get_edit_post_link($item->product_id)); ?>">
+                                    <?php echo esc_html($item->product_name); ?>
+                                </a>
+                            <?php else : ?>
+                                #<?php echo esc_html($item->product_id); ?>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo esc_html($item->action); ?></td>
+                        <td class="zicer-error"><?php echo esc_html($item->error_message); ?></td>
+                        <td><?php echo esc_html($item->processed_at); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
 
     <div class="zicer-card">
         <h2><?php esc_html_e('Synced Products', 'zicer-woo-sync'); ?></h2>
