@@ -35,6 +35,7 @@ class Zicer_Settings {
         add_action('wp_ajax_zicer_process_queue', [__CLASS__, 'ajax_process_queue']);
         add_action('wp_ajax_zicer_save_product_category', [__CLASS__, 'ajax_save_product_category']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
+        add_action('admin_post_zicer_accept_terms', [__CLASS__, 'handle_accept_terms']);
     }
 
     /**
@@ -309,6 +310,27 @@ class Zicer_Settings {
             'different_account' => $is_different_account,
             'previous_email'    => $is_different_account ? get_option('zicer_connected_user_email', '') : null,
         ]);
+    }
+
+    /**
+     * Handle terms acceptance form
+     */
+    public static function handle_accept_terms() {
+        if (!isset($_POST['zicer_terms_nonce']) ||
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['zicer_terms_nonce'])), 'zicer_accept_terms')) {
+            wp_die(__('Security check failed.', 'zicer-woo-sync'));
+        }
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_die(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        if (!empty($_POST['zicer_accept_terms'])) {
+            update_option('zicer_terms_accepted', true);
+        }
+
+        wp_safe_redirect(admin_url('admin.php?page=zicer-sync'));
+        exit;
     }
 
     /**
