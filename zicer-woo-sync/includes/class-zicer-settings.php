@@ -268,6 +268,11 @@ class Zicer_Settings {
                 'clear_data_desc'      => __('Remove all ZICER listing IDs from your products. Next sync will create new listings on the new account. Your WooCommerce products are not affected.', 'zicer-woo-sync'),
                 'keep_data'            => __('Keep sync data', 'zicer-woo-sync'),
                 'keep_data_desc'       => __('Keep existing listing IDs. Warning: Syncing will fail because these IDs belong to the old account.', 'zicer-woo-sync'),
+                // Queue buttons
+                'add_to_queue'         => __('Add to Queue', 'zicer-woo-sync'),
+                'remove_from_queue'    => __('Remove from Queue', 'zicer-woo-sync'),
+                'added_to_queue_single'=> __('Added to queue', 'zicer-woo-sync'),
+                'removed_from_queue'   => __('Removed from queue', 'zicer-woo-sync'),
             ],
         ]);
     }
