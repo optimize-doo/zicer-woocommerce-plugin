@@ -243,16 +243,20 @@ class Zicer_Settings {
             }
         }
 
+        $rate_limit = $api->get_rate_limit_status();
         update_option('zicer_connection_status', [
-            'connected'  => true,
-            'user'       => $result['email'] ?? '',
-            'shop'       => $shop['title'] ?? null,
-            'last_check' => current_time('mysql'),
+            'connected'       => true,
+            'user'            => $result['email'] ?? '',
+            'shop'            => $shop['title'] ?? null,
+            'last_check'      => current_time('mysql'),
+            'rate_limit'      => $rate_limit['limit'],
+            'rate_remaining'  => $rate_limit['remaining'],
         ]);
 
         wp_send_json_success([
-            'user' => $result,
-            'shop' => $shop,
+            'user'       => $result,
+            'shop'       => $shop,
+            'rate_limit' => $rate_limit['limit'],
         ]);
     }
 

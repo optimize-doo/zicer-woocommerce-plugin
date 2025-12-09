@@ -53,6 +53,16 @@ $regions      = get_option('zicer_regions_cache', []);
                                 <?php if (!empty($connection['shop'])) : ?>
                                     (<?php echo esc_html($connection['shop']); ?>)
                                 <?php endif; ?>
+                                <?php if (!empty($connection['rate_limit'])) : ?>
+                                    <span class="zicer-rate-limit">
+                                        &mdash;
+                                        <?php printf(
+                                            /* translators: %d: rate limit per minute */
+                                            esc_html__('Rate limit: %d/min', 'zicer-woo-sync'),
+                                            $connection['rate_limit']
+                                        ); ?>
+                                    </span>
+                                <?php endif; ?>
                             <?php else : ?>
                                 &#10007; <?php esc_html_e('Not connected', 'zicer-woo-sync'); ?>
                             <?php endif; ?>
