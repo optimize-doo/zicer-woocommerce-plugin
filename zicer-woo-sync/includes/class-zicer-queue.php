@@ -203,4 +203,25 @@ class Zicer_Queue {
             $limit
         ));
     }
+
+    /**
+     * Get pending items with details
+     *
+     * @param int $limit Number of items to return.
+     * @return array
+     */
+    public static function get_pending_items($limit = 20) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'zicer_sync_queue';
+
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT q.*, p.post_title as product_name
+             FROM $table q
+             LEFT JOIN {$wpdb->posts} p ON q.product_id = p.ID
+             WHERE q.status IN ('pending', 'processing')
+             ORDER BY q.created_at ASC
+             LIMIT %d",
+            $limit
+        ));
+    }
 }

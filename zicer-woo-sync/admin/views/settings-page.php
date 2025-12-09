@@ -14,7 +14,7 @@ $is_connected = !empty($connection['connected']);
 $regions      = get_option('zicer_regions_cache', []);
 ?>
 <div class="wrap zicer-settings">
-    <h1><?php esc_html_e('ZICER Sync Settings', 'zicer-woo-sync'); ?></h1>
+    <h1><?php esc_html_e('Settings', 'zicer-woo-sync'); ?></h1>
 
     <form method="post" action="options.php">
         <?php settings_fields('zicer_settings'); ?>
