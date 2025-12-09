@@ -15,7 +15,7 @@ $rate_limit = $connection['rate_limit'] ?? 60;
 ?>
 
 <div class="wrap zicer-status">
-    <h1><?php esc_html_e('Sync Status', 'zicer-woo-sync'); ?></h1>
+    <h1><?php esc_html_e('Sync Queue', 'zicer-woo-sync'); ?></h1>
 
     <div class="zicer-stats-grid">
         <div class="zicer-stat-card">

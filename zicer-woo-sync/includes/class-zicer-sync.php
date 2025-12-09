@@ -24,6 +24,7 @@ class Zicer_Sync {
         add_action('woocommerce_update_product', [__CLASS__, 'on_product_save'], 10, 2);
         add_action('woocommerce_new_product', [__CLASS__, 'on_product_save'], 10, 2);
         add_action('before_delete_post', [__CLASS__, 'on_product_delete']);
+        add_action('wp_trash_post', [__CLASS__, 'on_product_trash']);
         add_action('woocommerce_product_set_stock', [__CLASS__, 'on_stock_change']);
 
         // AJAX handlers
@@ -96,6 +97,20 @@ class Zicer_Sync {
             // Delete immediately from ZICER
             self::delete_listing($post_id, $listing_id);
         }
+    }
+
+    /**
+     * Handle product trash (move to trash)
+     *
+     * @param int $post_id The post ID.
+     */
+    public static function on_product_trash($post_id) {
+        if (get_post_type($post_id) !== 'product') {
+            return;
+        }
+
+        // Delete listing from ZICER (handles variable products too)
+        self::delete_listing($post_id);
     }
 
     /**

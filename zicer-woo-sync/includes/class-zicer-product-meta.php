@@ -31,6 +31,11 @@ class Zicer_Product_Meta {
         // Product list filter
         add_action('restrict_manage_posts', [__CLASS__, 'add_sync_filter']);
         add_filter('parse_query', [__CLASS__, 'filter_by_sync_status']);
+
+        // Bulk actions
+        add_filter('bulk_actions-edit-product', [__CLASS__, 'add_bulk_actions']);
+        add_filter('handle_bulk_actions-edit-product', [__CLASS__, 'handle_bulk_actions'], 10, 3);
+        add_action('admin_notices', [__CLASS__, 'bulk_action_notices']);
     }
 
     /**
@@ -160,6 +165,108 @@ class Zicer_Product_Meta {
                 $query->set('post__not_in', $synced_ids);
             }
         }
+    }
+
+    /**
+     * Add ZICER bulk actions
+     *
+     * @param array $actions Existing bulk actions.
+     * @return array Modified bulk actions.
+     */
+    public static function add_bulk_actions($actions) {
+        $actions['zicer_sync'] = __('Sync to ZICER', 'zicer-woo-sync');
+        $actions['zicer_remove'] = __('Remove from ZICER', 'zicer-woo-sync');
+        return $actions;
+    }
+
+    /**
+     * Handle ZICER bulk actions
+     *
+     * @param string $redirect_url Redirect URL.
+     * @param string $action       Action name.
+     * @param array  $post_ids     Selected post IDs.
+     * @return string Modified redirect URL.
+     */
+    public static function handle_bulk_actions($redirect_url, $action, $post_ids) {
+        if (!in_array($action, ['zicer_sync', 'zicer_remove'], true)) {
+            return $redirect_url;
+        }
+
+        $queued = 0;
+
+        foreach ($post_ids as $post_id) {
+            $product = wc_get_product($post_id);
+            if (!$product) {
+                continue;
+            }
+
+            if ($action === 'zicer_sync') {
+                // For variable products, queue each variation
+                if ($product->is_type('variable')) {
+                    foreach ($product->get_children() as $variation_id) {
+                        Zicer_Queue::add($variation_id, 'sync');
+                        $queued++;
+                    }
+                } else {
+                    Zicer_Queue::add($post_id, 'sync');
+                    $queued++;
+                }
+            } elseif ($action === 'zicer_remove') {
+                // For variable products, queue each variation for delete
+                if ($product->is_type('variable')) {
+                    foreach ($product->get_children() as $variation_id) {
+                        $listing_id = get_post_meta($variation_id, '_zicer_listing_id', true);
+                        if ($listing_id) {
+                            Zicer_Queue::add($variation_id, 'delete', ['listing_id' => $listing_id]);
+                            $queued++;
+                        }
+                    }
+                } else {
+                    $listing_id = get_post_meta($post_id, '_zicer_listing_id', true);
+                    if ($listing_id) {
+                        Zicer_Queue::add($post_id, 'delete', ['listing_id' => $listing_id]);
+                        $queued++;
+                    }
+                }
+            }
+        }
+
+        $redirect_url = add_query_arg([
+            'zicer_bulk_action' => $action,
+            'zicer_queued' => $queued,
+        ], $redirect_url);
+
+        return $redirect_url;
+    }
+
+    /**
+     * Display bulk action admin notices
+     */
+    public static function bulk_action_notices() {
+        if (empty($_GET['zicer_bulk_action']) || empty($_GET['zicer_queued'])) {
+            return;
+        }
+
+        $action = sanitize_text_field($_GET['zicer_bulk_action']);
+        $queued = (int) $_GET['zicer_queued'];
+
+        if ($action === 'zicer_sync') {
+            $message = sprintf(
+                /* translators: %d: number of items */
+                _n('%d item added to sync queue.', '%d items added to sync queue.', $queued, 'zicer-woo-sync'),
+                $queued
+            );
+        } elseif ($action === 'zicer_remove') {
+            $message = sprintf(
+                /* translators: %d: number of items */
+                _n('%d item added to removal queue.', '%d items added to removal queue.', $queued, 'zicer-woo-sync'),
+                $queued
+            );
+        } else {
+            return;
+        }
+
+        printf('<div class="notice notice-success is-dismissible"><p>%s</p></div>', esc_html($message));
     }
 
     /**
