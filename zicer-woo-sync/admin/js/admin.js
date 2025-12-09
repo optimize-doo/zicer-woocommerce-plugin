@@ -300,6 +300,10 @@
 
         // Remove queue item
         $(document).on('click', '.zicer-remove-queue-item', function() {
+            if (!confirm('Remove this item from the queue?')) {
+                return;
+            }
+
             var $btn = $(this);
             var $row = $btn.closest('tr');
             var id = $btn.data('id');
