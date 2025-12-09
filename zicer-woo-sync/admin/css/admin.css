@@ -124,6 +124,33 @@
     margin-left: 5px;
 }
 
+/* Select2 customization */
+.zicer-categories .select2-container {
+    max-width: 400px;
+}
+
+/* Style disabled options as section headers in Select2 */
+.select2-container--default .select2-results__option[aria-disabled=true] {
+    color: #999;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    margin-top: 4px;
+}
+
+.select2-container--default .select2-results__option[aria-disabled=true]:first-child {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 8px;
+}
+
+/* Indent selectable child options */
+.select2-container--default .select2-results__option:not([aria-disabled=true]) {
+    padding-left: 20px;
+}
+
 /* Log status badges */
 .zicer-log-status {
     display: inline-block;

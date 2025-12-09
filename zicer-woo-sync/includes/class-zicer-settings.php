@@ -170,16 +170,31 @@ class Zicer_Settings {
         }
 
         wp_enqueue_style(
+            'select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+            [],
+            '4.1.0'
+        );
+
+        wp_enqueue_style(
             'zicer-admin',
             ZICER_WOO_PLUGIN_URL . 'admin/css/admin.css',
-            [],
+            ['select2'],
             ZICER_WOO_VERSION
+        );
+
+        wp_enqueue_script(
+            'select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+            ['jquery'],
+            '4.1.0',
+            true
         );
 
         wp_enqueue_script(
             'zicer-admin',
             ZICER_WOO_PLUGIN_URL . 'admin/js/admin.js',
-            ['jquery'],
+            ['jquery', 'select2'],
             ZICER_WOO_VERSION,
             true
         );
