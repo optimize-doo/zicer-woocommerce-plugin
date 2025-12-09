@@ -164,6 +164,44 @@
     };
 
     /**
+     * Show toast notification in meta box
+     *
+     * @param {string} message - Message to display
+     * @param {string} type - 'success' or 'error'
+     */
+    function showMetaBoxToast(message, type) {
+        var $metaBox = $('#zicer_sync_meta .inside');
+        if (!$metaBox.length) {
+            return;
+        }
+
+        // Remove existing toast
+        $metaBox.find('.zicer-toast').remove();
+
+        var icon = type === 'success' ? '✓' : '✕';
+        var $toast = $('<div class="zicer-toast zicer-toast-' + type + '">' +
+            '<span class="zicer-toast-message">' + icon + ' ' + message + '</span>' +
+            '<button type="button" class="zicer-toast-close">&times;</button>' +
+            '</div>');
+
+        // Close button handler
+        $toast.find('.zicer-toast-close').on('click', function() {
+            $toast.fadeOut(200, function() {
+                $(this).remove();
+            });
+        });
+
+        $metaBox.prepend($toast);
+
+        // Auto-remove after 4 seconds
+        setTimeout(function() {
+            $toast.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 4000);
+    }
+
+    /**
      * Validate API token format
      * Token format: zic_ + 32 hex characters = 36 total
      * Example: zic_81f5c4a7840e228b098f77d1e22636dd
@@ -380,41 +418,59 @@
             });
         });
 
-        // Enqueue product
-        $('.zicer-enqueue').on('click', function() {
+        // Enqueue product (delegated event)
+        $(document).on('click', '.zicer-enqueue', function() {
             var $btn = $(this);
             var productId = $btn.data('product-id');
 
-            $btn.prop('disabled', true);
+            $btn.prop('disabled', true).text(zicerAdmin.strings.loading);
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_enqueue_product',
                 nonce: zicerAdmin.nonce,
                 product_id: productId
             }, function(response) {
-                location.reload();
+                if (response.success) {
+                    // Switch button to dequeue
+                    $btn.removeClass('zicer-enqueue').addClass('zicer-dequeue')
+                        .text(zicerAdmin.strings.remove_from_queue)
+                        .prop('disabled', false);
+                    showMetaBoxToast(zicerAdmin.strings.added_to_queue_single, 'success');
+                } else {
+                    $btn.prop('disabled', false).text(zicerAdmin.strings.add_to_queue);
+                    showMetaBoxToast(response.data || zicerAdmin.strings.error, 'error');
+                }
             }).fail(function() {
-                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.add_to_queue);
+                showMetaBoxToast(zicerAdmin.strings.connection_failed, 'error');
             });
         });
 
-        // Dequeue product
-        $('.zicer-dequeue').on('click', function() {
+        // Dequeue product (delegated event)
+        $(document).on('click', '.zicer-dequeue', function() {
             var $btn = $(this);
             var productId = $btn.data('product-id');
 
-            $btn.prop('disabled', true);
+            $btn.prop('disabled', true).text(zicerAdmin.strings.loading);
 
             $.post(zicerAdmin.ajaxUrl, {
                 action: 'zicer_dequeue_product',
                 nonce: zicerAdmin.nonce,
                 product_id: productId
             }, function(response) {
-                location.reload();
+                if (response.success) {
+                    // Switch button to enqueue
+                    $btn.removeClass('zicer-dequeue').addClass('zicer-enqueue')
+                        .text(zicerAdmin.strings.add_to_queue)
+                        .prop('disabled', false);
+                    showMetaBoxToast(zicerAdmin.strings.removed_from_queue, 'success');
+                } else {
+                    $btn.prop('disabled', false).text(zicerAdmin.strings.remove_from_queue);
+                    showMetaBoxToast(response.data || zicerAdmin.strings.error, 'error');
+                }
             }).fail(function() {
-                ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
-                $btn.prop('disabled', false);
+                $btn.prop('disabled', false).text(zicerAdmin.strings.remove_from_queue);
+                showMetaBoxToast(zicerAdmin.strings.connection_failed, 'error');
             });
         });
 

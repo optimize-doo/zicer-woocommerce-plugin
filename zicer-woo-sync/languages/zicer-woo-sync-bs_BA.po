@@ -910,3 +910,19 @@ msgstr "Dodaj u obradu"
 #: includes/class-zicer-settings.php:770
 msgid "Product not found."
 msgstr "Proizvod nije pronađen."
+
+#: includes/class-zicer-settings.php:272
+msgid "Add to Queue"
+msgstr "Dodaj u obradu"
+
+#: includes/class-zicer-settings.php:273
+msgid "Remove from Queue"
+msgstr "Ukloni iz obrade"
+
+#: includes/class-zicer-settings.php:274
+msgid "Added to queue"
+msgstr "Dodano u obradu"
+
+#: includes/class-zicer-settings.php:275
+msgid "Removed from queue"
+msgstr "Uklonjeno iz obrade"
