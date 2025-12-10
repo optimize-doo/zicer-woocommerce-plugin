@@ -926,3 +926,324 @@ msgstr "Dodano u obradu"
 #: includes/class-zicer-settings.php:275
 msgid "Removed from queue"
 msgstr "Uklonjeno iz obrade"
+
+#: admin/views/help-page.php
+#: includes/class-zicer-settings.php
+msgid "Help"
+msgstr "Pomoć"
+
+#: admin/views/help-page.php
+msgid "Quick Start"
+msgstr "Brzi početak"
+
+#: admin/views/help-page.php
+msgid "Get API Token"
+msgstr "Nabavite API token"
+
+#: admin/views/help-page.php
+msgid "Log in to %s, go to profile settings, and generate an API token."
+msgstr "Prijavite se na %s, idite na postavke profila i generirajte API token."
+
+#: admin/views/help-page.php
+msgid "Connect"
+msgstr "Povežite se"
+
+#: admin/views/help-page.php
+msgid "Go to %s, enter your token, and click Connect."
+msgstr "Idite na %s, unesite vaš token i kliknite Poveži."
+
+#: admin/views/help-page.php
+msgid "Map Categories"
+msgstr "Mapirajte kategorije"
+
+#: admin/views/help-page.php
+msgid "Go to %s and map your WooCommerce categories to ZICER categories."
+msgstr "Idite na %s i mapirajte vaše WooCommerce kategorije na ZICER kategorije."
+
+#: admin/views/help-page.php
+msgid "Sync Products"
+msgstr "Sinkronizirajte proizvode"
+
+#: admin/views/help-page.php
+msgid "Enable products for sync from the product edit page or use bulk actions."
+msgstr "Omogućite sinkronizaciju proizvoda sa stranice za uređivanje proizvoda ili koristite grupne akcije."
+
+#: admin/views/help-page.php
+msgid "Settings Explained"
+msgstr "Objašnjenje postavki"
+
+#: admin/views/help-page.php
+msgid "Connection"
+msgstr "Konekcija"
+
+#: admin/views/help-page.php
+msgid "API Token"
+msgstr "API token"
+
+#: admin/views/help-page.php
+msgid "Your ZICER API token starting with \"zic_\". Required to sync products."
+msgstr "Vaš ZICER API token koji počinje sa \"zic_\". Potreban za sinkronizaciju proizvoda."
+
+#: admin/views/help-page.php
+msgid "Sync Options"
+msgstr "Opcije sinkronizacije"
+
+#: admin/views/help-page.php
+msgid "Real-time Sync"
+msgstr "Sinkronizacija u realnom vremenu"
+
+#: admin/views/help-page.php
+msgid "When enabled, products are automatically synced when you save them in WooCommerce."
+msgstr "Kada je omogućeno, proizvodi se automatski sinkroniziraju kada ih sačuvate u WooCommerce-u."
+
+#: admin/views/help-page.php
+msgid "Delete on Unavailable"
+msgstr "Obriši kad nije dostupno"
+
+#: admin/views/help-page.php
+msgid "Automatically remove listings from ZICER when products go out of stock or are unpublished."
+msgstr "Automatski ukloni oglase sa ZICER-a kada proizvodi postanu nedostupni ili nisu objavljeni."
+
+#: admin/views/help-page.php
+msgid "Stock Threshold"
+msgstr "Prag zaliha"
+
+#: admin/views/help-page.php
+msgid "Minimum stock quantity for a product to be considered available on ZICER."
+msgstr "Minimalna količina zaliha da bi proizvod bio smatran dostupnim na ZICER-u."
+
+#: admin/views/help-page.php
+msgid "Product Data"
+msgstr "Podaci o proizvodu"
+
+#: admin/views/help-page.php
+msgid "Default Condition"
+msgstr "Zadano stanje"
+
+#: admin/views/help-page.php
+msgid "Product condition used when not specified per-product (New, Used, Open box, etc.)."
+msgstr "Stanje proizvoda koje se koristi kada nije navedeno za pojedinačni proizvod (Novo, Korišteno, Otvoreno, itd.)."
+
+#: admin/views/help-page.php
+msgid "Price Conversion"
+msgstr "Konverzija cijena"
+
+#: admin/views/help-page.php
+msgid "Multiplier to convert your prices to KM (Convertible Mark). Set to 1 if already in KM."
+msgstr "Množitelj za konverziju cijena u KM (Konvertibilna marka). Postavite na 1 ako su već u KM."
+
+#: admin/views/help-page.php
+msgid "Title Truncation"
+msgstr "Skraćivanje naslova"
+
+#: admin/views/help-page.php
+msgid "ZICER has a title length limit. Enable to automatically truncate long titles."
+msgstr "ZICER ima ograničenje dužine naslova. Omogućite za automatsko skraćivanje dugih naslova."
+
+#: admin/views/help-page.php
+msgid "Description"
+msgstr "Opis"
+
+#: admin/views/help-page.php
+msgid "Description Mode"
+msgstr "Način opisa"
+
+#: admin/views/help-page.php
+msgid "Product description"
+msgstr "Opis proizvoda"
+
+#: admin/views/help-page.php
+msgid "Use WooCommerce product description as-is."
+msgstr "Koristi WooCommerce opis proizvoda kakav jest."
+
+#: admin/views/help-page.php
+msgid "Replace"
+msgstr "Zamijeni"
+
+#: admin/views/help-page.php
+msgid "Use template instead of product description."
+msgstr "Koristi predložak umjesto opisa proizvoda."
+
+#: admin/views/help-page.php
+msgid "Prepend"
+msgstr "Dodaj na početak"
+
+#: admin/views/help-page.php
+msgid "Add template before product description."
+msgstr "Dodaj predložak prije opisa proizvoda."
+
+#: admin/views/help-page.php
+msgid "Append"
+msgstr "Dodaj na kraj"
+
+#: admin/views/help-page.php
+msgid "Add template after product description."
+msgstr "Dodaj predložak nakon opisa proizvoda."
+
+#: admin/views/help-page.php
+msgid "Template Variables"
+msgstr "Varijable predloška"
+
+#: admin/views/help-page.php
+msgid "Images"
+msgstr "Slike"
+
+#: admin/views/help-page.php
+msgid "Sync Images"
+msgstr "Sinkroniziraj slike"
+
+#: admin/views/help-page.php
+msgid "Upload product images to ZICER. Disable to create listings without images."
+msgstr "Učitaj slike proizvoda na ZICER. Onemogućite za kreiranje oglasa bez slika."
+
+#: admin/views/help-page.php
+msgid "Max Images"
+msgstr "Maksimalno slika"
+
+#: admin/views/help-page.php
+msgid "Maximum number of images to sync per product. ZICER may have limits."
+msgstr "Maksimalan broj slika za sinkronizaciju po proizvodu. ZICER može imati ograničenja."
+
+#: admin/views/help-page.php
+msgid "Category Mapping"
+msgstr "Mapiranje kategorija"
+
+#: admin/views/help-page.php
+msgid "Each WooCommerce category must be mapped to a ZICER category before products can sync."
+msgstr "Svaka WooCommerce kategorija mora biti mapirana na ZICER kategoriju prije nego što se proizvodi mogu sinkronizirati."
+
+#: admin/views/help-page.php
+msgid "Products without a mapped category will fail to sync."
+msgstr "Proizvodi bez mapirane kategorije neće se moći sinkronizirati."
+
+#: admin/views/help-page.php
+msgid "Use \"Suggest\" button for automatic category suggestions."
+msgstr "Koristite dugme \"Predloži\" za automatske prijedloge kategorija."
+
+#: admin/views/help-page.php
+msgid "Child categories inherit parent mapping if not explicitly set."
+msgstr "Podkategorije nasljeđuju mapiranje roditeljske kategorije ako nije eksplicitno postavljeno."
+
+#: admin/views/help-page.php
+msgid "Sync Queue"
+msgstr "Red za sinkronizaciju"
+
+#: admin/views/help-page.php
+msgid "The queue shows products waiting to be synced with ZICER."
+msgstr "Red pokazuje proizvode koji čekaju na sinkronizaciju sa ZICER-om."
+
+#: admin/views/help-page.php
+msgid "Pending"
+msgstr "Na čekanju"
+
+#: admin/views/help-page.php
+msgid "Products waiting in queue to be processed."
+msgstr "Proizvodi koji čekaju u redu za obradu."
+
+#: admin/views/help-page.php
+msgid "Processing"
+msgstr "U obradi"
+
+#: admin/views/help-page.php
+msgid "Currently being synced with ZICER."
+msgstr "Trenutno se sinkronizira sa ZICER-om."
+
+#: admin/views/help-page.php
+msgid "Failed"
+msgstr "Neuspjelo"
+
+#: admin/views/help-page.php
+msgid "Sync failed. Check the error message and retry or fix the issue."
+msgstr "Sinkronizacija nije uspjela. Provjerite poruku greške i pokušajte ponovo ili riješite problem."
+
+#: admin/views/help-page.php
+msgid "The queue processes automatically via WordPress cron, or you can process manually."
+msgstr "Red se automatski obrađuje putem WordPress cron-a, ili možete obraditi ručno."
+
+#: admin/views/help-page.php
+msgid "Per-Product Settings"
+msgstr "Postavke po proizvodu"
+
+#: admin/views/help-page.php
+msgid "Each product has a \"ZICER Sync\" panel in the sidebar:"
+msgstr "Svaki proizvod ima \"ZICER Sync\" panel u bočnoj traci:"
+
+#: admin/views/help-page.php
+msgid "ZICER Category"
+msgstr "ZICER kategorija"
+
+#: admin/views/help-page.php
+msgid "Override the mapped category for this specific product."
+msgstr "Zaobiđi mapiranu kategoriju za ovaj specifični proizvod."
+
+#: admin/views/help-page.php
+msgid "Exclude from sync"
+msgstr "Isključi iz sinkronizacije"
+
+#: admin/views/help-page.php
+msgid "Prevent this product from syncing to ZICER."
+msgstr "Spriječi sinkronizaciju ovog proizvoda na ZICER."
+
+#: admin/views/help-page.php
+msgid "In Product Data → General tab:"
+msgstr "U Podaci o proizvodu → Općenito tab:"
+
+#: admin/views/help-page.php
+msgid "ZICER Condition"
+msgstr "ZICER Stanje"
+
+#: admin/views/help-page.php
+msgid "Override the default condition for this product."
+msgstr "Zaobiđi zadano stanje za ovaj proizvod."
+
+#: admin/views/help-page.php
+msgid "Troubleshooting"
+msgstr "Rješavanje problema"
+
+#: admin/views/help-page.php
+msgid "Common Issues"
+msgstr "Česti problemi"
+
+#: admin/views/help-page.php
+msgid "Connection failed"
+msgstr "Konekcija nije uspjela"
+
+#: admin/views/help-page.php
+msgid "Check that your API token is correct and not expired. Generate a new one from zicer.ba if needed."
+msgstr "Provjerite da li je vaš API token ispravan i nije istekao. Generirajte novi sa zicer.ba ako je potrebno."
+
+#: admin/views/help-page.php
+msgid "Product not syncing"
+msgstr "Proizvod se ne sinkronizira"
+
+#: admin/views/help-page.php
+msgid "Ensure the product category is mapped to a ZICER category and the product is not excluded."
+msgstr "Provjerite da li je kategorija proizvoda mapirana na ZICER kategoriju i da proizvod nije isključen."
+
+#: admin/views/help-page.php
+msgid "Rate limit exceeded"
+msgstr "Prekoračeno ograničenje zahtjeva"
+
+#: admin/views/help-page.php
+msgid "ZICER has request limits that vary by account tier. The plugin handles this automatically, but bulk syncs may take time."
+msgstr "ZICER ima ograničenja zahtjeva koja ovise o nivou računa. Plugin ovo automatski upravlja, ali grupne sinkronizacije mogu potrajati."
+
+#: admin/views/help-page.php
+msgid "Images not uploading"
+msgstr "Slike se ne učitavaju"
+
+#: admin/views/help-page.php
+msgid "Check that \"Sync Images\" is enabled and images are accessible. Large images may timeout."
+msgstr "Provjerite da li je \"Sinkroniziraj slike\" omogućeno i da su slike dostupne. Velike slike mogu izazvati timeout."
+
+#: admin/views/help-page.php
+msgid "Support"
+msgstr "Podrška"
+
+#: admin/views/help-page.php
+msgid "For bug reports and feature requests, visit %s."
+msgstr "Za prijavu grešaka i zahtjeve za nove funkcije, posjetite %s."
+
+#: admin/views/help-page.php
+msgid "Version: %s"
+msgstr "Verzija: %s"

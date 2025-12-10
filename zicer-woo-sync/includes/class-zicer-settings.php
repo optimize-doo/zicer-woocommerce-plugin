@@ -90,6 +90,15 @@ class Zicer_Settings {
             'zicer-log',
             [__CLASS__, 'render_log_page']
         );
+
+        add_submenu_page(
+            'zicer-sync',
+            __('Help', 'zicer-woo-sync'),
+            __('Help', 'zicer-woo-sync'),
+            'manage_woocommerce',
+            'zicer-help',
+            [__CLASS__, 'render_help_page']
+        );
     }
 
     /**
@@ -876,6 +885,13 @@ class Zicer_Settings {
      */
     public static function render_log_page() {
         include ZICER_WOO_PLUGIN_DIR . 'admin/views/sync-log.php';
+    }
+
+    /**
+     * Render help page
+     */
+    public static function render_help_page() {
+        include ZICER_WOO_PLUGIN_DIR . 'admin/views/help-page.php';
     }
 
     /**
