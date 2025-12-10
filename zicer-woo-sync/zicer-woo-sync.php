@@ -48,7 +48,7 @@ if (file_exists(ZICER_WOO_PLUGIN_DIR . 'vendor/autoload.php')) {
     require ZICER_WOO_PLUGIN_DIR . 'vendor/autoload.php';
 
     $zicer_update_checker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-        'https://github.com/optimize-doo/zicer-woo-sync/',  // TODO: Update with actual repo URL
+        'https://github.com/optimize-doo/zicer-woocommerce-plugin/',
         __FILE__,
         'zicer-woo-sync'
     );
