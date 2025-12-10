@@ -1,11 +1,12 @@
-name: Build Release
+name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,21 +18,39 @@ jobs:
           php-version: '8.1'
           tools: composer
 
-      - name: Install dependencies
+      - name: Install dependencies (production only)
         run: |
           cd zicer-woo-sync
           composer install --no-dev --optimize-autoloader
 
       - name: Create plugin ZIP
         run: |
-          zip -r zicer-woo-sync.zip zicer-woo-sync \
-            -x "zicer-woo-sync/.git/*" \
-            -x "zicer-woo-sync/.gitignore" \
-            -x "zicer-woo-sync/composer.lock"
+          cd zicer-woo-sync
+          zip -r ../zicer-woo-sync.zip . \
+            -x "*.git*" \
+            -x "composer.json" \
+            -x "composer.lock" \
+            -x "*.po" \
+            -x "*.pot" \
+            -x "phpcs.xml*" \
+            -x "phpunit.xml*" \
+            -x ".editorconfig" \
+            -x "tests/*" \
+            -x "node_modules/*"
 
-      - name: Upload release asset
-        uses: softprops/action-gh-release@v1
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          # Extract section for this version from CHANGELOG.md
+          sed -n "/## \[${VERSION}\]/,/## \[/p" zicer-woo-sync/CHANGELOG.md | sed '$d' > release_notes.md
+          # If no specific version found, use the first section
+          if [ ! -s release_notes.md ]; then
+            sed -n '/## \[/,/## \[/p' zicer-woo-sync/CHANGELOG.md | sed '$d' > release_notes.md
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
           files: zicer-woo-sync.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body_path: release_notes.md
