@@ -3,7 +3,7 @@
  * Plugin Name: ZICER WooCommerce Sync
  * Plugin URI: https://zicer.ba
  * Description: Synchronize WooCommerce products with ZICER marketplace
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: ZICER
  * Text Domain: zicer-woo-sync
  * Domain Path: /languages
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('ZICER_WOO_VERSION', '1.0.0');
+define('ZICER_WOO_VERSION', '1.0.1');
 define('ZICER_WOO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ZICER_WOO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('ZICER_API_BASE_URL', 'https://api.zicer.ba/api');

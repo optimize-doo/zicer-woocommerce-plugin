@@ -2,6 +2,14 @@
 
 All notable changes to ZICER WooCommerce Sync will be documented in this file.
 
+## [1.0.1] - 2024-12-10
+
+### Added
+- Help page with user manual (ZICER Sync → Help)
+- Plugin readme.txt for WordPress plugin details
+- Bilingual documentation (English/Bosnian)
+- GPL-2.0 license file
+
 ## [1.0.0] - 2024-12-10
 
 ### Added

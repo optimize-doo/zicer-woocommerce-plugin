@@ -4,7 +4,7 @@ Tags: woocommerce, marketplace, sync, zicer, products
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,12 @@ Ne, odspajanje dodatka ne briše sinkronizirane oglase sa ZICER-a. Možete ih up
 
 == Changelog ==
 
+= 1.0.1 =
+* Help page with user manual / Stranica pomoći sa korisničkim uputstvom
+* Plugin readme.txt for WordPress plugin details / Plugin readme.txt za detalje WordPress dodatka
+* Bilingual documentation / Dvojezična dokumentacija
+* GPL-2.0 license file / GPL-2.0 licenca
+
 = 1.0.0 =
 * Initial release / Inicijalno izdanje
 * Product synchronization with ZICER marketplace / Sinkronizacija proizvoda sa ZICER marketplace-om
@@ -125,6 +131,10 @@ Ne, odspajanje dodatka ne briše sinkronizirane oglase sa ZICER-a. Možete ih up
 * Bosnian and English translations / Bosanski i engleski prijevodi
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Added help page and documentation.
+Dodana stranica pomoći i dokumentacija.
 
 = 1.0.0 =
 Initial release of ZICER WooCommerce Sync plugin.
