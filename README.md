@@ -12,7 +12,7 @@ WordPress/WooCommerce plugin for synchronizing products with the ZICER marketpla
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/aarsla/zicer.woo/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/optimize-doo/zicer-woo-sync/releases)
 2. In WordPress admin, go to **Plugins → Add New → Upload Plugin**
 3. Upload the `zicer-woo-sync.zip` file
 4. Click **Install Now**, then **Activate**
