@@ -37,6 +37,10 @@ class Zicer_Settings {
         add_action('wp_ajax_zicer_enqueue_product', [__CLASS__, 'ajax_enqueue_product']);
         add_action('wp_ajax_zicer_dequeue_product', [__CLASS__, 'ajax_dequeue_product']);
         add_action('wp_ajax_zicer_save_product_category', [__CLASS__, 'ajax_save_product_category']);
+        add_action('wp_ajax_zicer_get_promotion_price', [__CLASS__, 'ajax_get_promotion_price']);
+        add_action('wp_ajax_zicer_promote_listing', [__CLASS__, 'ajax_promote_listing']);
+        add_action('wp_ajax_zicer_get_listing_promo_status', [__CLASS__, 'ajax_get_listing_promo_status']);
+        add_action('wp_ajax_zicer_get_credits', [__CLASS__, 'ajax_get_credits']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
         add_action('admin_post_zicer_accept_terms', [__CLASS__, 'handle_accept_terms']);
     }
@@ -282,6 +286,32 @@ class Zicer_Settings {
                 'remove_from_queue'    => __('Remove from Queue', 'zicer-woo-sync'),
                 'added_to_queue_single'=> __('Added to queue', 'zicer-woo-sync'),
                 'removed_from_queue'   => __('Removed from queue', 'zicer-woo-sync'),
+                // Promotion strings
+                'promote'              => __('Promote', 'zicer-woo-sync'),
+                'promoting'            => __('Promoting...', 'zicer-woo-sync'),
+                'promoted'             => __('Promoted!', 'zicer-woo-sync'),
+                'promotion_success'    => __('Listing promoted successfully!', 'zicer-woo-sync'),
+                'promotion_failed'     => __('Promotion failed', 'zicer-woo-sync'),
+                'premium'              => __('Premium', 'zicer-woo-sync'),
+                'super_premium'        => __('Super Premium', 'zicer-woo-sync'),
+                'credits'              => __('credits', 'zicer-woo-sync'),
+                'your_balance'         => __('Your balance:', 'zicer-woo-sync'),
+                'cost'                 => __('Cost:', 'zicer-woo-sync'),
+                'days'                 => __('days', 'zicer-woo-sync'),
+                'insufficient_credits' => __('Insufficient credits', 'zicer-woo-sync'),
+                'top_up_credits'       => __('Top up credits', 'zicer-woo-sync'),
+                'select_duration'      => __('Select duration', 'zicer-woo-sync'),
+                'select_type'          => __('Select type', 'zicer-woo-sync'),
+                'promotion_type'       => __('Promotion type', 'zicer-woo-sync'),
+                'promotion_duration'   => __('Duration', 'zicer-woo-sync'),
+                'confirm_promotion'    => __('Promote this listing for %d days (%s) for %d credits?', 'zicer-woo-sync'),
+                'not_synced'           => __('Product not synced', 'zicer-woo-sync'),
+                'sync_first'           => __('Sync this product to ZICER first before promoting.', 'zicer-woo-sync'),
+                'select_variation'     => __('Select a variation', 'zicer-woo-sync'),
+                'loading_status'       => __('Loading...', 'zicer-woo-sync'),
+                'expires'              => __('Expires:', 'zicer-woo-sync'),
+                'days_remaining'       => __('%d days remaining', 'zicer-woo-sync'),
+                'hours_remaining'      => __('%d hours remaining', 'zicer-woo-sync'),
             ],
         ]);
     }
@@ -857,6 +887,129 @@ class Zicer_Settings {
 
         update_post_meta($product_id, '_zicer_category', $category);
         wp_send_json_success();
+    }
+
+    /**
+     * AJAX: Get promotion price preview
+     */
+    public static function ajax_get_promotion_price() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $days  = isset($_POST['days']) ? (int) $_POST['days'] : 1;
+        $super = isset($_POST['super']) && $_POST['super'] === 'true';
+
+        $api    = Zicer_API_Client::instance();
+        $result = $api->get_promotion_price($days, $super);
+
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+
+        wp_send_json_success($result);
+    }
+
+    /**
+     * AJAX: Promote a listing
+     */
+    public static function ajax_promote_listing() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        $days       = isset($_POST['days']) ? (int) $_POST['days'] : 1;
+        $super      = isset($_POST['super']) && $_POST['super'] === 'true';
+
+        if (!$product_id) {
+            wp_send_json_error(__('Invalid product ID.', 'zicer-woo-sync'));
+        }
+
+        $listing_id = get_post_meta($product_id, '_zicer_listing_id', true);
+        if (!$listing_id) {
+            wp_send_json_error(__('Product is not synced to ZICER.', 'zicer-woo-sync'));
+        }
+
+        $api    = Zicer_API_Client::instance();
+        $result = $api->promote_listing($listing_id, $days, $super);
+
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+
+        Zicer_Logger::log('info', sprintf(
+            'Promoted listing %s for %d days (%s)',
+            $listing_id,
+            $days,
+            $super ? 'Super Premium' : 'Premium'
+        ));
+
+        wp_send_json_success($result);
+    }
+
+    /**
+     * AJAX: Get listing promotion status
+     */
+    public static function ajax_get_listing_promo_status() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('edit_products')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $product_id = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+        if (!$product_id) {
+            wp_send_json_error(__('Invalid product ID.', 'zicer-woo-sync'));
+        }
+
+        $listing_id = get_post_meta($product_id, '_zicer_listing_id', true);
+        if (!$listing_id) {
+            wp_send_json_error(__('Product is not synced to ZICER.', 'zicer-woo-sync'));
+        }
+
+        $api     = Zicer_API_Client::instance();
+        $listing = $api->get_listing($listing_id);
+
+        if (is_wp_error($listing)) {
+            wp_send_json_error($listing->get_error_message());
+        }
+
+        $is_promoted    = !empty($listing['premium']) || !empty($listing['superPremium']);
+        $promotion_type = !empty($listing['superPremium']) ? 'super' : 'premium';
+        $featured_until = $listing['featuredUntil'] ?? '';
+
+        wp_send_json_success([
+            'is_promoted'     => $is_promoted,
+            'promotion_type'  => $is_promoted ? $promotion_type : '',
+            'featured_until'  => $featured_until,
+        ]);
+    }
+
+    /**
+     * AJAX: Get user credits
+     */
+    public static function ajax_get_credits() {
+        check_ajax_referer('zicer_admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(__('You do not have permission.', 'zicer-woo-sync'));
+        }
+
+        $api    = Zicer_API_Client::instance();
+        $result = $api->get_credits();
+
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+
+        wp_send_json_success([
+            'credits' => $result['credits'] ?? 0,
+        ]);
     }
 
     /**

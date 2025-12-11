@@ -291,6 +291,15 @@ class Zicer_Product_Meta {
             'side',
             'default'
         );
+
+        add_meta_box(
+            'zicer_promote_meta',
+            __('ZICER Promote', 'zicer-woo-sync'),
+            [__CLASS__, 'render_promote_meta_box'],
+            'product',
+            'side',
+            'default'
+        );
     }
 
     /**
@@ -323,6 +332,25 @@ class Zicer_Product_Meta {
      * @param WP_Post $post The post object.
      */
     public static function render_meta_box($post) {
+        // Check if connected first
+        $is_connected    = (bool) get_option('zicer_api_token');
+        $terms_accepted  = (bool) get_option('zicer_terms_accepted');
+        if (!$is_connected) {
+            $settings_url = $terms_accepted
+                ? admin_url('admin.php?page=zicer-sync')
+                : admin_url('admin.php?page=zicer-sync');
+            ?>
+            <div class="zicer-product-meta">
+                <p>
+                    <a href="<?php echo esc_url($settings_url); ?>" class="button" style="width: 100%; text-align: center;">
+                        <?php esc_html_e('Connect to ZICER', 'zicer-woo-sync'); ?>
+                    </a>
+                </p>
+            </div>
+            <?php
+            return;
+        }
+
         $product           = wc_get_product($post->ID);
         $is_variable       = $product && $product->is_type('variable');
         $listing_id        = get_post_meta($post->ID, '_zicer_listing_id', true);
@@ -576,6 +604,297 @@ class Zicer_Product_Meta {
                             style="width: 100%;"
                             data-product-id="<?php echo esc_attr($post->ID); ?>">
                         <?php esc_html_e('Remove from ZICER', 'zicer-woo-sync'); ?>
+                    </button>
+                </p>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render promote meta box content
+     *
+     * @param WP_Post $post The post object.
+     */
+    public static function render_promote_meta_box($post) {
+        $product    = wc_get_product($post->ID);
+        $listing_id = get_post_meta($post->ID, '_zicer_listing_id', true);
+
+        // For variable products, collect synced variations
+        $is_variable        = $product && $product->is_type('variable');
+        $synced_variations  = [];
+        if ($is_variable) {
+            foreach ($product->get_children() as $variation_id) {
+                $var_listing_id = get_post_meta($variation_id, '_zicer_listing_id', true);
+                if ($var_listing_id) {
+                    $variation = wc_get_product($variation_id);
+                    if ($variation) {
+                        $synced_variations[] = [
+                            'id'         => $variation_id,
+                            'listing_id' => $var_listing_id,
+                            'name'       => $variation->get_name(),
+                        ];
+                    }
+                }
+            }
+            if (!empty($synced_variations)) {
+                $listing_id = 'variations';
+            }
+        }
+
+        // Check if connected
+        $is_connected   = (bool) get_option('zicer_api_token');
+        $terms_accepted = (bool) get_option('zicer_terms_accepted');
+
+        // Check current promotion status from API (for simple products)
+        $is_promoted     = false;
+        $promotion_type  = '';
+        $featured_until  = '';
+        if ($is_connected && $listing_id && $listing_id !== 'variations') {
+            $api     = Zicer_API_Client::instance();
+            $listing = $api->get_listing($listing_id);
+            if (!is_wp_error($listing)) {
+                if (!empty($listing['premium']) || !empty($listing['superPremium'])) {
+                    $is_promoted    = true;
+                    $promotion_type = !empty($listing['superPremium']) ? 'super' : 'premium';
+                    $featured_until = $listing['featuredUntil'] ?? '';
+                }
+            }
+        }
+
+        // Promotion duration options (days => credits for premium)
+        $duration_options = [
+            1 => 10,
+            2 => 20,
+            3 => 30,
+            5 => 50,
+            7 => 70,
+        ];
+        ?>
+        <div class="zicer-promote-meta"
+             data-is-variable="<?php echo $is_variable ? '1' : '0'; ?>"
+             data-variations="<?php echo esc_attr(wp_json_encode($synced_variations)); ?>">
+            <?php if (!$is_connected) : ?>
+                <p>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=zicer-sync')); ?>" class="button" style="width: 100%; text-align: center;">
+                        <?php esc_html_e('Connect to ZICER', 'zicer-woo-sync'); ?>
+                    </a>
+                </p>
+            <?php elseif (!$listing_id) : ?>
+                <p class="zicer-status pending">
+                    <?php esc_html_e('Sync product first', 'zicer-woo-sync'); ?>
+                </p>
+                <p class="description">
+                    <?php esc_html_e('This product must be synced to ZICER before it can be promoted.', 'zicer-woo-sync'); ?>
+                </p>
+            <?php elseif ($is_variable && !empty($synced_variations)) : ?>
+                <!-- Variation selector -->
+                <p>
+                    <label for="zicer_promo_variation"><strong><?php esc_html_e('Variation', 'zicer-woo-sync'); ?></strong></label>
+                </p>
+                <p>
+                    <select name="zicer_promo_variation" id="zicer_promo_variation" style="width: 100%;">
+                        <option value=""><?php esc_html_e('-- Select variation --', 'zicer-woo-sync'); ?></option>
+                        <?php foreach ($synced_variations as $var) : ?>
+                            <option value="<?php echo esc_attr($var['id']); ?>"
+                                    data-listing-id="<?php echo esc_attr($var['listing_id']); ?>">
+                                <?php echo esc_html($var['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+
+                <!-- Variation promotion status (loaded via JS) -->
+                <div class="zicer-variation-promo-status" style="display: none;"></div>
+
+                <!-- Promotion form (shown when variation selected and not promoted) -->
+                <div class="zicer-variation-promo-form" style="display: none;">
+                    <!-- Promotion Type -->
+                    <p>
+                        <label><strong><?php esc_html_e('Type', 'zicer-woo-sync'); ?></strong></label>
+                    </p>
+                    <div class="zicer-promo-types">
+                        <label class="zicer-radio-label">
+                            <input type="radio" name="zicer_promo_type" value="premium" checked>
+                            <?php esc_html_e('Premium', 'zicer-woo-sync'); ?>
+                        </label>
+                        <label class="zicer-radio-label zicer-super-premium">
+                            <input type="radio" name="zicer_promo_type" value="super">
+                            <?php esc_html_e('Super Premium', 'zicer-woo-sync'); ?>
+                        </label>
+                    </div>
+
+                    <!-- Duration -->
+                    <p>
+                        <label for="zicer_promo_days"><strong><?php esc_html_e('Duration', 'zicer-woo-sync'); ?></strong></label>
+                    </p>
+                    <p>
+                        <select name="zicer_promo_days" id="zicer_promo_days" style="width: 100%;">
+                            <?php foreach ($duration_options as $days => $credits) : ?>
+                                <option value="<?php echo esc_attr($days); ?>">
+                                    <?php
+                                    printf(
+                                        /* translators: %d: number of days */
+                                        esc_html(_n('%d day', '%d days', $days, 'zicer-woo-sync')),
+                                        $days
+                                    );
+                                    ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
+
+                    <!-- Price Preview -->
+                    <div class="zicer-promo-preview" style="display: none;">
+                        <p class="zicer-promo-cost">
+                            <span class="label"><?php esc_html_e('Cost:', 'zicer-woo-sync'); ?></span>
+                            <span class="values"><span class="value">-</span> <?php esc_html_e('credits', 'zicer-woo-sync'); ?></span>
+                        </p>
+                        <p class="zicer-promo-balance">
+                            <span class="label"><?php esc_html_e('Your balance:', 'zicer-woo-sync'); ?></span>
+                            <span class="values"><span class="value">-</span> <?php esc_html_e('credits', 'zicer-woo-sync'); ?></span>
+                        </p>
+                    </div>
+
+                    <!-- Insufficient Credits Warning -->
+                    <div class="zicer-promo-warning" style="display: none;">
+                        <p class="zicer-status error">
+                            <?php esc_html_e('Insufficient credits', 'zicer-woo-sync'); ?>
+                        </p>
+                        <p>
+                            <a href="https://zicer.ba/moji-krediti" target="_blank" class="button" style="width: 100%; text-align: center;">
+                                <?php esc_html_e('Top up credits', 'zicer-woo-sync'); ?>
+                                <span class="dashicons dashicons-external" style="line-height: 1.4;"></span>
+                            </a>
+                        </p>
+                    </div>
+
+                    <!-- Promote Button -->
+                    <p class="zicer-promo-action">
+                        <button type="button"
+                                class="button button-primary zicer-promote-btn"
+                                style="width: 100%;"
+                                data-product-id="">
+                            <?php esc_html_e('Promote', 'zicer-woo-sync'); ?>
+                        </button>
+                    </p>
+                </div>
+            <?php elseif ($is_promoted) : ?>
+                <!-- Currently Promoted -->
+                <div class="zicer-promo-active <?php echo $promotion_type === 'super' ? 'super' : 'premium'; ?>">
+                    <p class="zicer-status synced">
+                        <span class="dashicons dashicons-superhero-alt"></span>
+                        <?php
+                        if ($promotion_type === 'super') {
+                            esc_html_e('Super Premium', 'zicer-woo-sync');
+                        } else {
+                            esc_html_e('Premium', 'zicer-woo-sync');
+                        }
+                        ?>
+                    </p>
+                    <?php if ($featured_until) : ?>
+                        <?php
+                        $expiry_date = new DateTime($featured_until);
+                        $now         = new DateTime();
+                        $diff        = $now->diff($expiry_date);
+                        ?>
+                        <p class="zicer-promo-expiry">
+                            <span class="label"><?php esc_html_e('Expires:', 'zicer-woo-sync'); ?></span>
+                            <span class="value">
+                                <?php
+                                echo esc_html($expiry_date->format(get_option('date_format') . ' ' . get_option('time_format')));
+                                ?>
+                            </span>
+                        </p>
+                        <?php if ($diff->days > 0 || $diff->h > 0) : ?>
+                            <p class="zicer-promo-remaining">
+                                <?php
+                                if ($diff->days > 0) {
+                                    printf(
+                                        /* translators: %d: number of days */
+                                        esc_html(_n('%d day remaining', '%d days remaining', $diff->days, 'zicer-woo-sync')),
+                                        $diff->days
+                                    );
+                                } else {
+                                    printf(
+                                        /* translators: %d: number of hours */
+                                        esc_html(_n('%d hour remaining', '%d hours remaining', $diff->h, 'zicer-woo-sync')),
+                                        $diff->h
+                                    );
+                                }
+                                ?>
+                            </p>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            <?php else : ?>
+                <!-- Promotion Type -->
+                <p>
+                    <label><strong><?php esc_html_e('Type', 'zicer-woo-sync'); ?></strong></label>
+                </p>
+                <div class="zicer-promo-types">
+                    <label class="zicer-radio-label">
+                        <input type="radio" name="zicer_promo_type" value="premium" checked>
+                        <?php esc_html_e('Premium', 'zicer-woo-sync'); ?>
+                    </label>
+                    <label class="zicer-radio-label zicer-super-premium">
+                        <input type="radio" name="zicer_promo_type" value="super">
+                        <?php esc_html_e('Super Premium', 'zicer-woo-sync'); ?>
+                    </label>
+                </div>
+
+                <!-- Duration -->
+                <p>
+                    <label for="zicer_promo_days"><strong><?php esc_html_e('Duration', 'zicer-woo-sync'); ?></strong></label>
+                </p>
+                <p>
+                    <select name="zicer_promo_days" id="zicer_promo_days" style="width: 100%;">
+                        <?php foreach ($duration_options as $days => $credits) : ?>
+                            <option value="<?php echo esc_attr($days); ?>">
+                                <?php
+                                printf(
+                                    /* translators: %d: number of days */
+                                    esc_html(_n('%d day', '%d days', $days, 'zicer-woo-sync')),
+                                    $days
+                                );
+                                ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </p>
+
+                <!-- Price Preview -->
+                <div class="zicer-promo-preview" style="display: none;">
+                    <p class="zicer-promo-cost">
+                        <span class="label"><?php esc_html_e('Cost:', 'zicer-woo-sync'); ?></span>
+                        <span class="values"><span class="value">-</span> <?php esc_html_e('credits', 'zicer-woo-sync'); ?></span>
+                    </p>
+                    <p class="zicer-promo-balance">
+                        <span class="label"><?php esc_html_e('Your balance:', 'zicer-woo-sync'); ?></span>
+                        <span class="values"><span class="value">-</span> <?php esc_html_e('credits', 'zicer-woo-sync'); ?></span>
+                    </p>
+                </div>
+
+                <!-- Insufficient Credits Warning -->
+                <div class="zicer-promo-warning" style="display: none;">
+                    <p class="zicer-status error">
+                        <?php esc_html_e('Insufficient credits', 'zicer-woo-sync'); ?>
+                    </p>
+                    <p>
+                        <a href="https://zicer.ba/moji-krediti" target="_blank" class="button" style="width: 100%; text-align: center;">
+                            <?php esc_html_e('Top up credits', 'zicer-woo-sync'); ?>
+                            <span class="dashicons dashicons-external" style="line-height: 1.4;"></span>
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Promote Button -->
+                <p class="zicer-promo-action">
+                    <button type="button"
+                            class="button button-primary zicer-promote-btn"
+                            style="width: 100%;"
+                            data-product-id="<?php echo esc_attr($post->ID); ?>">
+                        <?php esc_html_e('Promote', 'zicer-woo-sync'); ?>
                     </button>
                 </p>
             <?php endif; ?>

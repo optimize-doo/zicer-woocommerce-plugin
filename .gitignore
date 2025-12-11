@@ -27,3 +27,6 @@ vendor/
 # Environment
 .env
 .env.local
+
+# Claude
+CLAUDE.md

@@ -70,69 +70,90 @@ $terms_accepted = get_option('zicer_terms_accepted', false);
         <?php settings_fields('zicer_settings'); ?>
 
         <!-- Connection Section -->
-        <div class="zicer-card">
-            <h2><?php esc_html_e('Connection', 'zicer-woo-sync'); ?></h2>
+        <div class="zicer-connection-row">
+            <div class="zicer-card zicer-connection-card">
+                <h2><?php esc_html_e('Connection', 'zicer-woo-sync'); ?></h2>
 
-            <table class="form-table">
-                <tr>
-                    <th><?php esc_html_e('API Token', 'zicer-woo-sync'); ?></th>
-                    <td>
-                        <input type="password"
-                               name="zicer_api_token"
-                               id="zicer_api_token"
-                               value="<?php echo esc_attr(get_option('zicer_api_token')); ?>"
-                               class="regular-text">
-                        <button type="button" id="zicer-test-connection" class="button">
-                            <?php esc_html_e('Test Connection', 'zicer-woo-sync'); ?>
-                        </button>
-                        <?php if ($is_connected) : ?>
-                            <button type="button" id="zicer-disconnect" class="button">
-                                <?php esc_html_e('Disconnect', 'zicer-woo-sync'); ?>
+                <table class="form-table">
+                    <tr>
+                        <th><?php esc_html_e('API Token', 'zicer-woo-sync'); ?></th>
+                        <td>
+                            <input type="password"
+                                   name="zicer_api_token"
+                                   id="zicer_api_token"
+                                   value="<?php echo esc_attr(get_option('zicer_api_token')); ?>"
+                                   class="regular-text">
+                            <button type="button" id="zicer-test-connection" class="button">
+                                <?php esc_html_e('Test Connection', 'zicer-woo-sync'); ?>
                             </button>
-                        <?php endif; ?>
-                        <p class="description">
-                            <?php
-                            printf(
-                                /* translators: %s: link to ZICER profile */
-                                esc_html__('You can create an API token in your %s.', 'zicer-woo-sync'),
-                                '<a href="https://zicer.ba/moje-integracije" target="_blank">' . esc_html__('ZICER profile settings', 'zicer-woo-sync') . '</a>'
-                            );
-                            ?>
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php esc_html_e('Status', 'zicer-woo-sync'); ?></th>
-                    <td>
-                        <span id="zicer-connection-status" class="<?php echo $is_connected ? 'connected' : 'disconnected'; ?>">
                             <?php if ($is_connected) : ?>
-                                &#10003; <?php printf(
-                                    /* translators: %s: user email */
-                                    esc_html__('Connected as %s', 'zicer-woo-sync'),
-                                    esc_html($connection['user'])
-                                ); ?>
-                                <?php if (!empty($connection['shop'])) : ?>
-                                    (<?php echo esc_html($connection['shop']); ?>)
-                                <?php elseif (empty($connection['has_shop'])) : ?>
-                                    &mdash; <a href="https://zicer.ba/" target="_blank"><?php esc_html_e('Create a shop for higher rate limits', 'zicer-woo-sync'); ?></a>
-                                <?php endif; ?>
-                                <?php if (!empty($connection['rate_limit'])) : ?>
-                                    <span class="zicer-rate-limit">
-                                        &mdash;
-                                        <?php printf(
-                                            /* translators: %d: rate limit per minute */
-                                            esc_html__('Rate limit: %d/min', 'zicer-woo-sync'),
-                                            $connection['rate_limit']
-                                        ); ?>
-                                    </span>
-                                <?php endif; ?>
-                            <?php else : ?>
-                                &#10007; <?php esc_html_e('Not connected', 'zicer-woo-sync'); ?>
+                                <button type="button" id="zicer-disconnect" class="button">
+                                    <?php esc_html_e('Disconnect', 'zicer-woo-sync'); ?>
+                                </button>
                             <?php endif; ?>
-                        </span>
-                    </td>
-                </tr>
-            </table>
+                            <p class="description">
+                                <?php
+                                printf(
+                                    /* translators: %s: link to ZICER profile */
+                                    esc_html__('You can create an API token in your %s.', 'zicer-woo-sync'),
+                                    '<a href="https://zicer.ba/moje-integracije" target="_blank">' . esc_html__('ZICER profile settings', 'zicer-woo-sync') . '</a>'
+                                );
+                                ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Status', 'zicer-woo-sync'); ?></th>
+                        <td>
+                            <span id="zicer-connection-status" class="<?php echo $is_connected ? 'connected' : 'disconnected'; ?>">
+                                <?php if ($is_connected) : ?>
+                                    &#10003; <?php printf(
+                                        /* translators: %s: user email */
+                                        esc_html__('Connected as %s', 'zicer-woo-sync'),
+                                        esc_html($connection['user'])
+                                    ); ?>
+                                    <?php if (!empty($connection['shop'])) : ?>
+                                        (<?php echo esc_html($connection['shop']); ?>)
+                                    <?php elseif (empty($connection['has_shop'])) : ?>
+                                        &mdash; <a href="https://zicer.ba/" target="_blank"><?php esc_html_e('Create a shop for higher rate limits', 'zicer-woo-sync'); ?></a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($connection['rate_limit'])) : ?>
+                                        <span class="zicer-rate-limit">
+                                            &mdash;
+                                            <?php printf(
+                                                /* translators: %d: rate limit per minute */
+                                                esc_html__('Rate limit: %d/min', 'zicer-woo-sync'),
+                                                $connection['rate_limit']
+                                            ); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    &#10007; <?php esc_html_e('Not connected', 'zicer-woo-sync'); ?>
+                                <?php endif; ?>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <?php if ($is_connected) : ?>
+            <!-- Credits Widget -->
+            <div class="zicer-card zicer-credits-card">
+                <h2><?php esc_html_e('Credits', 'zicer-woo-sync'); ?></h2>
+                <div class="zicer-credits-content">
+                    <div class="zicer-credits-balance">
+                        <span class="zicer-credits-value" id="zicer-credits-value">...</span>
+                        <span class="zicer-credits-label"><?php esc_html_e('credits', 'zicer-woo-sync'); ?></span>
+                    </div>
+                    <p>
+                        <a href="https://zicer.ba/moji-krediti" target="_blank" class="button" style="width: 100%; text-align: center;">
+                            <?php esc_html_e('Top up credits', 'zicer-woo-sync'); ?>
+                            <span class="dashicons dashicons-external" style="font-size: 14px; line-height: 1.8; vertical-align: middle;"></span>
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
 
         <!-- Sync Settings -->
