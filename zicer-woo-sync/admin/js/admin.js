@@ -812,6 +812,23 @@
             $('#zicer_default_region').trigger('change');
         }
 
+        // Load credits on settings page
+        var $creditsValue = $('#zicer-credits-value');
+        if ($creditsValue.length) {
+            $.post(zicerAdmin.ajaxUrl, {
+                action: 'zicer_get_credits',
+                nonce: zicerAdmin.nonce
+            }, function(response) {
+                if (response.success) {
+                    $creditsValue.text(response.data.credits);
+                } else {
+                    $creditsValue.text('-');
+                }
+            }).fail(function() {
+                $creditsValue.text('-');
+            });
+        }
+
         // Retry failed
         $('#zicer-retry-failed').on('click', function() {
             var $btn = $(this);
@@ -846,6 +863,287 @@
                 });
             });
         });
+
+        // =====================
+        // Promotion functionality
+        // =====================
+
+        var $promoMeta = $('.zicer-promote-meta');
+        if ($promoMeta.length) {
+            var isVariable = $promoMeta.data('is-variable') === 1;
+            var promoCache = {};
+
+            // Elements (may be in main form or variation form)
+            function getPromoElements($container) {
+                return {
+                    $promoType: $container.find('input[name="zicer_promo_type"]'),
+                    $promoDays: $container.find('#zicer_promo_days, select[name="zicer_promo_days"]'),
+                    $promoPreview: $container.find('.zicer-promo-preview'),
+                    $promoWarning: $container.find('.zicer-promo-warning'),
+                    $promoAction: $container.find('.zicer-promo-action'),
+                    $promoCost: $container.find('.zicer-promo-cost .value'),
+                    $promoBalance: $container.find('.zicer-promo-balance .value'),
+                    $promoteBtn: $container.find('.zicer-promote-btn')
+                };
+            }
+
+            /**
+             * Update promotion price preview
+             */
+            function updatePromoPrice(els) {
+                var days = parseInt(els.$promoDays.val());
+                var isSuper = els.$promoType.filter(':checked').val() === 'super';
+                var cacheKey = days + '-' + isSuper;
+
+                // Show loading state
+                els.$promoCost.text('...');
+                els.$promoBalance.text('...');
+                els.$promoPreview.show();
+                els.$promoWarning.hide();
+                els.$promoAction.show();
+                els.$promoteBtn.prop('disabled', true);
+
+                // Check cache
+                if (promoCache[cacheKey]) {
+                    displayPromoPrice(promoCache[cacheKey], els);
+                    return;
+                }
+
+                $.post(zicerAdmin.ajaxUrl, {
+                    action: 'zicer_get_promotion_price',
+                    nonce: zicerAdmin.nonce,
+                    days: days,
+                    super: isSuper.toString()
+                }, function(response) {
+                    if (response.success) {
+                        promoCache[cacheKey] = response.data;
+                        displayPromoPrice(response.data, els);
+                    } else {
+                        els.$promoCost.text('-');
+                        els.$promoBalance.text('-');
+                        els.$promoteBtn.prop('disabled', true);
+                    }
+                }).fail(function() {
+                    els.$promoCost.text('-');
+                    els.$promoBalance.text('-');
+                    els.$promoteBtn.prop('disabled', true);
+                });
+            }
+
+            /**
+             * Display promotion price data
+             */
+            function displayPromoPrice(data, els) {
+                els.$promoCost.text(data.price);
+                els.$promoBalance.text(data.credits);
+
+                if (data.canPromote) {
+                    els.$promoWarning.hide();
+                    els.$promoAction.show();
+                    els.$promoteBtn.prop('disabled', false);
+                } else {
+                    els.$promoWarning.show();
+                    els.$promoAction.hide();
+                    els.$promoteBtn.prop('disabled', true);
+                }
+            }
+
+            /**
+             * Build promotion status HTML
+             */
+            function buildPromoStatusHtml(data) {
+                var typeClass = data.promotion_type === 'super' ? 'super' : 'premium';
+                var typeLabel = data.promotion_type === 'super' ? zicerAdmin.strings.super_premium : zicerAdmin.strings.premium;
+
+                var html = '<div class="zicer-promo-active ' + typeClass + '">';
+                html += '<p class="zicer-status synced">';
+                html += '<span class="dashicons dashicons-superhero-alt"></span> ';
+                html += typeLabel;
+                html += '</p>';
+
+                if (data.featured_until) {
+                    var expiry = new Date(data.featured_until);
+                    var now = new Date();
+                    var diffMs = expiry - now;
+                    var diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    var diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+                    html += '<p class="zicer-promo-expiry">';
+                    html += '<span class="label">' + zicerAdmin.strings.expires + '</span>';
+                    html += '<span class="value">' + expiry.toLocaleDateString() + ' ' + expiry.toLocaleTimeString() + '</span>';
+                    html += '</p>';
+
+                    if (diffDays > 0 || diffHours > 0) {
+                        html += '<p class="zicer-promo-remaining">';
+                        if (diffDays > 0) {
+                            html += zicerAdmin.strings.days_remaining.replace('%d', diffDays);
+                        } else {
+                            html += zicerAdmin.strings.hours_remaining.replace('%d', diffHours);
+                        }
+                        html += '</p>';
+                    }
+                }
+
+                html += '</div>';
+                return html;
+            }
+
+            // Handle variable products
+            if (isVariable) {
+                var $variationSelect = $promoMeta.find('#zicer_promo_variation');
+                var $variationStatus = $promoMeta.find('.zicer-variation-promo-status');
+                var $variationForm = $promoMeta.find('.zicer-variation-promo-form');
+                var variationEls = getPromoElements($variationForm);
+
+                $variationSelect.on('change', function() {
+                    var variationId = $(this).val();
+
+                    // Hide everything first
+                    $variationStatus.hide().empty();
+                    $variationForm.hide();
+
+                    if (!variationId) {
+                        return;
+                    }
+
+                    // Show loading
+                    $variationStatus.html('<p class="description">' + zicerAdmin.strings.loading_status + '</p>').show();
+
+                    // Fetch promotion status for this variation
+                    $.post(zicerAdmin.ajaxUrl, {
+                        action: 'zicer_get_listing_promo_status',
+                        nonce: zicerAdmin.nonce,
+                        product_id: variationId
+                    }, function(response) {
+                        if (response.success) {
+                            if (response.data.is_promoted) {
+                                // Show promotion status
+                                $variationStatus.html(buildPromoStatusHtml(response.data)).show();
+                                $variationForm.hide();
+                            } else {
+                                // Show promotion form
+                                $variationStatus.hide();
+                                $variationForm.show();
+                                variationEls.$promoteBtn.data('product-id', variationId);
+                                updatePromoPrice(variationEls);
+                            }
+                        } else {
+                            $variationStatus.html('<p class="description">' + response.data + '</p>').show();
+                        }
+                    }).fail(function() {
+                        $variationStatus.html('<p class="description">' + zicerAdmin.strings.error + '</p>').show();
+                    });
+                });
+
+                // Update price on type/duration change for variations
+                variationEls.$promoType.on('change', function() {
+                    updatePromoPrice(variationEls);
+                });
+                variationEls.$promoDays.on('change', function() {
+                    updatePromoPrice(variationEls);
+                });
+
+                // Promote button click for variations
+                variationEls.$promoteBtn.on('click', function() {
+                    var $btn = $(this);
+                    var productId = $btn.data('product-id');
+                    var days = parseInt(variationEls.$promoDays.val());
+                    var isSuper = variationEls.$promoType.filter(':checked').val() === 'super';
+                    var typeName = isSuper ? zicerAdmin.strings.super_premium : zicerAdmin.strings.premium;
+                    var cacheKey = days + '-' + isSuper;
+                    var price = promoCache[cacheKey] ? promoCache[cacheKey].price : '?';
+
+                    var confirmMsg = zicerAdmin.strings.confirm_promotion
+                        .replace('%d', days)
+                        .replace('%s', typeName)
+                        .replace('%d', price);
+
+                    ZicerModal.confirm(confirmMsg, function() {
+                        $btn.prop('disabled', true).text(zicerAdmin.strings.promoting);
+
+                        $.post(zicerAdmin.ajaxUrl, {
+                            action: 'zicer_promote_listing',
+                            nonce: zicerAdmin.nonce,
+                            product_id: productId,
+                            days: days,
+                            super: isSuper.toString()
+                        }, function(response) {
+                            if (response.success) {
+                                $btn.text(zicerAdmin.strings.promoted);
+                                ZicerModal.alert(zicerAdmin.strings.promotion_success, function() {
+                                    // Reload variation status
+                                    $variationSelect.trigger('change');
+                                });
+                            } else {
+                                ZicerModal.alert(zicerAdmin.strings.promotion_failed + ': ' + response.data);
+                                $btn.prop('disabled', false).text(zicerAdmin.strings.promote);
+                            }
+                        }).fail(function() {
+                            ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                            $btn.prop('disabled', false).text(zicerAdmin.strings.promote);
+                        });
+                    });
+                });
+
+            } else if ($promoMeta.find('.zicer-promote-btn').length) {
+                // Simple product promotion
+                var els = getPromoElements($promoMeta);
+
+                // Update price on type/duration change
+                els.$promoType.on('change', function() {
+                    updatePromoPrice(els);
+                });
+                els.$promoDays.on('change', function() {
+                    updatePromoPrice(els);
+                });
+
+                // Initial price load
+                updatePromoPrice(els);
+
+                // Promote button click
+                els.$promoteBtn.on('click', function() {
+                    var $btn = $(this);
+                    var productId = $btn.data('product-id');
+                    var days = parseInt(els.$promoDays.val());
+                    var isSuper = els.$promoType.filter(':checked').val() === 'super';
+                    var typeName = isSuper ? zicerAdmin.strings.super_premium : zicerAdmin.strings.premium;
+                    var cacheKey = days + '-' + isSuper;
+                    var price = promoCache[cacheKey] ? promoCache[cacheKey].price : '?';
+
+                    // Confirm promotion
+                    var confirmMsg = zicerAdmin.strings.confirm_promotion
+                        .replace('%d', days)
+                        .replace('%s', typeName)
+                        .replace('%d', price);
+
+                    ZicerModal.confirm(confirmMsg, function() {
+                        $btn.prop('disabled', true).text(zicerAdmin.strings.promoting);
+
+                        $.post(zicerAdmin.ajaxUrl, {
+                            action: 'zicer_promote_listing',
+                            nonce: zicerAdmin.nonce,
+                            product_id: productId,
+                            days: days,
+                            super: isSuper.toString()
+                        }, function(response) {
+                            if (response.success) {
+                                $btn.text(zicerAdmin.strings.promoted);
+                                ZicerModal.alert(zicerAdmin.strings.promotion_success, function() {
+                                    // Reload to show promotion status
+                                    location.reload();
+                                });
+                            } else {
+                                ZicerModal.alert(zicerAdmin.strings.promotion_failed + ': ' + response.data);
+                                $btn.prop('disabled', false).text(zicerAdmin.strings.promote);
+                            }
+                        }).fail(function() {
+                            ZicerModal.alert(zicerAdmin.strings.error + ' ' + zicerAdmin.strings.connection_failed);
+                            $btn.prop('disabled', false).text(zicerAdmin.strings.promote);
+                        });
+                    });
+                });
+            }
+        }
 
     });
 

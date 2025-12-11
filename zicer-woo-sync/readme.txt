@@ -4,7 +4,7 @@ Tags: woocommerce, marketplace, sync, zicer, products
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,13 @@ Ne, odspajanje dodatka ne briše sinkronizirane oglase sa ZICER-a. Možete ih up
 
 == Changelog ==
 
+= 1.0.2 =
+* Listing promotion feature (Premium/Super Premium) / Mogućnost promocije oglasa (Premium/Super Premium)
+* Promotion meta box on product edit page / Meta box za promociju na stranici uređivanja proizvoda
+* Variable product variation promotion support / Podrška za promociju varijacija varijabilnih proizvoda
+* Credits balance display on settings page / Prikaz stanja kredita na stranici postavki
+* Connect to ZICER button when not connected / Dugme za povezivanje sa ZICER-om kada nije povezan
+
 = 1.0.1 =
 * Help page with user manual / Stranica pomoći sa korisničkim uputstvom
 * Plugin readme.txt for WordPress plugin details / Plugin readme.txt za detalje WordPress dodatka
@@ -131,6 +138,10 @@ Ne, odspajanje dodatka ne briše sinkronizirane oglase sa ZICER-a. Možete ih up
 * Bosnian and English translations / Bosanski i engleski prijevodi
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Added listing promotion feature and credits display.
+Dodana mogućnost promocije oglasa i prikaz kredita.
 
 = 1.0.1 =
 Added help page and documentation.

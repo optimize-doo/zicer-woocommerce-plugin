@@ -871,3 +871,276 @@
         transform: translateY(0);
     }
 }
+
+/* ==========================================================================
+   ZICER Promotion Meta Box
+   ========================================================================== */
+
+.zicer-promote-meta .zicer-status {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.zicer-promote-meta .zicer-status.pending {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.zicer-promote-meta .zicer-status.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Promotion types row */
+.zicer-promo-types {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+/* Radio labels for promotion type */
+.zicer-promote-meta .zicer-radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin: 0;
+    flex: 1;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.zicer-promote-meta .zicer-radio-label:hover {
+    border-color: #facc15;
+    background: #fffbeb;
+}
+
+.zicer-promote-meta .zicer-radio-label input[type="radio"] {
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* Selected state */
+.zicer-promote-meta .zicer-radio-label:has(input[type="radio"]:checked) {
+    border-color: #facc15;
+    background: #fffbeb;
+    font-weight: 500;
+}
+
+/* Super Premium styling */
+.zicer-promote-meta .zicer-radio-label.zicer-super-premium {
+    border-color: #fde68a;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.zicer-promote-meta .zicer-radio-label.zicer-super-premium:hover {
+    border-color: #fbbf24;
+}
+
+/* Price preview section */
+.zicer-promo-preview {
+    background: #f9fafb;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.zicer-promo-preview p {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zicer-promo-preview p:last-child {
+    margin-bottom: 0;
+}
+
+.zicer-promo-preview .label {
+    color: #6b7280;
+}
+
+.zicer-promo-preview .values {
+    text-align: right;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.zicer-promo-preview .value {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.zicer-promo-cost .value {
+    color: #ca8a04;
+}
+
+.zicer-promo-balance .value {
+    color: #16a34a;
+}
+
+/* Warning section for insufficient credits */
+.zicer-promo-warning {
+    margin-top: 12px;
+}
+
+.zicer-promo-warning .zicer-status {
+    margin-bottom: 10px;
+}
+
+.zicer-promo-warning .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.zicer-promo-warning .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Action buttons */
+.zicer-promo-action {
+    margin-top: 12px;
+}
+
+.zicer-promo-action .button-primary {
+    background: #facc15;
+    border-color: #eab308;
+    color: #000;
+    font-weight: 500;
+}
+
+.zicer-promo-action .button-primary:hover,
+.zicer-promo-action .button-primary:focus {
+    background: #eab308;
+    border-color: #ca8a04;
+    color: #000;
+}
+
+.zicer-promo-action .button-primary:disabled {
+    background: #fef3c7 !important;
+    border-color: #fde68a !important;
+    color: #a16207 !important;
+    opacity: 0.7;
+}
+
+/* Active promotion display */
+.zicer-promo-active .zicer-status {
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.zicer-promo-active .zicer-status .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.zicer-promo-active.premium .zicer-status {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    color: #1d4ed8;
+}
+
+.zicer-promo-active.premium .zicer-status .dashicons {
+    color: #2563eb;
+}
+
+.zicer-promo-active.super .zicer-status {
+    background: #fefce8;
+    border: 2px solid #eab308;
+    color: #a16207;
+}
+
+.zicer-promo-active.super .zicer-status .dashicons {
+    color: #eab308;
+}
+
+.zicer-promo-expiry {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin: 8px 0 4px;
+}
+
+.zicer-promo-expiry .label {
+    color: #6b7280;
+}
+
+.zicer-promo-expiry .value {
+    color: #374151;
+    font-weight: 500;
+}
+
+.zicer-promo-remaining {
+    text-align: center;
+    font-size: 11px;
+    color: #16a34a;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Connection row with credits widget */
+.zicer-connection-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.zicer-connection-card {
+    flex: 1;
+}
+
+.zicer-credits-card {
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.zicer-credits-content {
+    text-align: center;
+}
+
+.zicer-credits-balance {
+    padding: 16px 0;
+}
+
+.zicer-credits-value {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: #16a34a;
+    line-height: 1;
+}
+
+.zicer-credits-label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+@media screen and (max-width: 900px) {
+    .zicer-connection-row {
+        flex-direction: column;
+    }
+
+    .zicer-credits-card {
+        width: 100%;
+    }
+}

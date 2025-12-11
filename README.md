@@ -81,8 +81,6 @@ zicer.woo/
 │   │   ├── js/
 │   │   └── views/
 │   └── languages/         # Translations (BS/EN)
-└── thoughts/
-    └── plans/             # Implementation plans
 ```
 
 ## Features

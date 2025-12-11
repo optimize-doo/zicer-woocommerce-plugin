@@ -424,4 +424,43 @@ class Zicer_API_Client {
             'reset_in'  => max(0, $this->rate_limit_reset - time()),
         ];
     }
+
+    /**
+     * Get user credit balance
+     *
+     * @return array|WP_Error
+     */
+    public function get_credits() {
+        return $this->get('/credits');
+    }
+
+    /**
+     * Get promotion price preview
+     *
+     * @param int  $days  Number of days for promotion.
+     * @param bool $super Whether super premium promotion.
+     * @return array|WP_Error Response with price, credits, canPromote.
+     */
+    public function get_promotion_price($days, $super = false) {
+        return $this->post('/listings/promote/price', [
+            'days'  => (int) $days,
+            'super' => (bool) $super,
+        ]);
+    }
+
+    /**
+     * Promote a listing
+     *
+     * @param string $listing_id Listing ID.
+     * @param int    $days       Number of days for promotion.
+     * @param bool   $super      Whether super premium promotion.
+     * @return array|WP_Error Response with promotion details.
+     */
+    public function promote_listing($listing_id, $days, $super = false) {
+        return $this->post("/listings/$listing_id/promote", [
+            'days'    => (int) $days,
+            'super'   => (bool) $super,
+            'promote' => true,
+        ]);
+    }
 }
